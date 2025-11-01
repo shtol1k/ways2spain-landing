@@ -1,0 +1,211 @@
+import { Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
+const packages = [
+  {
+    name: "Консультація",
+    price: "49",
+    description: "Початкова оцінка вашої ситуації",
+    features: [
+      { text: "Відеоконсультація 1 година", included: true },
+      { text: "Аналіз документів", included: true },
+      { text: "Оцінка шансів на отримання візи", included: true },
+      { text: "Відповіді на всі запитання", included: true },
+      { text: "Підготовка документів", included: false },
+      { text: "Подача заявки", included: false },
+      { text: "Супровід процесу", included: false },
+    ],
+    popular: false,
+  },
+  {
+    name: "Базовий пакет",
+    price: "890",
+    description: "Консультація та перевірка документів",
+    features: [
+      { text: "Детальна консультація", included: true },
+      { text: "Перевірка всіх документів", included: true },
+      { text: "Інструкції з підготовки", included: true },
+      { text: "Чекліст документів", included: true },
+      { text: "Підготовка форм та заяв", included: true },
+      { text: "Супровід подачі", included: true },
+      { text: "Переклади та апостилі", included: false },
+    ],
+    popular: false,
+  },
+  {
+    name: "Під ключ",
+    price: "1,990",
+    description: "Повний супровід від А до Я",
+    features: [
+      { text: "Все з базового пакету", included: true },
+      { text: "Підготовка всіх документів", included: true },
+      { text: "Переклади та легалізація", included: true },
+      { text: "Запис до нотаріуса", included: true },
+      { text: "Подача документів", included: true },
+      { text: "Супровід до отримання ТІЕ", included: true },
+      { text: "Допомога з NIE/NIF", included: true },
+    ],
+    popular: true,
+  },
+  {
+    name: "Преміум",
+    price: "2,990",
+    description: "Максимальний комфорт та підтримка",
+    features: [
+      { text: "Все з пакету 'Під ключ'", included: true },
+      { text: "Пріоритетна підтримка 24/7", included: true },
+      { text: "Податкові консультації", included: true },
+      { text: "Допомога з пошуком житла", included: true },
+      { text: "Супровід родини", included: true },
+      { text: "Допомога з відкриттям рахунку", included: true },
+      { text: "Адаптація в Іспанії", included: true },
+    ],
+    popular: false,
+  },
+];
+
+const additionalServices = [
+  {
+    title: "Модифікація статусу",
+    price: "790",
+    description: "Зміна з тимчасового захисту на Digital Nomad Visa",
+  },
+  {
+    title: "Легалізація родини",
+    price: "від 490",
+    description: "Оформлення візи для членів сім'ї (за особу)",
+  },
+  {
+    title: "Податкові консультації",
+    price: "290",
+    description: "Консультація з іспанським податковим радником",
+  },
+  {
+    title: "Продовження візи",
+    price: "690",
+    description: "Повний супровід продовження Digital Nomad Visa",
+  },
+];
+
+const Services = () => {
+  return (
+    <div className="min-h-screen pt-32 pb-20">
+      <div className="container mx-auto px-4 lg:px-8">
+        {/* Header */}
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <h1 className="mb-6">Наші послуги</h1>
+          <p className="text-xl text-muted-foreground">
+            Оберіть пакет, який найкраще підходить для вашої ситуації
+          </p>
+        </div>
+
+        {/* Packages Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+          {packages.map((pkg, index) => (
+            <div
+              key={index}
+              className={`relative bg-card rounded-xl p-6 border transition-smooth hover:shadow-strong ${
+                pkg.popular
+                  ? "border-secondary shadow-elegant scale-105 lg:scale-110"
+                  : "border-border shadow-elegant hover:scale-105"
+              }`}
+            >
+              {pkg.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="px-4 py-1 rounded-full gradient-accent text-accent-foreground text-sm font-bold">
+                    Найпопулярніший
+                  </span>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {pkg.description}
+                </p>
+                <div className="flex items-baseline">
+                  <span className="text-4xl font-bold">€{pkg.price}</span>
+                </div>
+              </div>
+
+              <ul className="space-y-3 mb-6">
+                {pkg.features.map((feature, fIndex) => (
+                  <li key={fIndex} className="flex items-start space-x-2">
+                    {feature.included ? (
+                      <Check className="w-5 h-5 text-secondary flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <X className="w-5 h-5 text-muted-foreground/40 flex-shrink-0 mt-0.5" />
+                    )}
+                    <span
+                      className={
+                        feature.included ? "text-foreground" : "text-muted-foreground/60"
+                      }
+                    >
+                      {feature.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link to="/contact">
+                <Button
+                  variant={pkg.popular ? "hero" : "outline"}
+                  className="w-full"
+                  size="lg"
+                >
+                  Замовити
+                </Button>
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional Services */}
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">
+            Додаткові послуги
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {additionalServices.map((service, index) => (
+              <div
+                key={index}
+                className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-bold">{service.title}</h3>
+                  <span className="text-2xl font-bold text-secondary">
+                    €{service.price}
+                  </span>
+                </div>
+                <p className="text-muted-foreground mb-4">{service.description}</p>
+                <Link to="/contact">
+                  <Button variant="outline" size="sm">
+                    Дізнатись більше
+                  </Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="bg-gradient-to-r from-primary to-primary/90 rounded-2xl p-8 md:p-12 text-center text-primary-foreground">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+              Не впевнені який пакет обрати?
+            </h3>
+            <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+              Отримайте безкоштовну консультацію, і ми допоможемо визначити оптимальний варіант для вашої ситуації
+            </p>
+            <Link to="/contact">
+              <Button variant="secondary" size="xl">
+                Безкоштовна консультація
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Services;
