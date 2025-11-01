@@ -52,7 +52,7 @@ const Hero = () => {
           </div>
 
           {/* Key Benefits */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
+          <div className="flex flex-wrap lg:flex-nowrap gap-6 animate-fade-in">
             {[
               "Законна альтернатива тимчасовому захисту",
               "Повний супровід процесу",
@@ -60,7 +60,9 @@ const Hero = () => {
             ].map((benefit, index) => (
               <div
                 key={index}
-                className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/20"
+                className={`flex items-center space-x-2 rounded-lg flex-shrink-0 ${
+                  index === 0 ? "whitespace-nowrap" : ""
+                }`}
               >
                 <CheckCircle className="w-5 h-5 text-secondary flex-shrink-0" />
                 <span className="text-white text-sm font-medium">{benefit}</span>
