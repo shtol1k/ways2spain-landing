@@ -118,7 +118,15 @@ ${message}
       } catch (notionError) {
         // Не блокуємо відповідь, якщо Notion не спрацював
         console.error('⚠️ Notion error (non-blocking):', notionError);
+        console.error('⚠️ Notion error details:', {
+          code: notionError.code,
+          status: notionError.status,
+          message: notionError.message,
+          body: notionError.body,
+        });
       }
+    } else {
+      console.log('ℹ️ Notion integration not configured (missing API_KEY or DATABASE_ID)');
     }
 
     return res.status(200).json({
@@ -161,7 +169,35 @@ async function createNotionEntry(data) {
     auth: process.env.NOTION_API_KEY,
   });
 
-  const databaseId = process.env.NOTION_DATABASE_ID;
+  // Очищаємо Database ID від зайвих символів (якщо вставлений повний URL)
+  let databaseId = process.env.NOTION_DATABASE_ID.trim();
+  
+  // Якщо це URL, витягуємо тільки ID
+  if (databaseId.includes('?')) {
+    databaseId = databaseId.split('?')[0];
+  }
+  
+  // Якщо це повний URL, витягуємо ID з кінця
+  if (databaseId.includes('notion.so/')) {
+    const parts = databaseId.split('/');
+    databaseId = parts[parts.length - 1];
+  }
+  
+  // Прибираємо дефіси для перевірки довжини
+  const cleanId = databaseId.replace(/-/g, '');
+  
+  // Перевіряємо формат (має бути 32 hex символи)
+  if (cleanId.length !== 32) {
+    throw new Error(`Invalid Database ID format. Expected 32 hex characters, got ${cleanId.length}. Clean ID: ${cleanId}`);
+  }
+  
+  // Конвертуємо в формат UUID з дефісами (8-4-4-4-12)
+  // Notion API вимагає формат з дефісами
+  if (!databaseId.includes('-')) {
+    databaseId = `${cleanId.substring(0, 8)}-${cleanId.substring(8, 12)}-${cleanId.substring(12, 16)}-${cleanId.substring(16, 20)}-${cleanId.substring(20, 32)}`;
+  }
+
+  console.log('📝 Creating Notion entry in database:', databaseId);
 
   // Формуємо властивості для Notion
   // Примітка: назви властивостей мають відповідати назвам колонок у твоїй Notion базі
@@ -213,13 +249,25 @@ async function createNotionEntry(data) {
     },
   };
 
-  const response = await notion.pages.create({
-    parent: {
-      database_id: databaseId,
-    },
-    properties: properties,
-  });
+  try {
+    const response = await notion.pages.create({
+      parent: {
+        database_id: databaseId,
+      },
+      properties: properties,
+    });
 
-  return response;
+    return response;
+  } catch (error) {
+    // Детальне логування помилок Notion
+    console.error('❌ Notion API error:', {
+      code: error.code,
+      status: error.status,
+      message: error.message,
+      body: error.body,
+      databaseId: databaseId,
+    });
+    throw error;
+  }
 }
 

@@ -58,12 +58,17 @@
 2. Скопіюй URL з адресного рядка браузера
 3. URL виглядає так:
    ```
-   https://www.notion.so/workspace/DATABASE_ID?v=...
+   https://www.notion.so/workspace/29efcef3872d809a907ffb5ff5ea4d7f?v=...
    ```
 4. **Database ID** - це частина між останнім `/` та `?`
-   - Приклад: якщо URL `https://notion.so/workspace/a1b2c3d4e5f6g7h8i9j0k1l2m3?`
-   - Database ID: `a1b2c3d4e5f6g7h8i9j0k1l2m3`
-5. Скопіюй цей ID
+   - Приклад з твого URL: `29efcef3872d809a907ffb5ff5ea4d7f`
+   - **Можеш скопіювати повний ID з `?v=` - код автоматично його очистить!**
+   
+   **ВАЖЛИВО:** Можеш додати ID в будь-якому форматі:
+   - `29efcef3872d809a907ffb5ff5ea4d7f` ✅
+   - `29efcef3-872d-809a-907f-f5ff5ea4d7f` ✅ (з дефісами)
+   - `29efcef3872d809a907ffb5ff5ea4d7f?v=...` ✅ (з параметрами - код очистить)
+5. Скопіюй цей ID (або залиш як є з параметрами)
 
 ## ⚙️ Крок 5: Додавання змінних в Vercel
 
