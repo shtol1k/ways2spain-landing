@@ -1,5 +1,6 @@
 // Vercel Serverless Function для обробки контактної форми
 import nodemailer from 'nodemailer';
+import { Client } from '@notionhq/client';
 
 export default async function handler(req, res) {
   // Встановлюємо CORS headers для Vercel
@@ -99,13 +100,32 @@ ${message}
 
     // Відправляємо email
     const info = await transporter.sendMail(mailOptions);
-
     console.log('✅ Email sent successfully:', info.messageId);
+
+    // Додаємо запис в Notion (якщо налаштовано)
+    let notionResult = null;
+    if (process.env.NOTION_API_KEY && process.env.NOTION_DATABASE_ID) {
+      try {
+        notionResult = await createNotionEntry({
+          name,
+          email,
+          phone: phone || 'Не вказано',
+          package: packageValue || 'Не обрано',
+          situation: situation || 'Не вказано',
+          message,
+        });
+        console.log('✅ Notion entry created:', notionResult.id);
+      } catch (notionError) {
+        // Не блокуємо відповідь, якщо Notion не спрацював
+        console.error('⚠️ Notion error (non-blocking):', notionError);
+      }
+    }
 
     return res.status(200).json({
       success: true,
       message: 'Повідомлення успішно надіслано!',
       messageId: info.messageId,
+      notionEntryId: notionResult?.id,
     });
   } catch (error) {
     console.error('❌ Error sending email:', error);
@@ -133,5 +153,73 @@ ${message}
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
+}
+
+// Функція для створення запису в Notion
+async function createNotionEntry(data) {
+  const notion = new Client({
+    auth: process.env.NOTION_API_KEY,
+  });
+
+  const databaseId = process.env.NOTION_DATABASE_ID;
+
+  // Формуємо властивості для Notion
+  // Примітка: назви властивостей мають відповідати назвам колонок у твоїй Notion базі
+  const properties = {
+    'Ім\'я': {
+      title: [
+        {
+          text: {
+            content: data.name,
+          },
+        },
+      ],
+    },
+    'Email': {
+      email: data.email,
+    },
+    'Телефон': {
+      rich_text: [
+        {
+          text: {
+            content: data.phone,
+          },
+        },
+      ],
+    },
+    'Послуга': {
+      select: {
+        name: data.package,
+      },
+    },
+    'Кейс': {
+      select: {
+        name: data.situation,
+      },
+    },
+    'Повідомлення': {
+      rich_text: [
+        {
+          text: {
+            content: data.message,
+          },
+        },
+      ],
+    },
+    'Дата': {
+      date: {
+        start: new Date().toISOString(),
+      },
+    },
+  };
+
+  const response = await notion.pages.create({
+    parent: {
+      database_id: databaseId,
+    },
+    properties: properties,
+  });
+
+  return response;
 }
 
