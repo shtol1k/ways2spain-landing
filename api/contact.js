@@ -109,19 +109,28 @@ ${message}
     });
   } catch (error) {
     console.error('❌ Error sending email:', error);
+    console.error('Error details:', {
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode,
+    });
 
     // Більш детальні повідомлення про помилки
     let errorMessage = 'Помилка при відправці повідомлення. Спробуйте пізніше.';
     
     if (error.code === 'EAUTH') {
-      errorMessage = 'Помилка автентифікації Gmail. Перевірте налаштування SMTP.';
+      errorMessage = 'Помилка автентифікації Gmail. Перевірте налаштування SMTP. Переконайся, що використовуєш App Password (пароль додатка), а не звичайний пароль від Google. Інструкція: перевір GMAIL_SETUP.md';
     } else if (error.code === 'ECONNECTION') {
       errorMessage = 'Помилка підключення до Gmail сервера.';
+    } else if (error.responseCode === 535) {
+      errorMessage = 'Помилка автентифікації (535). Використовуй App Password, а не звичайний пароль!';
     }
 
     return res.status(500).json({
       success: false,
       error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 }
