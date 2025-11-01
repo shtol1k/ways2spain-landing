@@ -12,25 +12,25 @@ const Footer = () => {
               <div className="w-10 h-10 rounded-lg gradient-accent flex items-center justify-center font-bold text-accent-foreground">
                 DN
               </div>
-              <span className="text-xl font-bold">Digital Nomad Іспанія</span>
+              <span className="text-xl font-bold">Ways 2 Spain</span>
             </div>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               Допомагаємо віддаленим спеціалістам та родинам легально жити і працювати в Іспанії через Digital Nomad Visa.
             </p>
             <div className="space-y-2">
               <a
-                href="mailto:info@digitalnomad.es"
+                href="mailto:ways2spain@gmail.com"
                 className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
               >
                 <Mail className="w-4 h-4" />
-                <span>info@digitalnomad.es</span>
+                <span>ways2spain@gmail.com</span>
               </a>
               <a
-                href="tel:+34600000000"
+                href="tel:+34627073891"
                 className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
               >
                 <Phone className="w-4 h-4" />
-                <span>+34 600 000 000</span>
+                <span>+34 62 707 3891</span>
               </a>
             </div>
           </div>
@@ -80,7 +80,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-primary-foreground/10 text-center text-primary-foreground/60 text-sm">
-          <p>&copy; {new Date().getFullYear()} Digital Nomad Іспанія. Всі права захищені.</p>
+          <p>&copy; {new Date().getFullYear()} Ways 2 Spain. Всі права захищені.</p>
         </div>
       </div>
     </footer>

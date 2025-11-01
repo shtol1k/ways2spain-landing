@@ -28,7 +28,7 @@ const Navbar = () => {
               DN
             </div>
             <span className="text-xl font-bold text-foreground hidden sm:inline">
-              Digital Nomad Іспанія
+              Ways 2 Spain
             </span>
           </Link>
 

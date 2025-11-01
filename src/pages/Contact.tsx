@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
@@ -58,7 +58,7 @@ const Contact = () => {
           <div className="text-center mb-12">
             <h1 className="mb-4">Зв'яжіться з нами</h1>
             <p className="text-xl text-muted-foreground">
-              Отримайте безкоштовну консультацію щодо вашої ситуації
+              Отримайте безкоштовну консультацію щодо вашого кейсу
             </p>
           </div>
 
@@ -103,7 +103,7 @@ const Contact = () => {
                         type="tel"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+34 600 000 000"
+                        placeholder="+32 00 000 0000"
                       />
                     </div>
                     <div className="space-y-2">
@@ -128,7 +128,7 @@ const Contact = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="situation">Ваша ситуація</Label>
+                    <Label htmlFor="situation">Ваш кейс</Label>
                     <Select
                       value={formData.situation}
                       onValueChange={(value) =>
@@ -154,7 +154,7 @@ const Contact = () => {
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder="Розкажіть детальніше про вашу ситуацію..."
+                      placeholder="Розкажіть детальніше про ваш кейс..."
                       rows={6}
                       required
                     />
@@ -179,10 +179,10 @@ const Contact = () => {
                     <div>
                       <p className="font-medium">Email</p>
                       <a
-                        href="mailto:info@digitalnomad.es"
+                        href="mailto:ways2spain@gmail.com"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
-                        info@digitalnomad.es
+                        ways2spain@gmail.com
                       </a>
                     </div>
                   </div>
@@ -191,10 +191,48 @@ const Contact = () => {
                     <div>
                       <p className="font-medium">Телефон</p>
                       <a
-                        href="tel:+34600000000"
+                        href="tel:+34627073891"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
-                        +34 600 000 000
+                        +34 62 707 3891
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Send className="w-5 h-5 text-secondary mt-1" />
+                    <div>
+                      <p className="font-medium">Телеграм (зворотний зв'язок)</p>
+                      <a
+                        href="/"
+                        className="text-muted-foreground hover:text-secondary transition-smooth"
+                      >
+                        @w2s
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Send className="w-5 h-5 text-secondary mt-1" />
+                    <div>
+                      <p className="font-medium">Телеграм (канал новин)</p>
+                      <a
+                        href="https://t.me/+FABp3kLbRt45NzFi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-secondary transition-smooth"
+                      >
+                        Ways2Spain
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Instagram className="w-5 h-5 text-secondary mt-1" />
+                    <div>
+                      <p className="font-medium">Instagram</p>
+                      <a
+                        href="/"
+                        className="text-muted-foreground hover:text-secondary transition-smooth"
+                      >
+                        @ways2spain
                       </a>
                     </div>
                   </div>
@@ -203,7 +241,7 @@ const Contact = () => {
                     <div>
                       <p className="font-medium">Адреса</p>
                       <p className="text-muted-foreground">
-                        Barcelona, Spain
+                        Валенсія, Іспанія
                       </p>
                     </div>
                   </div>
@@ -216,7 +254,7 @@ const Contact = () => {
                 <div className="space-y-2 text-primary-foreground/90">
                   <div className="flex justify-between">
                     <span>Понеділок - П'ятниця</span>
-                    <span className="font-semibold">9:00 - 18:00</span>
+                    <span className="font-semibold">10:00 - 20:00</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Субота</span>
