@@ -169,35 +169,32 @@ async function createNotionEntry(data) {
     auth: process.env.NOTION_API_KEY,
   });
 
-  // Очищаємо Database ID від зайвих символів (якщо вставлений повний URL)
-  let databaseId = process.env.NOTION_DATABASE_ID.trim();
+  // Використовуємо Database ID як є (очікуємо формат з дефісами або без)
+  const databaseId = process.env.NOTION_DATABASE_ID.trim();
   
-  // Якщо це URL, витягуємо тільки ID
-  if (databaseId.includes('?')) {
-    databaseId = databaseId.split('?')[0];
-  }
-  
-  // Якщо це повний URL, витягуємо ID з кінця
-  if (databaseId.includes('notion.so/')) {
-    const parts = databaseId.split('/');
-    databaseId = parts[parts.length - 1];
-  }
-  
-  // Прибираємо дефіси для перевірки довжини
-  const cleanId = databaseId.replace(/-/g, '');
-  
-  // Перевіряємо формат (має бути 32 hex символи)
-  if (cleanId.length !== 32) {
-    throw new Error(`Invalid Database ID format. Expected 32 hex characters, got ${cleanId.length}. Clean ID: ${cleanId}`);
-  }
-  
-  // Конвертуємо в формат UUID з дефісами (8-4-4-4-12)
-  // Notion API вимагає формат з дефісами
-  if (!databaseId.includes('-')) {
-    databaseId = `${cleanId.substring(0, 8)}-${cleanId.substring(8, 12)}-${cleanId.substring(12, 16)}-${cleanId.substring(16, 20)}-${cleanId.substring(20, 32)}`;
-  }
+  console.log('📝 Notion Configuration:', {
+    hasApiKey: !!process.env.NOTION_API_KEY,
+    apiKeyPrefix: process.env.NOTION_API_KEY?.substring(0, 10) || 'missing',
+    databaseId: databaseId,
+    databaseIdLength: databaseId.length,
+  });
 
-  console.log('📝 Creating Notion entry in database:', databaseId);
+  // Спочатку отримуємо структуру бази для діагностики
+  try {
+    const databaseInfo = await notion.databases.retrieve({ database_id: databaseId });
+    console.log('📊 Notion Database Info:', {
+      id: databaseInfo.id,
+      title: databaseInfo.title?.[0]?.plain_text || 'Untitled',
+      properties: Object.keys(databaseInfo.properties || {}),
+    });
+  } catch (dbError) {
+    console.error('❌ Cannot retrieve database info:', {
+      code: dbError.code,
+      status: dbError.status,
+      message: dbError.message,
+    });
+    throw new Error(`Cannot access Notion database: ${dbError.message}. Check if integration has access to the database.`);
+  }
 
   // Формуємо властивості для Notion
   // Примітка: назви властивостей мають відповідати назвам колонок у твоїй Notion базі
@@ -223,16 +220,16 @@ async function createNotionEntry(data) {
         },
       ],
     },
-    'Послуга': {
+    'Послуга': data.package && data.package !== 'Не обрано' ? {
       select: {
         name: data.package,
       },
-    },
-    'Кейс': {
+    } : undefined,
+    'Кейс': data.situation && data.situation !== 'Не вказано' ? {
       select: {
         name: data.situation,
       },
-    },
+    } : undefined,
     'Повідомлення': {
       rich_text: [
         {
@@ -249,12 +246,34 @@ async function createNotionEntry(data) {
     },
   };
 
+  // Фільтруємо undefined властивості
+  const cleanedProperties = Object.fromEntries(
+    Object.entries(properties).filter(([_, value]) => value !== undefined)
+  );
+
+  console.log('📝 Properties to create:', {
+    propertyNames: Object.keys(cleanedProperties),
+    propertyCount: Object.keys(cleanedProperties).length,
+    sampleData: {
+      name: data.name,
+      email: data.email,
+      package: data.package,
+      situation: data.situation,
+    },
+  });
+
   try {
     const response = await notion.pages.create({
       parent: {
         database_id: databaseId,
       },
-      properties: properties,
+      properties: cleanedProperties,
+    });
+
+    console.log('✅ Notion page created successfully:', {
+      pageId: response.id,
+      url: response.url,
+      createdTime: response.created_time,
     });
 
     return response;
@@ -264,9 +283,20 @@ async function createNotionEntry(data) {
       code: error.code,
       status: error.status,
       message: error.message,
-      body: error.body,
+      body: error.body ? JSON.stringify(error.body, null, 2) : 'No body',
       databaseId: databaseId,
+      propertiesSent: Object.keys(cleanedProperties),
     });
+    
+    // Більш зрозумілі повідомлення про помилки
+    if (error.code === 'object_not_found') {
+      throw new Error(`Database not found. Check NOTION_DATABASE_ID. Make sure the integration has access to the database.`);
+    } else if (error.code === 'validation_error') {
+      throw new Error(`Property validation error: ${error.message}. Check if property names match your Notion database columns.`);
+    } else if (error.status === 401) {
+      throw new Error(`Unauthorized. Check NOTION_API_KEY. Make sure it's a valid integration token.`);
+    }
+    
     throw error;
   }
 }
