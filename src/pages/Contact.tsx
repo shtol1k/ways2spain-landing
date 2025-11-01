@@ -23,22 +23,56 @@ const Contact = () => {
     situation: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the form data to your backend
-    toast({
-      title: "Заявку надіслано!",
-      description: "Ми зв'яжемося з вами найближчим часом.",
-    });
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      package: "",
-      situation: "",
-      message: "",
-    });
+    setIsSubmitting(true);
+
+    try {
+      // Визначаємо URL: локально використовуємо localhost, на продакшн - відносний шлях
+      const apiUrl = import.meta.env.DEV 
+        ? 'http://localhost:3001/api/contact' 
+        : '/api/contact';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast({
+          title: "Повідомлення надіслано!",
+          description: "Ми зв'яжемося з вами найближчим часом.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          package: "",
+          situation: "",
+          message: "",
+        });
+      } else {
+        throw new Error(data.error || 'Помилка при відправці');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Помилка",
+        description: error instanceof Error 
+          ? error.message 
+          : "Не вдалося надіслати повідомлення. Спробуйте пізніше.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -107,7 +141,7 @@ const Contact = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="package">Пакет послуг</Label>
+                      <Label htmlFor="package">Послуга</Label>
                       <Select
                         value={formData.package}
                         onValueChange={(value) =>
@@ -115,7 +149,7 @@ const Contact = () => {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Оберіть пакет" />
+                          <SelectValue placeholder="Оберіть послугу" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="consultation">Консультація</SelectItem>
@@ -160,9 +194,14 @@ const Contact = () => {
                     />
                   </div>
 
-                  <Button type="submit" variant="hero" size="lg" className="w-full">
-                    Надіслати заявку
-                    <Send className="ml-2" />
+                  <Button 
+                    type="submit" 
+                    variant="hero" 
+                    size="lg" 
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Відправка...' : 'Надіслати повідомлення'}
                   </Button>
                 </form>
               </div>
