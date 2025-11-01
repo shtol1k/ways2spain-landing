@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Send, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -17,21 +17,46 @@ const Footer = () => {
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               Допомагаємо віддаленим спеціалістам та родинам легально жити і працювати в Іспанії через Digital Nomad Visa.
             </p>
-            <div className="space-y-2">
-              <a
-                href="mailto:ways2spain@gmail.com"
-                className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
-              >
-                <Mail className="w-4 h-4" />
-                <span>ways2spain@gmail.com</span>
-              </a>
-              <a
-                href="tel:+34627073891"
-                className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
-              >
-                <Phone className="w-4 h-4" />
-                <span>+34 62 707 3891</span>
-              </a>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column - Email and Phone */}
+              <div className="space-y-2">
+                <a
+                  href="mailto:ways2spain@gmail.com"
+                  className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>ways2spain@gmail.com</span>
+                </a>
+                <a
+                  href="tel:+34627073891"
+                  className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>+34 62 707 3891</span>
+                </a>
+              </div>
+              
+              {/* Right Column - Telegram and Instagram */}
+              <div className="space-y-2">
+                <a
+                  href="https://t.me/+FABp3kLbRt45NzFi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Ways2Spain</span>
+                </a>
+                <a
+                  href="https://instagram.com/ways2spain"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
+                >
+                  <Instagram className="w-4 h-4" />
+                  <span>@ways2spain</span>
+                </a>
+              </div>
             </div>
           </div>
 
