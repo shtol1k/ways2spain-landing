@@ -1,6 +1,7 @@
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useGoogleCalendarScheduling } from "@/hooks/use-google-calendar-scheduling";
 
 const packages = [
   {
@@ -89,6 +90,17 @@ const additionalServices = [
 ];
 
 const Services = () => {
+  // Google Calendar scheduling URL from your Google Calendar setup
+  const CALENDAR_URL =
+    "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true";
+
+  // Initialize Google Calendar scheduling - returns ref and openCalendar function
+  // You can keep full control over button text and styling
+  const { ref: calendarButtonRef, openCalendar } = useGoogleCalendarScheduling(
+    CALENDAR_URL,
+    true // Open in popup window
+  );
+
   return (
     <div className="min-h-screen pt-32 pb-20">
       <div className="container mx-auto px-4 lg:px-8">
@@ -198,11 +210,14 @@ const Services = () => {
             <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
               Отримайте безкоштовну консультацію, і ми допоможемо визначити оптимальний варіант для вашої ситуації
             </p>
-            <Link to="/contact">
-              <Button variant="secondary" size="xl">
-                Безкоштовна консультація
-              </Button>
-            </Link>
+            <Button
+              ref={calendarButtonRef}
+              variant="secondary"
+              size="xl"
+              onClick={openCalendar}
+            >
+              Безкоштовна консультація
+            </Button>
           </div>
         </div>
       </div>
