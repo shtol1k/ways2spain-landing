@@ -41,7 +41,7 @@ const Home = () => {
               {
                 step: "04",
                 title: "Отримання",
-                description: "Супроводжуємо до отримання ТІЕ та оформлення NIE",
+                description: "Супроводжуємо до отримання ТІЕ",
               },
             ].map((item, index) => (
               <div key={index} className="relative">
@@ -62,7 +62,7 @@ const Home = () => {
       {/* CTA Section with Image */}
       <section className="py-20 lg:py-32 gradient-subtle">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <img
                 src={digitalNomadImage}
@@ -79,10 +79,18 @@ const Home = () => {
               </p>
               <ul className="space-y-4 mb-8">
                 {[
-                  "Безкоштовна початкова консультація",
-                  "Прозора ціна без прихованих витрат",
-                  "Підтримка українською та російською мовами",
-                  "Гарантія повернення коштів у разі відмови",
+                  "Безкоштовна початкова консультація.",
+                  "Прозора ціна без прихованих витрат.",
+                  <>
+                    Підтримка українською, російською та англійською мовами.
+                    <br />
+                    Ми не співпрацюємо з громадянами РФ.
+                  </>,
+                  <>
+                    Гарантія повернення коштів у разі відмови (крім витрат на сторонні послуги – переклади, засвідчення документів, тощо).
+                    <br />
+                    Повторна подача безкоштовно.
+                  </>,
                 ].map((item, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <CheckCircle2 className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />

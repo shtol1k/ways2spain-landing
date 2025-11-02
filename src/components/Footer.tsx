@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="text-xl font-bold">Ways 2 Spain</span>
             </div>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
-              Допомагаємо віддаленим спеціалістам та родинам легально жити і працювати в Іспанії через Digital Nomad Visa.
+              Допомагаємо віддаленим спеціалістам з родинами жити і працювати в Іспанії з Digital Nomad Visa.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column - Email and Phone */}

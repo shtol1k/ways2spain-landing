@@ -5,13 +5,13 @@ import { Link } from "react-router-dom";
 const packages = [
   {
     name: "Консультація",
-    price: "49",
+    price: "Безкоштовно",
     description: "Початкова оцінка вашої ситуації",
     features: [
-      { text: "Відеоконсультація 1 година", included: true },
-      { text: "Аналіз документів", included: true },
-      { text: "Оцінка шансів на отримання візи", included: true },
-      { text: "Відповіді на всі запитання", included: true },
+      { text: "Індивідуальна онлайн-зустріч", included: true },
+      { text: "Аналіз вашого кейсу та рекомендації щодо найкращого шляху", included: true },
+      { text: "Пояснення щодо вимог, документів і термінів", included: true },
+      { text: "Відповіді на ваші запитання", included: true },
       { text: "Підготовка документів", included: false },
       { text: "Подача заявки", included: false },
       { text: "Супровід процесу", included: false },
@@ -19,44 +19,44 @@ const packages = [
     popular: false,
   },
   {
-    name: "Базовий пакет",
-    price: "890",
+    name: "Лайт",
+    price: "400",
     description: "Консультація та перевірка документів",
     features: [
       { text: "Детальна консультація", included: true },
-      { text: "Перевірка всіх документів", included: true },
+      { text: "Перевірка всіх документів перед подачею", included: true },
       { text: "Інструкції з підготовки", included: true },
       { text: "Чекліст документів", included: true },
-      { text: "Підготовка форм та заяв", included: true },
       { text: "Супровід подачі", included: true },
       { text: "Переклади та апостилі", included: false },
+      { text: "Подача заявки", included: false },
     ],
     popular: false,
   },
   {
-    name: "Під ключ",
-    price: "1,990",
+    name: "Оптимум",
+    price: "700",
     description: "Повний супровід від А до Я",
     features: [
-      { text: "Все з базового пакету", included: true },
-      { text: "Підготовка всіх документів", included: true },
-      { text: "Переклади та легалізація", included: true },
-      { text: "Запис до нотаріуса", included: true },
+      { text: "Все з пакету \"Лайт\"", included: true },
+      { text: "Повна підтримка у зборі документів, адаптація та оптимізація документів під вимоги візи", included: true },
+      { text: "Персональні шаблони заяв і листів", included: true },
+      { text: "Доступ до системи для відслідковування статусу підготовки документів", included: true },
+      { text: "Координація перекладів та апостилів", included: true },
       { text: "Подача документів", included: true },
       { text: "Супровід до отримання ТІЕ", included: true },
-      { text: "Допомога з NIE/NIF", included: true },
     ],
     popular: true,
   },
   {
-    name: "Преміум",
-    price: "2,990",
+    name: "Все включено",
+    price: "1,300",
     description: "Максимальний комфорт та підтримка",
     features: [
-      { text: "Все з пакету 'Під ключ'", included: true },
+      { text: "Все з пакету 'Оптимум'", included: true },
       { text: "Пріоритетна підтримка 24/7", included: true },
-      { text: "Податкові консультації", included: true },
-      { text: "Допомога з пошуком житла", included: true },
+      { text: "Ми готуємо всі документи замість вас", included: true },
+      { text: "Жодних додаткових доплат", included: true },
       { text: "Супровід родини", included: true },
       { text: "Допомога з відкриттям рахунку", included: true },
       { text: "Адаптація в Іспанії", included: true },
@@ -96,7 +96,7 @@ const Services = () => {
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h1 className="mb-6">Наші послуги</h1>
           <p className="text-xl text-muted-foreground">
-            Оберіть пакет, який найкраще підходить для вашої ситуації
+            Оберіть рішення, яке підходить саме вам
           </p>
         </div>
 
@@ -105,7 +105,7 @@ const Services = () => {
           {packages.map((pkg, index) => (
             <div
               key={index}
-              className={`relative bg-card rounded-xl p-6 border transition-smooth hover:shadow-strong ${
+              className={`relative bg-card rounded-xl p-6 border transition-smooth hover:shadow-strong flex flex-col ${
                 pkg.popular
                   ? "border-secondary shadow-elegant scale-105 lg:scale-110"
                   : "border-border shadow-elegant hover:scale-105"
@@ -125,11 +125,13 @@ const Services = () => {
                   {pkg.description}
                 </p>
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold">€{pkg.price}</span>
+                  <span className="text-4xl font-bold">
+                    {pkg.price === "Безкоштовно" ? "Безкоштовно" : `€${pkg.price}`}
+                  </span>
                 </div>
               </div>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-6 flex-1">
                 {pkg.features.map((feature, fIndex) => (
                   <li key={fIndex} className="flex items-start space-x-2">
                     {feature.included ? (

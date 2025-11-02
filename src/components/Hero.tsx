@@ -54,7 +54,7 @@ const Hero = () => {
           {/* Key Benefits */}
           <div className="flex flex-wrap lg:flex-nowrap gap-6 animate-fade-in">
             {[
-              "Законна альтернатива тимчасовому захисту",
+              "Надійна альтернатива тимчасовому захисту",
               "Повний супровід процесу",
               "Економія часу та нервів",
             ].map((benefit, index) => (

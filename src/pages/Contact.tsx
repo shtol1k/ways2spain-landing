@@ -153,9 +153,9 @@ const Contact = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="consultation">Консультація</SelectItem>
-                          <SelectItem value="basic">Базовий пакет</SelectItem>
-                          <SelectItem value="turnkey">Під ключ</SelectItem>
-                          <SelectItem value="premium">Преміум</SelectItem>
+                          <SelectItem value="basic">Лайт</SelectItem>
+                          <SelectItem value="turnkey">Оптимум</SelectItem>
+                          <SelectItem value="premium">Все включено</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

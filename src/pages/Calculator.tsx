@@ -12,9 +12,9 @@ const Calculator = () => {
 
   const prices: Record<string, number> = {
     consultation: 49,
-    basic: 890,
-    turnkey: 1990,
-    premium: 2990,
+    basic: 400,
+    turnkey: 700,
+    premium: 1300,
   };
 
   const additionalPrices: Record<string, number> = {
@@ -74,9 +74,9 @@ const Calculator = () => {
                   <div className="space-y-3">
                     {[
                       { value: "consultation", label: "Консультація", price: 49 },
-                      { value: "basic", label: "Базовий пакет", price: 890 },
-                      { value: "turnkey", label: "Під ключ", price: 1990, recommended: true },
-                      { value: "premium", label: "Преміум", price: 2990 },
+                      { value: "basic", label: "Лайт", price: 400 },
+                      { value: "turnkey", label: "Оптимум", price: 700, recommended: true },
+                      { value: "premium", label: "Все включено", price: 1300 },
                     ].map((option) => (
                       <div
                         key={option.value}
