@@ -11,14 +11,20 @@ export default async function middleware(request: Request) {
   const hostname = url.hostname;
   const pathname = url.pathname;
   
-  // КРОК 1: Пропускаємо статичні файли та index.html
+  // КРОК 1: Пропускаємо статичні файли, index.html та головні маршрути для SPA
   // Це має бути ДО будь-яких інших перевірок
+  // ВАЖЛИВО: `/` та `/login` мають бути пропущені щоб rewrites могли перенаправити на /index.html
   if (
+    pathname === '/' ||
+    pathname === '/login' ||
     pathname === '/index.html' ||
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/_next/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
   ) {
+    // Пропускаємо - не повертаємо Response, щоб rewrites могли обробити
+    // Але насправді, якщо middleware викликається, то повертаємо 200
+    // і rewrites не спрацюють. Тому краще виключити з matcher.
     return new Response(null, { status: 200 });
   }
   
@@ -60,19 +66,30 @@ export default async function middleware(request: Request) {
 
 /**
  * Конфігурація middleware
- * Перехоплює всі запити крім статичних файлів
+ * Перехоплює всі запити крім статичних файлів та головних маршрутів
+ * 
+ * ВАЖЛИВО: Виключаємо `/` та `/login` щоб rewrites могли обробити їх
+ * і перенаправити на /index.html для SPA роутингу
  */
 export const config = {
   matcher: [
     /*
      * Match all request paths except:
+     * - / (root) - виключено: не має символів після `/`
+     * - /login (login page) - виключено в negative lookahead
      * - api routes
      * - assets (static files)
-     * - _next (Next.js internal, якщо використовується)
+     * - _next (Next.js internal)
      * - files with extensions (static files)
      * - index.html (SPA entry point)
+     * 
+     * ВАЖЛИВО: `/` та `/login` НЕ включені в matcher,
+     * тому middleware не викликається для них
+     * і rewrites можуть обробити їх правильно
+     * 
+     * Pattern: `/...` де `...` - хоча б один символ, і не `/login`, не `/api`, тощо
      */
-    '/((?!api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).*)',
+    '/((?!login$|api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).+)',
   ],
 };
 
