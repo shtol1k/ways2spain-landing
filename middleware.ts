@@ -39,10 +39,13 @@ export default async function middleware(request: Request) {
     return new Response(null, { status: 200 });
   }
 
-  // Пропускаємо статичні файли
+  // Пропускаємо статичні файли та index.html
+  // Важливо: index.html потрібен для SPA роутингу
   if (
+    pathname === '/index.html' ||
     pathname.startsWith('/assets/') ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot)$/)
+    pathname.startsWith('/_next/') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
   ) {
     return new Response(null, { status: 200 });
   }
@@ -51,8 +54,8 @@ export default async function middleware(request: Request) {
   const cookies = request.headers.get('cookie') || '';
   const authToken = getCookie(cookies, 'auth_token');
 
-  // Якщо користувач на сторінці логіну - пропускаємо
-  if (pathname === '/login') {
+  // Якщо користувач на сторінці логіну - пропускаємо (дозволяємо завантажити SPA)
+  if (pathname === '/login' || pathname.startsWith('/login')) {
     // Але якщо вже авторизований - редіректимо на головну
     // Для перевірки токену використаємо API endpoint
     if (authToken) {
@@ -60,6 +63,7 @@ export default async function middleware(request: Request) {
       // У middleware ми не можемо легко викликати інші API, тому просто перевіряємо наявність
       // Детальна перевірка буде в API route
     }
+    // Важливо: пропускаємо щоб дозволити завантажити index.html та JS файли
     return new Response(null, { status: 200 });
   }
 
@@ -68,7 +72,7 @@ export default async function middleware(request: Request) {
   if (!authToken) {
     const loginUrl = new URL('/login', url);
     // Зберігаємо URL для редіректу після логіну
-    if (pathname !== '/') {
+    if (pathname !== '/' && pathname !== '/index.html') {
       loginUrl.searchParams.set('redirect', pathname);
     }
     return Response.redirect(loginUrl);
@@ -96,12 +100,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except:
+     * - api routes
      * - assets (static files)
-     * - favicon.ico (favicon file)
-     * - files with extensions
-     * - API routes
+     * - _next (Next.js internal, якщо використовується)
+     * - files with extensions (static files)
+     * - index.html (SPA entry point)
      */
-    '/((?!api|assets|favicon.ico|.*\\..*).*)',
+    '/((?!api|_next|assets|favicon.ico|index.html|.*\\..*).*)',
   ],
 };
 
