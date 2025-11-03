@@ -7,46 +7,51 @@
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const hostname = url.hostname;
+  const pathname = url.pathname;
   
-  // Перевіряємо енвайронмент через hostname
-  // Vercel production domains: твій-домен.com або твій-проєкт.vercel.app
-  // Vercel preview domains: твій-проєкт-git-гілка-хеш.vercel.app
-  // Vercel development: localhost
-  
-  // Якщо це production domain (не vercel.app або основний vercel.app домен)
-  const isProduction = 
-    !hostname.includes('vercel.app') || // кастомний домен
-    hostname.match(/^[a-z0-9-]+\.vercel\.app$/); // основний домен проєкту (без git-)
-  
-  if (isProduction) {
-    return new Response(null, { status: 200 });
-  }
-
-  // Перевіряємо чи це preview або development
-  const isPreviewDeployment = hostname.includes('git-') || hostname.includes('preview');
-  const isDevelopment = hostname.includes('localhost') || hostname.includes('127.0.0.1');
-  
-  // Якщо це не preview/development - пропускаємо
-  if (!isPreviewDeployment && !isDevelopment) {
-    return new Response(null, { status: 200 });
-  }
-
-  // Дозволяємо доступ до API routes та статичних файлів
-  const { pathname } = url;
-  
-  // Пропускаємо API routes (вони мають свою логіку)
-  if (pathname.startsWith('/api/')) {
-    return new Response(null, { status: 200 });
-  }
-
-  // Пропускаємо статичні файли та index.html
-  // Важливо: index.html потрібен для SPA роутингу
+  // ВАЖЛИВО: Спочатку пропускаємо статичні файли та index.html
+  // Це має бути ДО перевірки енвайронменту
   if (
     pathname === '/index.html' ||
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/_next/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
   ) {
+    return new Response(null, { status: 200 });
+  }
+  
+  // Перевіряємо енвайронмент через hostname та VERCEL_ENV (якщо доступний)
+  // Vercel production domains: твій-домен.com або твій-проєкт.vercel.app
+  // Vercel preview domains: твій-проєкт-git-гілка-хеш.vercel.app
+  // Кастомні preview domains: develop.ways2spain.com (треба перевіряти через VERCEL_ENV)
+  // Vercel development: localhost
+  
+  // Якщо це production domain (основний домен без preview)
+  // Перевіряємо через hostname та VERCEL_ENV (якщо доступний)
+  const isMainDomain = hostname === 'ways2spain.com' || hostname === 'www.ways2spain.com';
+  
+  if (isMainDomain) {
+    return new Response(null, { status: 200 });
+  }
+
+  // Перевіряємо чи це preview або development
+  // Vercel автоматично встановлює VERCEL_ENV для preview deployments
+  // Але в Edge Middleware ми не маємо прямого доступу до env, тому перевіряємо через hostname
+  const isPreviewDeployment = 
+    hostname.includes('git-') || 
+    hostname.includes('preview') ||
+    hostname.includes('develop') || // develop.ways2spain.com
+    hostname.includes('staging') ||
+    hostname.includes('dev');
+  const isDevelopment = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+  
+  // Якщо це не preview/development - пропускаємо (production)
+  if (!isPreviewDeployment && !isDevelopment) {
+    return new Response(null, { status: 200 });
+  }
+
+  // Пропускаємо API routes (вони мають свою логіку)
+  if (pathname.startsWith('/api/')) {
     return new Response(null, { status: 200 });
   }
 
