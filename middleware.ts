@@ -3,20 +3,26 @@
  * Працює тільки в preview та development енвайронментах
  * 
  * Примітка: Для Vercel Edge Functions використовується стандартний Web API
+ * 
+ * ВАЖЛИВО: Middleware працює ДО Vercel rewrites,
+ * тому потрібно бути обережним з редіректами
  */
 export default async function middleware(request: Request) {
   const url = new URL(request.url);
   const hostname = url.hostname;
   const pathname = url.pathname;
   
-  // ВАЖЛИВО: Спочатку пропускаємо статичні файли та index.html
-  // Це має бути ДО перевірки енвайронменту
+  // КРОК 1: Пропускаємо статичні файли та index.html
+  // Це має бути ДО будь-яких інших перевірок
+  // Matcher вже має виключати ці файли, але на всяк випадок перевіряємо тут теж
   if (
     pathname === '/index.html' ||
+    pathname === '/' || // корінь також має завантажити index.html через rewrites
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/_next/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
   ) {
+    // Пропускаємо - дозволяємо Vercel rewrites обробити ці файли
     return new Response(null, { status: 200 });
   }
   
@@ -60,20 +66,15 @@ export default async function middleware(request: Request) {
   const authToken = getCookie(cookies, 'auth_token');
 
   // Якщо користувач на сторінці логіну - пропускаємо (дозволяємо завантажити SPA)
+  // Rewrites в vercel.json перенаправить /login на /index.html
   if (pathname === '/login' || pathname.startsWith('/login')) {
-    // Але якщо вже авторизований - редіректимо на головну
-    // Для перевірки токену використаємо API endpoint
-    if (authToken) {
-      // Перевіримо токен через API (асинхронно, але для простоти пропускаємо)
-      // У middleware ми не можемо легко викликати інші API, тому просто перевіряємо наявність
-      // Детальна перевірка буде в API route
-    }
-    // Важливо: пропускаємо щоб дозволити завантажити index.html та JS файли
+    // Пропускаємо - дозволяємо rewrites обробити і завантажити index.html
+    // Авторизацію перевіримо на клієнті в Login компоненті
     return new Response(null, { status: 200 });
   }
 
   // Якщо токену немає - редіректимо на логін
-  // Детальна перевірка валідності токену відбувається в API route
+  // Але НЕ робимо редірект якщо це вже редірект або це статичний файл
   if (!authToken) {
     const loginUrl = new URL('/login', url);
     // Зберігаємо URL для редіректу після логіну
@@ -106,12 +107,15 @@ export const config = {
     /*
      * Match all request paths except:
      * - api routes
-     * - assets (static files)
+     * - assets (static files) - ВАЖЛИВО: має бути в matcher
      * - _next (Next.js internal, якщо використовується)
-     * - files with extensions (static files)
-     * - index.html (SPA entry point)
+     * - files with extensions (static files) - ВАЖЛИВО: має бути в matcher
+     * - index.html (SPA entry point) - ВАЖЛИВО: має бути в matcher
+     * 
+     * Примітка: Matcher виконується ДО middleware функції,
+     * тому якщо файл не відповідає matcher - middleware взагалі не викликається
      */
-    '/((?!api|_next|assets|favicon.ico|index.html|.*\\..*).*)',
+    '/((?!api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).*)',
   ],
 };
 
