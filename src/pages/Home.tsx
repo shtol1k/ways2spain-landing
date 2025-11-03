@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import digitalNomadImage from "@/assets/digital-nomad.jpg";
+import Testimonials from "@/components/Testimonials";
 
 const Home = () => {
   return (
     <div className="min-h-screen">
       <Hero />
       <Features />
+      <Testimonials />
 
       {/* Process Section */}
       <section className="py-20 lg:py-32">

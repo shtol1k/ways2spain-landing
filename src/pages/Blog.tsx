@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+
 const blogPosts = [
   {
     id: 1,
@@ -95,10 +96,12 @@ const Blog = () => {
                     <span className="text-sm">{blogPosts[0].readTime}</span>
                   </div>
                 </div>
-                <Button variant="secondary" size="lg">
-                  Читати далі
-                  <ArrowRight className="ml-2" />
-                </Button>
+                <Link to={`/blog/${blogPosts[0].id}`}>
+                  <Button variant="secondary" size="lg">
+                    Читати далі
+                    <ArrowRight className="ml-2" />
+                  </Button>
+                </Link>
               </div>
               <div className="hidden lg:flex items-center justify-center">
                 <div className="w-full h-64 bg-primary-foreground/10 rounded-xl flex items-center justify-center">
@@ -140,10 +143,12 @@ const Blog = () => {
                       <span>{post.readTime}</span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" className="w-full group-hover:bg-muted">
-                    Читати далі
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
+                  <Link to={`/blog/${post.id}`}>
+                    <Button variant="ghost" size="sm" className="w-full group-hover:bg-muted">
+                      Читати далі
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
                 </div>
               </article>
             ))}
