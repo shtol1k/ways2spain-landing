@@ -14,6 +14,7 @@ import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import BlogPost from "./pages/BlogPost";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Login route - без Layout (без Navbar/Footer) */}
+          <Route path="/login" element={<Login />} />
+          
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="visa" element={<Visa />} />
