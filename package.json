@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --strictPort",
+    "dev:frontend": "vite --strictPort",
     "dev:server": "node server/index.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
+    "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:server\"",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",

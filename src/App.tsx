@@ -7,6 +7,7 @@ import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Visa from "./pages/Visa";
 import Services from "./pages/Services";
+import ServiceDetail from "./pages/ServiceDetail";
 import About from "./pages/About";
 import Calculator from "./pages/Calculator";
 import Blog from "./pages/Blog";
@@ -27,6 +28,7 @@ const App = () => (
             <Route index element={<Home />} />
             <Route path="visa" element={<Visa />} />
             <Route path="services" element={<Services />} />
+            <Route path="services/:id" element={<ServiceDetail />} />
             <Route path="about" element={<About />} />
             <Route path="calculator" element={<Calculator />} />
             <Route path="blog" element={<Blog />} />

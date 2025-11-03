@@ -5,6 +5,7 @@ import { useGoogleCalendarScheduling } from "@/hooks/use-google-calendar-schedul
 
 const packages = [
   {
+    id: "consultation",
     name: "Консультація",
     price: "Безкоштовно",
     description: "Початкова оцінка вашої ситуації",
@@ -20,6 +21,7 @@ const packages = [
     popular: false,
   },
   {
+    id: "light",
     name: "Лайт",
     price: "400",
     description: "Консультація та перевірка документів",
@@ -35,6 +37,7 @@ const packages = [
     popular: false,
   },
   {
+    id: "optimum",
     name: "Оптимум",
     price: "700",
     description: "Повний супровід від А до Я",
@@ -50,6 +53,7 @@ const packages = [
     popular: true,
   },
   {
+    id: "allinclusive",
     name: "Все включено",
     price: "1,300",
     description: "Максимальний комфорт та підтримка",
@@ -162,15 +166,22 @@ const Services = () => {
                 ))}
               </ul>
 
-              <Link to="/contact">
-                <Button
-                  variant={pkg.popular ? "hero" : "outline"}
-                  className="w-full"
-                  size="lg"
-                >
-                  Замовити
-                </Button>
-              </Link>
+              <div className="space-y-3">
+                <Link to={`/services/${pkg.id}`}>
+                  <Button variant="outline" className="w-full" size="lg">
+                    Детальніше про послугу
+                  </Button>
+                </Link>
+                <Link to="/contact">
+                  <Button
+                    variant={pkg.popular ? "hero" : "secondary"}
+                    className="w-full"
+                    size="lg"
+                  >
+                    Замовити
+                  </Button>
+                </Link>
+              </div>
             </div>
           ))}
         </div>
