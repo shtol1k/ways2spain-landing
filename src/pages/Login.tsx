@@ -22,12 +22,18 @@ const Login = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
+
   // Перевіряємо чи користувач вже авторизований при завантаженні сторінки
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
+    setIsLoading(true);
+    setInitError(null);
+    
     try {
       const apiUrl = import.meta.env.DEV 
         ? 'http://localhost:3001/api/auth/verify' 
@@ -38,6 +44,12 @@ const Login = () => {
         credentials: 'include', // Важливо для відправки cookies
       });
 
+      // Перевіряємо чи response є JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error(`Очікувався JSON, отримано: ${contentType}`);
+      }
+
       const data = await response.json();
 
       if (data.success && data.authenticated) {
@@ -46,8 +58,15 @@ const Login = () => {
         navigate(redirectUrl, { replace: true });
       }
     } catch (error) {
-      // Якщо помилка - просто залишаємо на сторінці логіну
+      // Якщо помилка - показуємо повідомлення, але залишаємо на сторінці логіну
       console.error('Auth check error:', error);
+      setInitError(
+        error instanceof Error 
+          ? error.message 
+          : 'Не вдалося перевірити статус авторизації'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,6 +130,18 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
+
+  // Показуємо loading стан поки перевіряємо авторизацію
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-sm text-muted-foreground">Завантаження...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 px-4 py-12">
@@ -209,7 +240,12 @@ const Login = () => {
           </form>
 
           {/* Info */}
-          <div className="text-center">
+          <div className="text-center space-y-2">
+            {initError && (
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
+                ⚠️ {initError}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
               Ця сторінка доступна тільки в preview та development середовищах
             </p>
