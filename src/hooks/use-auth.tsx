@@ -64,21 +64,41 @@ export function useAuth() {
 /**
  * Перевіряє чи потрібна авторизація для поточного енвайронменту
  * Авторизація потрібна тільки в preview/development, не в production
+ * 
+ * ВАЖЛИВО: Перевірка через hostname має бути ПЕРШОЮ,
+ * бо import.meta.env.PROD може бути true на Vercel навіть для preview
  */
 export function isAuthRequired(): boolean {
+  // Перевіряємо через hostname (для Vercel preview deployments)
+  // Це має бути ПЕРШОЮ перевіркою, бо import.meta.env може бути некоректним
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Production domains - не потрібна авторизація
+    const isMainDomain = hostname === 'ways2spain.com' || hostname === 'www.ways2spain.com';
+    if (isMainDomain) {
+      return false;
+    }
+    
+    // Preview/development domains - потрібна авторизація
+    // ВАЖЛИВО: має відповідати логіці в middleware.ts
+    const isPreviewDeployment = 
+      hostname.includes('git-') || 
+      hostname.includes('preview') ||
+      hostname.includes('develop') || // develop.ways2spain.com
+      hostname.includes('staging') ||
+      hostname.includes('dev');
+    const isDevelopment = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+    
+    if (isPreviewDeployment || isDevelopment) {
+      return true;
+    }
+  }
+
+  // Якщо не можемо визначити через hostname - перевіряємо env
   // У production не потрібна авторизація
   if (import.meta.env.PROD) {
     return false;
-  }
-
-  // У development/preview потрібна авторизація
-  // Перевіряємо через URL (для Vercel preview deployments)
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    const isPreviewDeployment = hostname.includes('git-') || hostname.includes('preview');
-    const isDevelopment = hostname.includes('localhost') || hostname.includes('127.0.0.1');
-    
-    return isPreviewDeployment || isDevelopment;
   }
 
   // За замовчуванням в dev режимі потрібна авторизація
