@@ -6,5 +6,5 @@
  * Замість редіректу в middleware, ми дозволяємо завантажити index.html,
  * а перевірку авторизації та редірект робить React на клієнті.
  */
-export { config, default } from './middleware/index';
+export { config, default } from './middleware/index.js';
 
