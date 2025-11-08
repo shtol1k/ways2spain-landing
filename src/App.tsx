@@ -16,38 +16,50 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
+import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
+const SHOW_COMING_SOON = true; // TODO: set to false або видали, коли основний сайт буде готовий
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Login route - без Layout (без Navbar/Footer) */}
-            <Route path="/login" element={<Login />} />
-            
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="visa" element={<Visa />} />
-              <Route path="services" element={<Services />} />
-              <Route path="services/:id" element={<ServiceDetail />} />
-              <Route path="about" element={<About />} />
-              <Route path="calculator" element={<Calculator />} />
-              <Route path="blog" element={<Blog />} />
-              <Route path="blog/:id" element={<BlogPost />} />
-              <Route path="contact" element={<Contact />} />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  if (SHOW_COMING_SOON) {
+    return (
+      <ErrorBoundary>
+        <ComingSoon />
+      </ErrorBoundary>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Login route - без Layout (без Navbar/Footer) */}
+              <Route path="/login" element={<Login />} />
+
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="visa" element={<Visa />} />
+                <Route path="services" element={<Services />} />
+                <Route path="services/:id" element={<ServiceDetail />} />
+                <Route path="about" element={<About />} />
+                <Route path="calculator" element={<Calculator />} />
+                <Route path="blog" element={<Blog />} />
+                <Route path="blog/:id" element={<BlogPost />} />
+                <Route path="contact" element={<Contact />} />
+              </Route>
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
