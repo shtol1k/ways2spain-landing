@@ -35,11 +35,7 @@ const Login = () => {
     setInitError(null);
     
     try {
-      const apiUrl = import.meta.env.DEV 
-        ? 'http://localhost:3001/api/auth/verify' 
-        : '/api/auth/verify';
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch("/api/auth/verify", {
         method: 'GET',
         credentials: 'include', // Важливо для відправки cookies
       });
@@ -76,11 +72,7 @@ const Login = () => {
 
     try {
       // Визначаємо URL: локально використовуємо localhost, на продакшн - відносний шлях
-      const apiUrl = import.meta.env.DEV 
-        ? 'http://localhost:3001/api/auth/login' 
-        : '/api/auth/login';
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

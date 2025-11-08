@@ -33,10 +33,11 @@ project-name/
 │   ├── App.tsx          # головний компонент
 │   ├── main.tsx         # точка входу
 │   └── index.css        # глобальні стилі
-├── server/
-│   ├── index.js         # Express сервер
-│   └── routes/          # API routes
-├── api/                 # Vercel API routes (опціонально)
+├── backend/
+│   ├── api/             # Реальна логіка Vercel/Serverless endpoint'ів
+│   └── server/          # Express сервер та маршрути
+├── api/                 # Тонкі обгортки, що реекспортують з backend/api для Vercel
+├── middleware/          # Реальна логіка edge-middleware
 ├── public/              # статичні файли
 ├── .storybook/          # Storybook конфігурація
 ├── stories/             # Storybook stories (опціонально)
@@ -72,8 +73,11 @@ project-name/
    - src/hooks/ (створи порожню)
    - src/lib/ (створи порожню)
    - src/assets/ (створи порожню)
-   - server/ (створи порожню)
-   - server/routes/ (створи порожню)
+   - backend/api/ (створи порожню)
+   - backend/server/ (створи порожню)
+   - backend/server/routes/ (створи порожню)
+   - api/ (створи порожню — Entry points для Vercel, що реекспортують backend/api)
+   - middleware/ (створи порожню — для логіки middleware)
    - public/ (створюється автоматично)
 
 3. Налаштуй TypeScript конфігурацію:
@@ -611,7 +615,7 @@ project-name/
 1. Встанови залежності:
    npm install express cors dotenv nodemailer
 
-2. Створи server/index.js:
+2. Створи backend/server/index.js:
    import express from 'express';
    import cors from 'cors';
    import dotenv from 'dotenv';
@@ -635,7 +639,7 @@ project-name/
      console.log(`🚀 Server is running on http://localhost:${PORT}`);
    });
 
-3. Створи server/routes/contact.js:
+3. Створи backend/server/routes/contact.js:
    import express from 'express';
    import nodemailer from 'nodemailer';
    
@@ -669,22 +673,31 @@ project-name/
    
    export { router as contactRoute };
 
-4. Створи .env.example:
+4. Створи структуру для serverless функцій:
+   - Реалізацію зберігай у `backend/api/`, наприклад `backend/api/contact.js`.
+   - Якщо деплоїш на Vercel, створи тонкі обгортки у кореневій папці `api/`, які реекспортують логіку:
+     ```js
+     // api/contact.js
+     export { default } from '../backend/api/contact.js';
+     ```
+   - Такий підхід дозволяє підтримувати чисту структуру коду і при цьому не ламати Vercel conventions.
+
+5. Створи .env.example:
    PORT=3001
    GMAIL_USER=your-email@gmail.com
    GMAIL_PASS=your-app-password
 
-5. Онови package.json зі скриптами:
+6. Онови package.json зі скриптами:
    "scripts": {
      "dev": "vite --strictPort",
      "dev:frontend": "vite --strictPort",
-     "dev:server": "node server/index.js",
+     "dev:server": "node backend/server/index.js",
      "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:server\"",
      "build": "vite build",
      "preview": "vite preview"
    }
 
-6. Встанови concurrently:
+7. Встанови concurrently:
    npm install -D concurrently
 ```
 

@@ -16,11 +16,7 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const apiUrl = import.meta.env.DEV 
-        ? 'http://localhost:3001/api/auth/verify' 
-        : '/api/auth/verify';
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/auth/verify', {
         method: 'GET',
         credentials: 'include',
       });
@@ -37,11 +33,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      const apiUrl = import.meta.env.DEV 
-        ? 'http://localhost:3001/api/auth/logout' 
-        : '/api/auth/logout';
-
-      await fetch(apiUrl, {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
