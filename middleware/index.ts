@@ -22,17 +22,15 @@ export default async function middleware(request: Request) {
     pathname.startsWith('/_next/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
   ) {
-    // Пропускаємо - не повертаємо Response, щоб rewrites могли обробити
-    // Але насправді, якщо middleware викликається, то повертаємо 200
-    // і rewrites не спрацюють. Тому краще виключити з matcher.
-    return new Response(null, { status: 200 });
+    // Дозволяємо виконання наступних обробників (rewrites/statics)
+    return;
   }
 
   // КРОК 2: Перевіряємо енвайронмент
   const isMainDomain = hostname === 'ways2spain.com' || hostname === 'www.ways2spain.com';
 
   if (isMainDomain) {
-    return new Response(null, { status: 200 });
+    return;
   }
 
   // Перевіряємо чи це preview або development
@@ -46,12 +44,12 @@ export default async function middleware(request: Request) {
 
   // Якщо це не preview/development - пропускаємо (production)
   if (!isPreviewDeployment && !isDevelopment) {
-    return new Response(null, { status: 200 });
+    return;
   }
 
   // КРОК 3: Пропускаємо API routes
   if (pathname.startsWith('/api/')) {
-    return new Response(null, { status: 200 });
+    return;
   }
 
   // КРОК 4: Для всіх інших маршрутів - дозволяємо завантажити index.html
@@ -60,7 +58,7 @@ export default async function middleware(request: Request) {
   // НЕ робимо редірект в middleware, бо це блокує завантаження статичних файлів
   // Замість цього React сам перевірить авторизацію і зробить редірект на /login
 
-  return new Response(null, { status: 200 });
+  return;
 }
 
 /**
