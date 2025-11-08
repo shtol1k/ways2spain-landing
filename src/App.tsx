@@ -19,7 +19,7 @@ import Login from "./pages/Login";
 import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
-const SHOW_COMING_SOON = true; // TODO: set to false або видали, коли основний сайт буде готовий
+const SHOW_COMING_SOON = false; // TODO: set to false або видали, коли основний сайт буде готовий
 
 const App = () => {
   if (SHOW_COMING_SOON) {
