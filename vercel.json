@@ -1,9 +1,41 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "cms/package.json",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "backend-express/server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|_next/|.*\\..*).*)",
+      "source": "/api/auth/(.*)",
+      "dest": "/backend-express/server/index.js"
+    },
+    {
+      "source": "/api/contact",
+      "dest": "/backend-express/server/index.js"
+    },
+    {
+      "source": "/api/(.*)",
+      "dest": "/cms/api/$1"
+    },
+    {
+      "source": "/admin/(.*)",
+      "dest": "/cms/admin/$1"
+    },
+    {
+      "source": "/((?!api/|admin/|assets/|_next/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ],

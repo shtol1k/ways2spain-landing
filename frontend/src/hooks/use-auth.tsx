@@ -65,23 +65,23 @@ export function isAuthRequired(): boolean {
   // Це має бути ПЕРШОЮ перевіркою, бо import.meta.env може бути некоректним
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    
+
     // Production domains - не потрібна авторизація
     const isMainDomain = hostname === 'ways2spain.com' || hostname === 'www.ways2spain.com';
     if (isMainDomain) {
       return false;
     }
-    
+
     // Preview/development domains - потрібна авторизація
     // ВАЖЛИВО: має відповідати логіці в middleware.ts
-    const isPreviewDeployment = 
-      hostname.includes('git-') || 
+    const isPreviewDeployment =
+      hostname.includes('git-') ||
       hostname.includes('preview') ||
       hostname.includes('develop') || // develop.ways2spain.com
       hostname.includes('staging') ||
       hostname.includes('dev');
     const isDevelopment = hostname.includes('localhost') || hostname.includes('127.0.0.1');
-    
+
     if (isPreviewDeployment || isDevelopment) {
       return true;
     }

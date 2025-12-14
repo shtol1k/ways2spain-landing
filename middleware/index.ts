@@ -89,5 +89,3 @@ export const config = {
     '/((?!login$|api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).+)',
   ],
 };
-
-

@@ -1,73 +1,111 @@
-# Welcome to your Lovable project
+# Ways2Spain Landing Page
 
-## Project info
+Монорепозиторій для сайту Ways2Spain з фронтендом на React та Strapi CMS.
 
-**URL**: https://lovable.dev/projects/e12d192c-5758-408d-8428-fa12cf99cb7e
+## Структура проекту
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/e12d192c-5758-408d-8428-fa12cf99cb7e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+ways2spain-landing/
+├── frontend/              # React фронтенд (Vite + TypeScript)
+├── cms/                  # Strapi CMS (буде встановлено на наступному кроці)
+├── backend-express/       # Попередній Express бекенд (збережено як резерв)
+├── shared/               # Спільні типи та утиліти
+│   └── types/           # TypeScript типи для API
+├── scripts/             # Допоміжні скрипти
+├── package.json         # Кореневий package.json з монорепозиторними скриптами
+└── vercel.json          # Конфігурація для розгортання на Vercel
 ```
 
-**Edit a file directly in GitHub**
+## Встановлення та запуск
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Передумови
 
-**Use GitHub Codespaces**
+- Node.js (рекомендовано v18+)
+- npm або yarn
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Встановлення залежностей
 
-## What technologies are used for this project?
+```bash
+# Встановлення залежностей для всього проекту
+npm install
 
-This project is built with:
+# Встановлення залежностей для фронтенду
+cd frontend && npm install
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Після встановлення Strapi:
+cd cms && npm install
+```
 
-## How can I deploy this project?
+### Запуск проекту
 
-Simply open [Lovable](https://lovable.dev/projects/e12d192c-5758-408d-8428-fa12cf99cb7e) and click on Share -> Publish.
+```bash
+# Запуск фронтенду та CMS одночасно
+npm run dev
 
-## Can I connect a custom domain to my Lovable project?
+# Запуск тільки фронтенду
+npm run dev:frontend
 
-Yes, you can!
+# Запуск тільки CMS
+npm run dev:cms
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Запуск старого Express бекенду (якщо потрібно)
+npm run dev:express
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Збірка проекту
+
+```bash
+# Збірка фронтенду та CMS
+npm run build
+
+# Збірка тільки фронтенду
+npm run build:frontend
+
+# Збірка тільки CMS
+npm run build:cms
+```
+
+## Встановлення Strapi
+
+Наступним кроком буде встановлення Strapi в папку `cms/`:
+
+```bash
+# Створення нового проекту Strapi
+npx create-strapi-app@latest cms --quickstart --no-run
+
+# Або з TypeScript
+npx create-strapi-app@latest cms --quickstart --typescript --no-run
+```
+
+## Розгортання
+
+Проект налаштований для розгортання на Vercel з автоматичною конфігурацією для фронтенду та Strapi.
+
+## Робота з контентом
+
+Після встановлення Strapi:
+
+1. Запустіть CMS: `npm run dev:cms`
+2. Відкрийте адмінпанель: http://localhost:1337/admin
+3. Створіть контент-типи відповідно до типів в `shared/types/index.ts`
+4. Налаштуйте API та права доступу
+5. Інтегруйте фронтенд з API Strapi
+
+## Корисні команди
+
+```bash
+# Перевірка linting
+npm run lint
+
+# Очищення портів перед запуском
+npm run dev:clean
+
+# Попередній перегляд фронтенду
+npm run preview
+```
+
+## Документація
+
+- [Документація Strapi](https://docs.strapi.io/)
+- [Документація Vite](https://vitejs.dev/)
+- [Документація React Router](https://reactrouter.com/)

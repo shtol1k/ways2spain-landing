@@ -3,8 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 import { contactRoute } from './routes/contact.js';
 import { authRoute } from './routes/auth.js';
+import { checkAuthRequired } from './middleware.js';
 
 // Визначаємо корінь проєкту (бо файл виконується з backend/server)
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +28,16 @@ app.use(
   }),
 ); // Дозволяємо запити з фронтенду
 app.use(express.json()); // Для парсингу JSON
+app.use(cookieParser()); // Для обробки cookies
+
+// Middleware для перевірки авторизації (тільки для не-API роутів)
+app.use((req, res, next) => {
+  // Пропускаємо API роути без перевірки авторизації
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  return checkAuthRequired(req, res, next);
+});
 
 // Роути для API
 app.use('/api', contactRoute);
