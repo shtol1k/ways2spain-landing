@@ -20,19 +20,19 @@
   "rewrites": [
     {
       "source": "/api/auth/(.*)",
-      "dest": "/backend-express/server/index.js"
+      "destination": "/backend-express/server/index.js"
     },
     {
       "source": "/api/contact",
-      "dest": "/backend-express/server/index.js"
+      "destination": "/backend-express/server/index.js"
     },
     {
       "source": "/api/(.*)",
-      "dest": "/cms/api/$1"
+      "destination": "/cms/api/$1"
     },
     {
       "source": "/admin/(.*)",
-      "dest": "/cms/admin/$1"
+      "destination": "/cms/admin/$1"
     },
     {
       "source": "/((?!api/|admin/|assets/|_next/|.*\\..*).*)",
