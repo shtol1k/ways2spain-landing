@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:cms\"",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:cms\" \"npm run dev:express\"",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:cms": "cd cms && npm run dev",
     "dev:express": "node backend-express/server/index.js",
