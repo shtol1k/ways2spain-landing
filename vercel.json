@@ -5,8 +5,7 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist",
-        "rootDirectory": "frontend"
+        "distDir": "dist"
       }
     },
     {
@@ -20,6 +19,10 @@
   ],
   "rewrites": [
     {
+      "source": "/admin/(.*)",
+      "destination": "/cms/admin/$1"
+    },
+    {
       "source": "/api/auth/(.*)",
       "destination": "/backend-express/server/index.js"
     },
@@ -32,17 +35,13 @@
       "destination": "/cms/api/$1"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/cms/admin/$1"
-    },
-    {
-      "source": "/((?!api/|admin/|assets/|_next/|.*\\..*).*)",
-      "destination": "/index.html"
+      "source": "/((?!api|admin|assets|_next|.*\\.).*)",
+      "destination": "/frontend/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/index.html",
+      "source": "/frontend/index.html",
       "headers": [
         {
           "key": "Cache-Control",
