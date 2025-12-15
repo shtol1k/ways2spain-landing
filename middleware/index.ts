@@ -18,6 +18,7 @@ export default async function middleware(request: Request) {
     pathname === '/' ||
     pathname === '/login' ||
     pathname === '/index.html' ||
+    pathname.startsWith('/admin/') ||
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/_next/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot|json|webp|gif)$/i)
@@ -74,18 +75,19 @@ export const config = {
      * Match all request paths except:
      * - / (root) - виключено: не має символів після `/`
      * - /login (login page) - виключено в negative lookahead
+     * - /admin (admin panel) - виключено в negative lookahead
      * - api routes
      * - assets (static files)
      * - _next (Next.js internal)
      * - files with extensions (static files)
      * - index.html (SPA entry point)
      *
-     * ВАЖЛИВО: `/` та `/login` НЕ включені в matcher,
+     * ВАЖЛИВО: `/`, `/login` та `/admin` НЕ включені в matcher,
      * тому middleware не викликається для них
      * і rewrites можуть обробити їх правильно
      *
-     * Pattern: `/...` де `...` - хоча б один символ, і не `/login`, не `/api`, тощо
+     * Pattern: `/...` де `...` - хоча б один символ, і не `/login`, не `/admin`, не `/api`, тощо
      */
-    '/((?!login$|api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).+)',
+    '/((?!login$|admin$|api|_next|assets|favicon\\.ico|index\\.html|.*\\.[a-z0-9]+$).+)',
   ],
 };

@@ -35,6 +35,10 @@
       "destination": "/cms/api/$1"
     },
     {
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
+    },
+    {
       "source": "/((?!api|admin|assets|_next|.*\\.).*)",
       "destination": "/frontend/index.html"
     }
@@ -50,7 +54,7 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/frontend/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
