@@ -1,0 +1,36 @@
+---
+description: Prohibition on working with .env files
+alwaysApply: true
+---
+
+GENERAL RULE: 
+
+Prohibited reading, creating, modifying, or deleting any files that start with `.env`, including but not limited to:  
+- `.env`  
+- `.env.local`  
+- `.env.development`  
+- `.env.production`  
+- `.env.test`  
+- `.env.*` (any files starting with `.env`, besides the exception mentioned below)
+
+EXCEPTIONS:
+
+Only allowed:
+1. Creating a .env.template file with a list of variables is allowed.
+2. Checking for the existence of `.env` files using `ls` or `test -f`  
+3. Checking access rights to `.env` files using `ls -la`  
+3. Providing instructions** to the user on how to work with `.env` files  
+
+RECOMMENDED ACTIONS:
+
+Instead of directly working with `.env` files, AI agent should:  
+1. Provide instructions to the user on creating/modifying files  
+2. Suggest commands for the user to execute  
+3. Check configuration (e.g., vite.config.ts) for correct handling of environment variables  
+4. Explain how to properly set up environment variables for different platforms (Vercel, Netlify, etc.)
+
+REASONS:
+
+1. Security: `.env` files contain secret keys, passwords, tokens, and other confidential information  
+2. Unpredictability: Automatic modification of `.env` files may lead to loss of important variables  
+3. Isolation: Environment variables should be controlled by the developer, not the AI assistant  

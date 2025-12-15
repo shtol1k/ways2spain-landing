@@ -13,6 +13,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Налаштовуємо шлях до .env файлу в корені проекту
+  envDir: '../',
   server: {
     port: 8080,
     strictPort: true,

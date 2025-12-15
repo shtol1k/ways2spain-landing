@@ -21,6 +21,10 @@ import ComingSoon from "./pages/ComingSoon";
 const queryClient = new QueryClient();
 const SHOW_COMING_SOON = import.meta.env.VITE_UNDER_CONSTRUCTION_MODE === 'true';
 
+// Дебаг-лог для перевірки змінної середовища
+console.log('VITE_UNDER_CONSTRUCTION_MODE:', import.meta.env.VITE_UNDER_CONSTRUCTION_MODE);
+console.log('SHOW_COMING_SOON:', SHOW_COMING_SOON);
+
 const App = () => {
   if (SHOW_COMING_SOON) {
     return (
