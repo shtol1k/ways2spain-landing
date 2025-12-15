@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "cms/api/index.js",
+      "src": "cms/api/strapi.js",
       "use": "@vercel/node"
     },
     {
@@ -20,7 +20,7 @@
   "rewrites": [
     {
       "source": "/admin/(.*)",
-      "destination": "/cms/api/index.js"
+      "destination": "/cms/api/strapi.js"
     },
     {
       "source": "/api/auth/(.*)",
@@ -32,7 +32,7 @@
     },
     {
       "source": "/api/(.*)",
-      "destination": "/cms/api/index.js"
+      "destination": "/cms/api/strapi.js"
     },
     {
       "source": "/assets/(.*)",
@@ -59,9 +59,9 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-      }
-    ]
-  }
+        }
+      ]
+    }
   ]
 }
 
