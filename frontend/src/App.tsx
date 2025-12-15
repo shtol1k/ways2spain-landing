@@ -19,7 +19,7 @@ import Login from "./pages/Login";
 import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
-const SHOW_COMING_SOON = import.meta.env.UNDER_CONSTRUCTION_MODE === 'true';
+const SHOW_COMING_SOON = import.meta.env.VITE_UNDER_CONSTRUCTION_MODE === 'true';
 
 const App = () => {
   if (SHOW_COMING_SOON) {
