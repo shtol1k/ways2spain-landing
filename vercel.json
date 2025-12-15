@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "cms/api/strapi.js",
+      "src": "cms/index.js",
       "use": "@vercel/node"
     },
     {
@@ -20,7 +20,7 @@
   "rewrites": [
     {
       "source": "/admin/(.*)",
-      "destination": "/cms/api/strapi.js"
+      "destination": "/cms/index.js"
     },
     {
       "source": "/api/auth/(.*)",
@@ -32,7 +32,7 @@
     },
     {
       "source": "/api/(.*)",
-      "destination": "/cms/api/strapi.js"
+      "destination": "/cms/index.js"
     },
     {
       "source": "/assets/(.*)",

@@ -7,3 +7,4 @@
  * а перевірку авторизації та редірект робить React на клієнті.
  */
 export { config, default } from './middleware/index.js';
+
