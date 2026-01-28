@@ -67,8 +67,8 @@ const Consultation = () => {
         </div>
 
         {/* Additional Info - no gradient background */}
-        <div className="rounded-xl p-8 border border-border mb-12">
-          <div className="max-w-3xl mx-auto">
+        <div className="rounded-xl p-8 mb-12">
+          <div className="max-w-xl mx-auto">
             <h3 className="text-2xl font-bold mb-4 text-center">Що отримаєте на консультації?</h3>
             <ul className="space-y-3 mb-8">
               <li className="flex items-start">
