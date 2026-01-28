@@ -154,8 +154,8 @@ const Contact = () => {
               {/* Free Consultation Block */}
               <div className="bg-gradient-to-r from-orange-500/10 to-yellow-400/10 rounded-xl p-6 border border-border shadow-elegant">
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold mb-2">Безкоштовна консультація</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <h2 className="text-2xl font-bold mb-2">Безкоштовна консультація</h2>
+                  <p className="text-muted-foreground mb-2">
                     Запишіться на безкоштовну консультацію та отримайте персональні рекомендації щодо вашого кейсу переїзду до Іспанії.
                   </p>
                   {/* Google Calendar Button Container */}
@@ -195,7 +195,8 @@ const Contact = () => {
 
               {/* Contact Form Card */}
               <div className="bg-card rounded-xl p-8 border border-border shadow-elegant">
-                <h2 className="text-2xl font-bold mb-6">Форма зворотного зв'язку</h2>
+                <h2 className="text-2xl font-bold mb-2">Форма зворотного зв'язку</h2>
+                <p className="text-muted-foreground mb-6">Відповідаємо протягом 24 годин в робочі дні.</p>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
