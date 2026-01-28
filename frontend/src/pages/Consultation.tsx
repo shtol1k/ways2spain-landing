@@ -4,8 +4,8 @@ const Consultation = () => {
   return (
     <div className="min-h-screen pt-32 pb-12">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Header - centered with max-w-3xl */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        {/* Header - centered */}
+        <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-400 mb-6">
             <Calendar className="w-8 h-8 text-white" />
           </div>
