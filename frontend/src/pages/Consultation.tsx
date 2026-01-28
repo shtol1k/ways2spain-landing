@@ -66,54 +66,49 @@ const Consultation = () => {
           ></iframe>
         </div>
 
-        {/* Additional Info - no gradient background */}
-        <div className="rounded-xl p-8 mb-12">
-          <div className="max-w-xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4 text-center">Що отримаєте на консультації?</h3>
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start">
-                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-foreground">Персональну оцінку вашого кейсу переїзду до Іспанії</span>
-              </li>
-              <li className="flex items-start">
-                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-foreground">Покроковий план дій залежно від вашої ситуації</span>
-              </li>
-              <li className="flex items-start">
-                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-foreground">Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
-              </li>
-              <li className="flex items-start">
-                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-foreground">Рекомендації по документах та підготовці до подання заявки</span>
-              </li>
-              <li className="flex items-start">
-                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-foreground">Інформацію про терміни, вартість та можливі ризики</span>
-              </li>
-            </ul>
+        {/* Additional Info - optimized */}
+        <div className="max-w-2xl mx-auto text-center rounded-xl p-8 mb-12">
+          <h3 className="text-2xl font-bold mb-4">Що отримаєте на консультації?</h3>
+          <ul className="space-y-4 mb-6 text-left">
+            <li className="flex items-start">
+              <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-foreground">Персональну оцінку вашого кейсу переїзду до Іспанії</span>
+            </li>
+            <li className="flex items-start">
+              <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-foreground">Покроковий план дій залежно від вашої ситуації</span>
+            </li>
+            <li className="flex items-start">
+              <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-foreground">Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
+            </li>
+            <li className="flex items-start">
+              <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-foreground">Рекомендації по документах та підготовці до подання заявки</span>
+            </li>
+            <li className="flex items-start">
+              <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-foreground">Інформацію про терміни, вартість та можливі ризики</span>
+            </li>
+          </ul>
 
-            {/* Contact buttons */}
-            <div className="text-center">
-              <p className="text-muted-foreground mb-4">
-                Не знайшли зручний час або маєте термінове питання?
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="/contact"
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-smooth shadow-strong font-semibold h-14 rounded-lg px-10 text-base bg-secondary text-secondary-foreground hover:bg-secondary/90"
-                >
-                  Написати нам
-                </a>
-                <a
-                  href="tel:+34627073891"
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-smooth border border-border bg-background hover:bg-muted h-14 rounded-lg px-10 text-base"
-                >
-                  <Send className="w-4 h-4" />
-                  Telegram
-                </a>
-              </div>
-            </div>
+          <p className="text-muted-foreground mb-6">
+            Не знайшли зручний час або маєте термінове питання?
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/contact"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-smooth shadow-strong font-semibold h-14 rounded-lg px-10 text-base bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            >
+              Написати нам
+            </a>
+            <a
+              href="tel:+34627073891"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-smooth border border-border bg-background hover:bg-muted h-14 rounded-lg px-10 text-base"
+            >
+              <Send className="w-4 h-4" />
+              Telegram
+            </a>
           </div>
         </div>
       </div>
