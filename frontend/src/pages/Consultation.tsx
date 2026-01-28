@@ -1,4 +1,4 @@
-import { Calendar, Clock, Phone, CircleCheckBig, Send } from "lucide-react";
+import { Calendar, Clock, CircleCheckBig, Send } from "lucide-react";
 
 const Consultation = () => {
   return (
@@ -24,8 +24,12 @@ const Consultation = () => {
             </p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-yellow-400/10 mb-4">
-              <CircleCheckBig className="w-6 h-6 text-secondary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-neutral-100 mb-4">
+              <img
+                src="/icon_personal.svg"
+                alt="Персональна консультація"
+                className="w-11 h-11"
+              />
             </div>
             <h3 className="font-semibold mb-2">Персонально</h3>
             <p className="text-sm text-muted-foreground">
@@ -33,8 +37,12 @@ const Consultation = () => {
             </p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-yellow-400/10 mb-4">
-              <Phone className="w-6 h-6 text-secondary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-neutral-100 mb-4">
+              <img
+                src="/icon_google_meet.svg"
+                alt="Онлайн консультація"
+                className="w-8 h-8"
+              />
             </div>
             <h3 className="font-semibold mb-2">Онлайн</h3>
             <p className="text-sm text-muted-foreground">
