@@ -19,8 +19,7 @@ const Contact = () => {
     name: "",
     email: "",
     phone: "",
-    package: "",
-    situation: "",
+    status: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,8 +107,7 @@ const Contact = () => {
           name: "",
           email: "",
           phone: "",
-          package: "",
-          situation: "",
+          status: "",
           message: "",
         });
       } else {
@@ -201,7 +199,7 @@ const Contact = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Ім'я *</Label>
+                      <Label htmlFor="name">Ім'я <span className="text-red-500">*</span></Label>
                       <Input
                         id="name"
                         name="name"
@@ -212,7 +210,7 @@ const Contact = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                       <Input
                         id="email"
                         name="email"
@@ -238,48 +236,29 @@ const Contact = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="package">Послуга</Label>
+                      <Label htmlFor="status">Ваш статус</Label>
                       <Select
-                        value={formData.package}
+                        value={formData.status}
                         onValueChange={(value) =>
-                          setFormData({ ...formData, package: value })
+                          setFormData({ ...formData, status: value })
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Оберіть послугу" />
+                          <SelectValue placeholder="Оберіть статус" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="consultation">Консультація</SelectItem>
-                          <SelectItem value="basic">Лайт</SelectItem>
-                          <SelectItem value="turnkey">Оптимум</SelectItem>
-                          <SelectItem value="premium">Все включено</SelectItem>
+                          <SelectItem value="planning">Планую переїзд в Іспанію</SelectItem>
+                          <SelectItem value="other-visa">Знахожусь в Іспанії по іншому типу візи</SelectItem>
+                          <SelectItem value="temporary-protection">Маю тимчасовий захист</SelectItem>
+                          <SelectItem value="renewal-digital-nomad">Необхідне продовження Digital Nomad візи</SelectItem>
+                          <SelectItem value="other">Інше</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="situation">Ваш кейс</Label>
-                    <Select
-                      value={formData.situation}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, situation: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Оберіть варіант" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="planning">Планую переїзд</SelectItem>
-                        <SelectItem value="in-spain">Вже в Іспанії</SelectItem>
-                        <SelectItem value="temporary">Маю тимчасовий захист</SelectItem>
-                        <SelectItem value="renewal">Потрібно продовження</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Повідомлення *</Label>
+                    <Label htmlFor="message">Повідомлення <span className="text-red-500">*</span></Label>
                     <Textarea
                       id="message"
                       name="message"
