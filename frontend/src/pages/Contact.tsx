@@ -236,10 +236,12 @@ const Contact = () => {
                     <div>
                       <p className="font-medium">Телеграм (зворотний зв'язок)</p>
                       <a
-                        href="/"
+                        href="https://t.me/DNSpain"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
-                        @w2s
+                        @DNSpain
                       </a>
                     </div>
                   </div>

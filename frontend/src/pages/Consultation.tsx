@@ -99,7 +99,9 @@ const Consultation = () => {
               Написати нам
             </a>
             <a
-              href="tel:+34627073891"
+              href="https://t.me/DNSpain"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-smooth border border-border bg-background hover:bg-muted h-14 rounded-lg px-10 text-base"
             >
               <Send className="w-4 h-4" />
