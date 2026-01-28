@@ -64,29 +64,31 @@ const Consultation = () => {
 
         {/* Additional Info - dark gradient card */}
         <div className="bg-gradient-to-br from-primary to-primary/90 rounded-2xl p-8 md:p-12 text-primary-foreground mb-12">
-          <h3 className="text-3xl font-bold mb-6 text-center">Що отримаєте на консультації?</h3>
-          <ul className="space-y-4 mb-8 text-left">
-            <li className="flex items-start">
-              <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-              <span className="text-primary-foreground/90 text-lg">Персональну оцінку вашого кейсу переїзду до Іспанії</span>
-            </li>
-            <li className="flex items-start">
-              <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-              <span className="text-primary-foreground/90 text-lg">Покроковий план дій залежно від вашої ситуації</span>
-            </li>
-            <li className="flex items-start">
-              <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-              <span className="text-primary-foreground/90 text-lg">Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
-            </li>
-            <li className="flex items-start">
-              <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-              <span className="text-primary-foreground/90 text-lg">Рекомендації по документах та підготовці до подання заявки</span>
-            </li>
-            <li className="flex items-start">
-              <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
-              <span className="text-primary-foreground/90 text-lg">Інформацію про терміни, вартість та можливі ризики</span>
-            </li>
-          </ul>
+          <div className="max-w-3xl mx-auto">
+            <h3 className="text-3xl font-bold mb-6 text-center">Що отримаєте на консультації?</h3>
+            <ul className="space-y-4 mb-8 text-left">
+              <li className="flex items-start">
+                <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-primary-foreground/90 text-lg">Персональну оцінку вашого кейсу переїзду до Іспанії</span>
+              </li>
+              <li className="flex items-start">
+                <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-primary-foreground/90 text-lg">Покроковий план дій залежно від вашої ситуації</span>
+              </li>
+              <li className="flex items-start">
+                <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-primary-foreground/90 text-lg">Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
+              </li>
+              <li className="flex items-start">
+                <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-primary-foreground/90 text-lg">Рекомендації по документах та підготовці до подання заявки</span>
+              </li>
+              <li className="flex items-start">
+                <CircleCheckBig className="w-6 h-6 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-primary-foreground/90 text-lg">Інформацію про терміни, вартість та можливі ризики</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* CTA - outside the card */}
