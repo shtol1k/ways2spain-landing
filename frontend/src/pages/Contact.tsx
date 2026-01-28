@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Mail, Phone, MapPin, Send, Instagram } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Instagram, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
@@ -23,64 +23,6 @@ const Contact = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [calendarScriptLoaded, setCalendarScriptLoaded] = useState(false);
-  const calendarButtonRef = useRef<HTMLDivElement>(null);
-  const isInitializedRef = useRef(false);
-
-  // Load Google Calendar script and styles on component mount (only once)
-  useEffect(() => {
-    // Check if script is already loaded globally
-    if ((window as any).calendar?.schedulingButton) {
-      setCalendarScriptLoaded(true);
-      return;
-    }
-
-    // Load CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
-    document.head.appendChild(link);
-
-    // Load script
-    const script = document.createElement('script');
-    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
-    script.async = true;
-    script.onload = () => {
-      setCalendarScriptLoaded(true);
-    };
-    document.body.appendChild(script);
-
-    // Cleanup function (removes script on unmount)
-    return () => {
-      // Note: We don't remove the script to allow other components to use it
-      // The script stays in DOM globally, but we'll prevent duplicate buttons
-    };
-  }, []);
-
-  // Initialize Google Calendar button (only once)
-  useEffect(() => {
-    if (calendarScriptLoaded && calendarButtonRef.current && !isInitializedRef.current) {
-      const calendarButton = (window as any).calendar?.schedulingButton;
-      if (calendarButton) {
-        calendarButton.load({
-          url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true',
-          color: '#F0B543',
-          label: 'Записатись на безкоштовну консультацію',
-          target: calendarButtonRef.current,
-        });
-        // Mark as initialized to prevent duplicate buttons
-        isInitializedRef.current = true;
-      }
-    }
-
-    // Cleanup: Clear the container and reset initialization flag on unmount
-    return () => {
-      if (calendarButtonRef.current) {
-        calendarButtonRef.current.innerHTML = '';
-      }
-      isInitializedRef.current = false;
-    };
-  }, [calendarScriptLoaded]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,41 +97,16 @@ const Contact = () => {
               <div className="bg-gradient-to-r from-orange-500/10 to-yellow-400/10 rounded-xl p-6 border border-border shadow-elegant">
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold mb-2">Безкоштовна консультація</h2>
-                  <p className="text-muted-foreground mb-2">
+                  <p className="text-muted-foreground mb-4">
                     Запишіться на безкоштовну консультацію та отримайте персональні рекомендації щодо вашого кейсу переїзду до Іспанії.
                   </p>
-                  {/* Google Calendar Button Container */}
-                  <div 
-                    id="calendar-button-container"
-                    ref={calendarButtonRef}
-                    className="w-fit"
-                  />
-                  <style>{`
-                    /* Custom styles for Google Calendar button to match our design */
-                    #calendar-button-container .schedule-meeting,
-                    #calendar-button-container .schedule-meeting-button {
-                      background: #F0B543 !important;
-                      color: white !important;
-                      border: none !important;
-                      border-radius: 0.5rem !important;
-                      padding: 0.75rem 1.5rem !important;
-                      font-weight: 500 !important;
-                      font-size: 0.875rem !important;
-                      font-family: system-ui, -apple-system, sans-serif !important;
-                      transition: all 0.2s ease !important;
-                      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-                    }
-                    #calendar-button-container .schedule-meeting:hover,
-                    #calendar-button-container .schedule-meeting-button:hover {
-                      transform: translateY(-1px) !important;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-                      filter: brightness(1.1) !important;
-                    }
-                    #calendar-button-container .schedule-meeting:active,
-                    #calendar-button-container .schedule-meeting-button:active {
-                      transform: translateY(0) !important;
-                    }
-                  `}</style>
+                  <a
+                    href="/consultation"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-background hover:bg-muted h-12 rounded-md px-8 shadow-elegant"
+                  >
+                    Записатись на безкоштовну консультацію
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
                 </div>
               </div>
 
