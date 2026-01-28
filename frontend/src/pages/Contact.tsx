@@ -26,30 +26,41 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarScriptLoaded, setCalendarScriptLoaded] = useState(false);
   const calendarButtonRef = useRef<HTMLDivElement>(null);
+  const isInitializedRef = useRef(false);
 
-  // Load Google Calendar script and styles on component mount
+  // Load Google Calendar script and styles on component mount (only once)
   useEffect(() => {
-    if (!calendarScriptLoaded) {
-      // Load CSS
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
-      document.head.appendChild(link);
-
-      // Load script
-      const script = document.createElement('script');
-      script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
-      script.async = true;
-      script.onload = () => {
-        setCalendarScriptLoaded(true);
-      };
-      document.body.appendChild(script);
+    // Check if script is already loaded globally
+    if ((window as any).calendar?.schedulingButton) {
+      setCalendarScriptLoaded(true);
+      return;
     }
-  }, [calendarScriptLoaded]);
 
-  // Initialize Google Calendar button
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
+    document.head.appendChild(link);
+
+    // Load script
+    const script = document.createElement('script');
+    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
+    script.async = true;
+    script.onload = () => {
+      setCalendarScriptLoaded(true);
+    };
+    document.body.appendChild(script);
+
+    // Cleanup function (removes script on unmount)
+    return () => {
+      // Note: We don't remove the script to allow other components to use it
+      // The script stays in DOM globally, but we'll prevent duplicate buttons
+    };
+  }, []);
+
+  // Initialize Google Calendar button (only once)
   useEffect(() => {
-    if (calendarScriptLoaded && calendarButtonRef.current) {
+    if (calendarScriptLoaded && calendarButtonRef.current && !isInitializedRef.current) {
       const calendarButton = (window as any).calendar?.schedulingButton;
       if (calendarButton) {
         calendarButton.load({
@@ -58,8 +69,18 @@ const Contact = () => {
           label: 'Записатись на безкоштовну консультацію',
           target: calendarButtonRef.current,
         });
+        // Mark as initialized to prevent duplicate buttons
+        isInitializedRef.current = true;
       }
     }
+
+    // Cleanup: Clear the container and reset initialization flag on unmount
+    return () => {
+      if (calendarButtonRef.current) {
+        calendarButtonRef.current.innerHTML = '';
+      }
+      isInitializedRef.current = false;
+    };
   }, [calendarScriptLoaded]);
 
   const handleSubmit = async (e: React.FormEvent) => {
