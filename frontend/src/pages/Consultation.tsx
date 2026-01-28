@@ -6,20 +6,17 @@ const Consultation = () => {
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header - centered */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-yellow-400 mb-6">
-            <Calendar className="w-8 h-8 text-white" />
-          </div>
           <h1 className="mb-4">Безкоштовна консультація</h1>
           <p className="text-xl text-muted-foreground">
-            Запишіться на зручний для вас час і отримайте персональні рекомендації
+            Запис на первинну безкоштовну консультацію для оцінки вашого кейсу та персональних рекомендацій
           </p>
         </div>
 
         {/* Benefits - full width grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
-              <Clock className="w-6 h-6 text-primary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-yellow-400/10 mb-4">
+              <Clock className="w-6 h-6 text-secondary" />
             </div>
             <h3 className="font-semibold mb-2">30 хвилин</h3>
             <p className="text-sm text-muted-foreground">
@@ -27,8 +24,8 @@ const Consultation = () => {
             </p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
-              <CircleCheckBig className="w-6 h-6 text-primary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-yellow-400/10 mb-4">
+              <CircleCheckBig className="w-6 h-6 text-secondary" />
             </div>
             <h3 className="font-semibold mb-2">Персонально</h3>
             <p className="text-sm text-muted-foreground">
@@ -36,8 +33,8 @@ const Consultation = () => {
             </p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
-              <Phone className="w-6 h-6 text-primary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500/10 to-yellow-400/10 mb-4">
+              <Phone className="w-6 h-6 text-secondary" />
             </div>
             <h3 className="font-semibold mb-2">Онлайн</h3>
             <p className="text-sm text-muted-foreground">
