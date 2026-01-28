@@ -234,7 +234,7 @@ const Contact = () => {
                   <div className="flex items-start space-x-3">
                     <Send className="w-5 h-5 text-secondary mt-1" />
                     <div>
-                      <p className="font-medium">Телеграм (зворотний зв'язок)</p>
+                      <p className="font-medium">Telegram</p>
                       <a
                         href="https://t.me/DNSpain"
                         target="_blank"
@@ -248,7 +248,7 @@ const Contact = () => {
                   <div className="flex items-start space-x-3">
                     <Send className="w-5 h-5 text-secondary mt-1" />
                     <div>
-                      <p className="font-medium">Телеграм (канал новин)</p>
+                      <p className="font-medium">Канал новин</p>
                       <a
                         href="https://t.me/+FABp3kLbRt45NzFi"
                         target="_blank"
