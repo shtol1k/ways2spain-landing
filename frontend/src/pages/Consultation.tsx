@@ -51,13 +51,12 @@ const Consultation = () => {
           </p>
         </div>
 
-        {/* Google Calendar iframe - full width like Benefits grid */}
+        {/* Google Calendar iframe - responsive */}
         <div className="rounded-xl overflow-hidden border border-border shadow-elegant mb-12">
           <iframe
             src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true"
             style={{ border: 0 }}
-            width="100%"
-            height="600"
+            className="w-full h-[500px] md:h-[600px] lg:h-[800px]"
             frameBorder="0"
             title="Google Calendar Appointment Scheduling"
           ></iframe>
