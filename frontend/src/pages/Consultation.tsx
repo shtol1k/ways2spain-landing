@@ -46,24 +46,24 @@ const Consultation = () => {
           </div>
         </div>
 
-        {/* Google Calendar iframe - full width */}
-        <div className="bg-card rounded-xl p-8 border border-border shadow-elegant mb-12">
-          <div className="max-w-3xl mx-auto mb-6">
-            <h2 className="text-2xl font-bold mb-2">Оберіть дату та час</h2>
-            <p className="text-muted-foreground">
-              Натисніть на вільний слот у календарі для запису на консультацію
-            </p>
-          </div>
-          <div className="rounded-lg overflow-hidden border border-border">
-            <iframe
-              src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true"
-              style={{ border: 0 }}
-              width="100%"
-              height="600"
-              frameBorder="0"
-              title="Google Calendar Appointment Scheduling"
-            ></iframe>
-          </div>
+        {/* Google Calendar header */}
+        <div className="text-center max-w-3xl mx-auto mb-6">
+          <h2 className="text-2xl font-bold mb-2">Оберіть дату та час</h2>
+          <p className="text-muted-foreground">
+            Натисніть на вільний слот у календарі для запису на консультацію
+          </p>
+        </div>
+
+        {/* Google Calendar iframe - full width like Benefits grid */}
+        <div className="rounded-xl overflow-hidden border border-border shadow-elegant mb-12">
+          <iframe
+            src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true"
+            style={{ border: 0 }}
+            width="100%"
+            height="600"
+            frameBorder="0"
+            title="Google Calendar Appointment Scheduling"
+          ></iframe>
         </div>
 
         {/* Additional Info - centered with max-w-3xl */}
