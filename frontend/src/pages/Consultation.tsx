@@ -2,7 +2,7 @@ import { Calendar, Clock, Phone, CircleCheckBig, Send } from "lucide-react";
 
 const Consultation = () => {
   return (
-    <div className="min-h-screen pt-32 pb-12">
+    <div className="min-h-screen py-20 lg:py-32">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header - centered */}
         <div className="text-center mb-12">
@@ -93,9 +93,9 @@ const Consultation = () => {
 
         {/* CTA - outside the card */}
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-muted-foreground mb-6">
+          <h2 className="text-2xl font-bold mb-6">
             Не знайшли зручний час або маєте термінове питання?
-          </p>
+          </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/contact"
