@@ -54,7 +54,7 @@ const Contact = () => {
       if (calendarButton) {
         calendarButton.load({
           url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true',
-          color: '#F09300',
+          color: '#F0B543',
           label: 'Записатись на безкоштовну консультацію',
           target: calendarButtonRef.current,
         });
@@ -149,13 +149,14 @@ const Contact = () => {
                     /* Custom styles for Google Calendar button to match our design */
                     #calendar-button-container .schedule-meeting,
                     #calendar-button-container .schedule-meeting-button {
-                      background: linear-gradient(to right, var(--primary) 0%, var(--secondary) 100%) !important;
+                      background: #F0B543 !important;
                       color: white !important;
                       border: none !important;
                       border-radius: 0.5rem !important;
                       padding: 0.75rem 1.5rem !important;
                       font-weight: 500 !important;
                       font-size: 0.875rem !important;
+                      font-family: system-ui, -apple-system, sans-serif !important;
                       transition: all 0.2s ease !important;
                       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
                     }
