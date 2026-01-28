@@ -100,7 +100,7 @@ const Navbar = () => {
               </Link>
               <Link to="/consultation" onClick={() => setIsOpen(false)}>
                 <Button variant="secondary" size="lg" className="w-full mt-2">
-                  Отримати консультацію
+                  Консультація
                 </Button>
               </Link>
             </div>
