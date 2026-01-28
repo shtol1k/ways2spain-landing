@@ -7,14 +7,13 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const navItems = [
+    const navItems = [
     { path: "/", label: "Головна" },
     { path: "/visa", label: "Про візу" },
     { path: "/services", label: "Послуги" },
     { path: "/about", label: "Про нас" },
     { path: "/calculator", label: "Калькулятор" },
     { path: "/blog", label: "Блог" },
-    { path: "/consultation", label: "Консультація" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -52,6 +51,11 @@ const Navbar = () => {
 
           <div className="hidden lg:flex items-center space-x-3">
             <Link to="/contact">
+              <Button variant="outline" size="lg" className="shadow-elegant">
+                Контакти
+              </Button>
+            </Link>
+            <Link to="/consultation">
               <Button variant="secondary" size="lg">
                 Отримати консультацію
               </Button>
@@ -90,6 +94,11 @@ const Navbar = () => {
                 </Link>
               ))}
               <Link to="/contact" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" size="lg" className="w-full mt-2 shadow-elegant">
+                  Контакти
+                </Button>
+              </Link>
+              <Link to="/consultation" onClick={() => setIsOpen(false)}>
                 <Button variant="secondary" size="lg" className="w-full mt-2">
                   Отримати консультацію
                 </Button>
