@@ -86,7 +86,7 @@ const Contact = () => {
           <div className="text-center mb-12">
             <h1 className="mb-4">Зв'яжіться з нами</h1>
             <p className="text-xl text-muted-foreground">
-              Отримайте безкоштовну консультацію щодо вашого кейсу
+              Зв'яжіться з нами з будь-яких питань щодо переїзду в Іспанію через Digital Nomad Visa
             </p>
           </div>
 
@@ -150,11 +150,11 @@ const Contact = () => {
                         type="tel"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+32 00 000 0000"
+                        placeholder="+34 00 000 0000"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="status">Ваш статус</Label>
+                      <Label htmlFor="status">Ваш запит</Label>
                       <Select
                         value={formData.status}
                         onValueChange={(value) =>
@@ -162,13 +162,13 @@ const Contact = () => {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Оберіть статус" />
+                          <SelectValue placeholder="Оберіть запит" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="planning">Планую переїзд в Іспанію</SelectItem>
-                          <SelectItem value="other-visa">Знахожусь в Іспанії по іншому типу візи</SelectItem>
-                          <SelectItem value="temporary-protection">Маю тимчасовий захист</SelectItem>
-                          <SelectItem value="renewal-digital-nomad">Необхідне продовження Digital Nomad візи</SelectItem>
+                          <SelectItem value="digital-nomad">Отримання візи Digital Nomad</SelectItem>
+                          <SelectItem value="temporary-protection">Перехід з тимчасового захисту</SelectItem>
+                          <SelectItem value="family-join">Приєднання члена сімʼї</SelectItem>
+                          <SelectItem value="visa-renewal">Продовження візи</SelectItem>
                           <SelectItem value="other">Інше</SelectItem>
                         </SelectContent>
                       </Select>
