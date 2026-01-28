@@ -1,4 +1,4 @@
-import { Calendar, Clock, Phone, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, Phone, CircleCheckBig, Send } from "lucide-react";
 
 const Consultation = () => {
   return (
@@ -28,7 +28,7 @@ const Consultation = () => {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
-              <CheckCircle2 className="w-6 h-6 text-primary" />
+              <CircleCheckBig className="w-6 h-6 text-primary" />
             </div>
             <h3 className="font-semibold mb-2">Персонально</h3>
             <p className="text-sm text-muted-foreground">
@@ -66,54 +66,54 @@ const Consultation = () => {
           ></iframe>
         </div>
 
-        {/* Additional Info - centered with max-w-3xl */}
-        <div className="max-w-3xl mx-auto mb-12">
-          <div className="bg-gradient-to-r from-orange-500/10 to-yellow-400/10 rounded-xl p-8 border border-border">
+        {/* Additional Info - no gradient background */}
+        <div className="rounded-xl p-8 border border-border mb-12">
+          <div className="max-w-3xl mx-auto">
             <h3 className="text-xl font-bold mb-4">Що отримаєте на консультації?</h3>
-            <ul className="space-y-3 text-muted-foreground">
+            <ul className="space-y-3 mb-8">
               <li className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <span>Персональну оцінку вашого кейсу переїзду до Іспанії</span>
+                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-foreground">Персональну оцінку вашого кейсу переїзду до Іспанії</span>
               </li>
               <li className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <span>Покроковий план дій залежно від вашої ситуації</span>
+                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-foreground">Покроковий план дій залежно від вашої ситуації</span>
               </li>
               <li className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <span>Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
+                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-foreground">Відповіді на всі ваші питання щодо віз, документів та життя в Іспанії</span>
               </li>
               <li className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <span>Рекомендації по документах та підготовці до подання заявки</span>
+                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-foreground">Рекомендації по документах та підготовці до подання заявки</span>
               </li>
               <li className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <span>Інформацію про терміни, вартість та можливі ризики</span>
+                <CircleCheckBig className="w-5 h-5 text-secondary mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-foreground">Інформацію про терміни, вартість та можливі ризики</span>
               </li>
             </ul>
-          </div>
-        </div>
 
-        {/* Contact Info - centered with max-w-3xl */}
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-muted-foreground mb-4">
-            Не знайшли зручний час або маєте термінове питання?
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-smooth"
-            >
-              Написати нам
-            </a>
-            <a
-              href="tel:+34627073891"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-secondary text-secondary-foreground font-medium hover:bg-secondary/90 transition-smooth"
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              +34 62 707 3891
-            </a>
+            {/* Contact buttons */}
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Не знайшли зручний час або маєте термінове питання?
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-smooth shadow-strong font-semibold h-14 rounded-lg px-10 text-base bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                >
+                  Написати нам
+                </a>
+                <a
+                  href="tel:+34627073891"
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-smooth border border-border bg-background hover:bg-muted h-14 rounded-lg px-10 text-base"
+                >
+                  <Send className="w-4 h-4" />
+                  Telegram
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
