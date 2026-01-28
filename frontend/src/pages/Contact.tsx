@@ -102,7 +102,7 @@ const Contact = () => {
       if (response.ok && data.success) {
         toast({
           title: "Повідомлення надіслано!",
-          description: "Ми зв\'яжемося з вами найближчим часом.",
+          description: "Ми зв'яжемося з вами найближчим часом.",
         });
         setFormData({
           name: "",
@@ -144,7 +144,7 @@ const Contact = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="mb-4">Зв\'яжіться з нами</h1>
+            <h1 className="mb-4">Зв'яжіться з нами</h1>
             <p className="text-xl text-muted-foreground">
               Отримайте безкоштовну консультацію щодо вашого кейсу
             </p>
@@ -197,11 +197,11 @@ const Contact = () => {
 
               {/* Contact Form Card */}
               <div className="bg-card rounded-xl p-8 border border-border shadow-elegant">
-                <h2 className="text-2xl font-bold mb-6">Форма зворотного зв\'язку</h2>
+                <h2 className="text-2xl font-bold mb-6">Форма зворотного зв'язку</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Ім\'я *</Label>
+                      <Label htmlFor="name">Ім'я *</Label>
                       <Input
                         id="name"
                         name="name"
@@ -337,7 +337,7 @@ const Contact = () => {
                   <div className="flex items-start space-x-3">
                     <Send className="w-5 h-5 text-secondary mt-1" />
                     <div>
-                      <p className="font-medium">Телеграм (зворотний зв\'язок)</p>
+                      <p className="font-medium">Телеграм (зворотний зв'язок)</p>
                       <a
                         href="/"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
@@ -389,7 +389,7 @@ const Contact = () => {
                 <h3 className="text-xl font-bold mb-4">Графік роботи</h3>
                 <div className="space-y-2 text-primary-foreground/90">
                   <div className="flex justify-between">
-                    <span>Понеділок - П\'ятниця</span>
+                    <span>Понеділок - П'ятниця</span>
                     <span className="font-semibold">10:00 - 20:00</span>
                   </div>
                   <div className="flex justify-between">
