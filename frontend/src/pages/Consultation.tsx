@@ -2,7 +2,7 @@ import { Calendar, Clock, Phone, CircleCheckBig, Send } from "lucide-react";
 
 const Consultation = () => {
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen pt-32 pb-12">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header - centered with max-w-3xl */}
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -67,7 +67,7 @@ const Consultation = () => {
         </div>
 
         {/* Additional Info - optimized */}
-        <div className="max-w-2xl mx-auto text-center rounded-xl p-8 mb-12">
+        <div className="max-w-2xl mx-auto rounded-xl p-8 mb-12">
           <h3 className="text-2xl font-bold mb-4">Що отримаєте на консультації?</h3>
           <ul className="space-y-4 mb-6 text-left">
             <li className="flex items-start">
@@ -95,7 +95,7 @@ const Consultation = () => {
           <p className="text-muted-foreground mb-6">
             Не знайшли зручний час або маєте термінове питання?
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-start">
             <a
               href="/contact"
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-smooth shadow-strong font-semibold h-14 rounded-lg px-10 text-base bg-secondary text-secondary-foreground hover:bg-secondary/90"
