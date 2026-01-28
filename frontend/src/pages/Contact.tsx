@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,43 @@ const Contact = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [calendarScriptLoaded, setCalendarScriptLoaded] = useState(false);
+  const calendarButtonRef = useRef<HTMLDivElement>(null);
+
+  // Load Google Calendar script and styles on component mount
+  useEffect(() => {
+    if (!calendarScriptLoaded) {
+      // Load CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
+      document.head.appendChild(link);
+
+      // Load script
+      const script = document.createElement('script');
+      script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
+      script.async = true;
+      script.onload = () => {
+        setCalendarScriptLoaded(true);
+      };
+      document.body.appendChild(script);
+    }
+  }, [calendarScriptLoaded]);
+
+  // Initialize Google Calendar button
+  useEffect(() => {
+    if (calendarScriptLoaded && calendarButtonRef.current) {
+      const calendarButton = (window as any).calendar?.schedulingButton;
+      if (calendarButton) {
+        calendarButton.load({
+          url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true',
+          color: '#F09300',
+          label: 'Записатись на безкоштовну консультацію',
+          target: calendarButtonRef.current,
+        });
+      }
+    }
+  }, [calendarScriptLoaded]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +81,7 @@ const Contact = () => {
       if (response.ok && data.success) {
         toast({
           title: "Повідомлення надіслано!",
-          description: "Ми зв'яжемося з вами найближчим часом.",
+          description: "Ми зв\'яжемося з вами найближчим часом.",
         });
         setFormData({
           name: "",
@@ -86,7 +123,7 @@ const Contact = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="mb-4">Зв'яжіться з нами</h1>
+            <h1 className="mb-4">Зв\'яжіться з нами</h1>
             <p className="text-xl text-muted-foreground">
               Отримайте безкоштовну консультацію щодо вашого кейсу
             </p>
@@ -94,13 +131,55 @@ const Contact = () => {
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Contact Form */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Free Consultation Block */}
+              <div className="bg-gradient-to-r from-orange-500/10 to-yellow-400/10 rounded-xl p-6 border border-border shadow-elegant">
+                <div className="flex-1">
+                  <h2 className="text-xl font-bold mb-2">Безкоштовна консультація</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Запишіться на безкоштовну консультацію та отримайте персональні рекомендації щодо вашого кейсу переїзду до Іспанії.
+                  </p>
+                  {/* Google Calendar Button Container */}
+                  <div 
+                    id="calendar-button-container"
+                    ref={calendarButtonRef}
+                    className="w-fit"
+                  />
+                  <style>{`
+                    /* Custom styles for Google Calendar button to match our design */
+                    #calendar-button-container .schedule-meeting,
+                    #calendar-button-container .schedule-meeting-button {
+                      background: linear-gradient(to right, var(--primary) 0%, var(--secondary) 100%) !important;
+                      color: white !important;
+                      border: none !important;
+                      border-radius: 0.5rem !important;
+                      padding: 0.75rem 1.5rem !important;
+                      font-weight: 500 !important;
+                      font-size: 0.875rem !important;
+                      transition: all 0.2s ease !important;
+                      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+                    }
+                    #calendar-button-container .schedule-meeting:hover,
+                    #calendar-button-container .schedule-meeting-button:hover {
+                      transform: translateY(-1px) !important;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+                      filter: brightness(1.1) !important;
+                    }
+                    #calendar-button-container .schedule-meeting:active,
+                    #calendar-button-container .schedule-meeting-button:active {
+                      transform: translateY(0) !important;
+                    }
+                  `}</style>
+                </div>
+              </div>
+
+              {/* Contact Form Card */}
               <div className="bg-card rounded-xl p-8 border border-border shadow-elegant">
-                <h2 className="text-2xl font-bold mb-6">Форма зворотного зв'язку</h2>
+                <h2 className="text-2xl font-bold mb-6">Форма зворотного зв\'язку</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Ім'я *</Label>
+                      <Label htmlFor="name">Ім\'я *</Label>
                       <Input
                         id="name"
                         name="name"
@@ -236,7 +315,7 @@ const Contact = () => {
                   <div className="flex items-start space-x-3">
                     <Send className="w-5 h-5 text-secondary mt-1" />
                     <div>
-                      <p className="font-medium">Телеграм (зворотний зв'язок)</p>
+                      <p className="font-medium">Телеграм (зворотний зв\'язок)</p>
                       <a
                         href="/"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
@@ -288,7 +367,7 @@ const Contact = () => {
                 <h3 className="text-xl font-bold mb-4">Графік роботи</h3>
                 <div className="space-y-2 text-primary-foreground/90">
                   <div className="flex justify-between">
-                    <span>Понеділок - П'ятниця</span>
+                    <span>Понеділок - П\'ятниця</span>
                     <span className="font-semibold">10:00 - 20:00</span>
                   </div>
                   <div className="flex justify-between">
@@ -300,14 +379,6 @@ const Contact = () => {
                     <span className="font-semibold">Вихідний</span>
                   </div>
                 </div>
-              </div>
-
-              {/* Quick Response */}
-              <div className="bg-card rounded-xl p-6 border border-border shadow-elegant">
-                <h3 className="text-lg font-bold mb-2">Швидка відповідь</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ми відповідаємо на всі запити протягом 24 годин в робочі дні.
-                </p>
               </div>
             </div>
           </div>
