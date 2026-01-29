@@ -38,13 +38,13 @@ const Testimonials = () => {
     return (
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center mb-16">
+          <div className="text-center mb-16">
             <h2 className="mb-6">Відгуки наших клієнтів</h2>
             <p className="text-xl text-muted-foreground">
               Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
             </p>
           </div>
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="text-center">
             <p className="text-muted-foreground">Завантаження відгуків...</p>
           </div>
         </div>
@@ -56,13 +56,13 @@ const Testimonials = () => {
     return (
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center mb-16">
+          <div className="text-center mb-16">
             <h2 className="mb-6">Відгуки наших клієнтів</h2>
             <p className="text-xl text-muted-foreground">
               Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
             </p>
           </div>
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="text-center">
             <p className="text-destructive">{error}</p>
           </div>
         </div>
@@ -74,13 +74,13 @@ const Testimonials = () => {
     return (
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center mb-16">
+          <div className="text-center mb-16">
             <h2 className="mb-6">Відгуки наших клієнтів</h2>
             <p className="text-xl text-muted-foreground">
               Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
             </p>
           </div>
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="text-center">
             <p className="text-muted-foreground">Поки що немає відгуків</p>
           </div>
         </div>
@@ -91,14 +91,14 @@ const Testimonials = () => {
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center mb-16">
+        <div className="text-center mb-16">
           <h2 className="mb-6">Відгуки наших клієнтів</h2>
           <p className="text-xl text-muted-foreground">
             Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div>
           <Carousel
             opts={{
               align: "start",
