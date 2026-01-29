@@ -1,30 +1,31 @@
-import { FileCheck, Clock, Users } from "lucide-react";
-
 const features = [
   {
     type: "image",
     imageSrc: "/icon_communication.svg",
     imageAlt: "Завжди на зв'язку",
     title: "Завжди на зв'язку",
-    description: "Оперативна та легка комунікація. Необмежена кількість консультацій протягом процесу підготовки кейсу.",
+    description: "Відповідаємо на всі запитання протягом 24 годин. Необмежена кількість консультацій протягом процесу підготовки кейсу.",
   },
   {
-    type: "icon",
-    icon: FileCheck,
+    type: "image",
+    imageSrc: "/icon_contract.svg",
+    imageAlt: "Офіційний договір",
+    title: "Гарантія та договір",
+    description: "Працюємо за офіційним договором. Гарантія повернення коштів у разі відмови у візі.",
+  },
+  {
+    type: "image",
+    imageSrc: "/icon_documents.svg",
+    imageAlt: "Повний пакет документів",
     title: "Повний пакет документів",
-    description: "Готуємо всі необхідні документи, переклади, нотаріальні завірення. Ви зосереджуєтесь на роботі.",
+    description: "Готуємо всі необхідні документи, переклади, нотаріальні завірення. Надійні і перевірені партнери.",
   },
   {
-    type: "icon",
-    icon: Clock,
+    type: "image",
+    imageSrc: "/icon_process.svg",
+    imageAlt: "Швидкий процес",
     title: "Швидкий процес",
     description: "Доступ до системи відстеження статусу підготовки документів. Чіткі терміни на кожному етапі.",
-  },
-  {
-    type: "icon",
-    icon: Users,
-    title: "Підтримка родини",
-    description: "Можливість легалізації членів сім\'ї. Комплексний супровід для всієї родини.",
   },
 ];
 
@@ -45,19 +46,13 @@ const Features = () => {
               key={index}
               className="bg-card rounded-xl p-8 shadow-elegant hover:shadow-strong transition-smooth border border-border hover:scale-105"
             >
-              {feature.type === "image" ? (
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-neutral-100 mb-6">
-                  <img
-                    src={feature.imageSrc}
-                    alt={feature.imageAlt}
-                    className="w-12 h-12"
-                  />
-                </div>
-              ) : (
-                <div className="w-14 h-14 rounded-lg gradient-accent flex items-center justify-center mb-6">
-                  <feature.icon className="w-7 h-7 text-accent-foreground" />
-                </div>
-              )}
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-neutral-100 mb-6">
+                <img
+                  src={feature.imageSrc}
+                  alt={feature.imageAlt}
+                  className="w-12 h-12"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
               <p className="text-muted-foreground leading-relaxed">
                 {feature.description}

@@ -73,7 +73,7 @@ const Testimonials = () => {
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="mb-6">Відгуки наших клієнтів</h2>
           <p className="text-xl text-muted-foreground">
-            Понад 200 успішних кейсів з оформлення Digital Nomad Visa
+            Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
           </p>
         </div>
 
