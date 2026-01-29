@@ -19,11 +19,11 @@ const Home = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="mb-6">Як це працює</h2>
             <p className="text-xl text-muted-foreground">
-              Простий процес у чотири кроки — від консультації до отримання візи
+              Простий процес у пʼять кроків — від консультації до отримання візи
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {[
               {
                 step: "01",
@@ -32,16 +32,21 @@ const Home = () => {
               },
               {
                 step: "02",
+                title: "Договір",
+                description: "Укладення договору надання послуг",
+              },
+              {
+                step: "03",
                 title: "Підготовка",
                 description: "Збираємо та готуємо всі необхідні документи",
               },
               {
-                step: "03",
+                step: "04",
                 title: "Подача",
                 description: "Подаємо документи до міграційної служби",
               },
               {
-                step: "04",
+                step: "05",
                 title: "Отримання",
                 description: "Супроводжуємо до отримання ТІЕ",
               },
@@ -52,7 +57,7 @@ const Home = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3">{item.title}</h3>
                 <p className="text-muted-foreground">{item.description}</p>
-                {index < 3 && (
+                {index < 4 && (
                   <div className="hidden lg:block absolute top-12 -right-4 w-8 h-0.5 bg-border" />
                 )}
               </div>
