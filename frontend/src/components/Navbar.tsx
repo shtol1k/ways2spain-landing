@@ -23,13 +23,8 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg gradient-accent flex items-center justify-center font-bold text-accent-foreground">
-              DN
-            </div>
-            <span className="text-xl font-bold text-foreground hidden sm:inline">
-              Ways 2 Spain
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="Ways 2 Spain Logo" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

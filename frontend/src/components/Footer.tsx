@@ -9,10 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-lg gradient-accent flex items-center justify-center font-bold text-accent-foreground">
-                DN
-              </div>
-              <span className="text-xl font-bold">Ways 2 Spain</span>
+              <img src="/logo.png" alt="Ways 2 Spain Logo" className="h-12 w-auto" />
             </div>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               Допомагаємо віддаленим спеціалістам з родинами жити і працювати в Іспанії з Digital Nomad Visa.
