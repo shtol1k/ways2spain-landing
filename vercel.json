@@ -36,31 +36,31 @@
     },
     {
       "source": "/assets/(.*)",
-      "destination": "/frontend/dist/assets/$1"
+      "destination": "/frontend/assets/$1"
     },
     {
       "source": "/logo.png",
-      "destination": "/frontend/dist/logo.png"
+      "destination": "/frontend/logo.png"
     },
     {
       "source": "/favicon.ico",
-      "destination": "/frontend/dist/favicon.ico"
+      "destination": "/frontend/favicon.ico"
     },
     {
       "source": "/robots.txt",
-      "destination": "/frontend/dist/robots.txt"
+      "destination": "/frontend/robots.txt"
     },
     {
       "source": "/opengraph.png",
-      "destination": "/frontend/dist/opengraph.png"
+      "destination": "/frontend/opengraph.png"
     },
     {
       "source": "/:path*.svg",
-      "destination": "/frontend/dist/:path*.svg"
+      "destination": "/frontend/:path*.svg"
     },
     {
       "source": "/((?!api|admin|assets|_next|.*\\.).*)",
-      "destination": "/frontend/dist/index.html"
+      "destination": "/frontend/index.html"
     }
   ],
   "headers": [
