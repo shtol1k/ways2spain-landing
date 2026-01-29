@@ -19,22 +19,9 @@ const Hero = () => {
       {/* Content */}
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="max-w-3xl">
-          <div className="inline-block mb-6">
-            <span className="px-4 py-2 rounded-full bg-secondary/20 backdrop-blur-sm border border-secondary/30 text-secondary text-sm font-semibold">
-              Digital Nomad Visa 2025
-            </span>
-          </div>
-
           <h1 className="text-white mb-6 animate-fade-in">
             Digital Nomad Visa в Іспанії під ключ
           </h1>
-
-          {/* Development Environment Indicator */}
-          <div className="mb-6 animate-fade-in">
-            <div className="inline-flex items-center px-4 py-2 rounded-lg bg-yellow-500/90 backdrop-blur-sm border-2 border-yellow-400 text-black font-bold text-sm shadow-lg">
-              🚀 DEVELOPMENT ENVIRONMENT - TEST MODE
-            </div>
-          </div>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed animate-fade-in">
             Від консультації до отримання ТІЕ — без плутанини. Легальне життя та робота в Іспанії для віддалених спеціалістів.
