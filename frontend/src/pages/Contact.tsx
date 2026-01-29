@@ -264,7 +264,9 @@ const Contact = () => {
                     <div>
                       <p className="font-medium">Instagram</p>
                       <a
-                        href="/"
+                        href="https://www.instagram.com/ways2spain"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
                         @ways2spain
