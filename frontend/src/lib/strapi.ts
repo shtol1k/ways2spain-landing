@@ -12,6 +12,20 @@ export interface Testimonial {
   Twitter?: string;
   LinkedIn?: string;
   Date: string;
+  Photo?: Array<{
+    id: number;
+    url: string;
+    name: string;
+    alternativeText?: string;
+    caption?: string;
+    width: number;
+    height: number;
+    formats?: {
+      thumbnail?: {
+        url: string;
+      };
+    };
+  }>;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -33,7 +47,7 @@ export interface StrapiResponse {
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
     const response = await fetch(
-      `${STRAPI_URL}/api/testimonials?sort=Date:desc&publicationState=live`,
+      `${STRAPI_URL}/api/testimonials?populate=Photo&sort=Date:desc&publicationState=live`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +70,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 export async function getTestimonial(id: string): Promise<Testimonial> {
   try {
     const response = await fetch(
-      `${STRAPI_URL}/api/testimonials/${id}?publicationState=live`,
+      `${STRAPI_URL}/api/testimonials/${id}?populate=Photo&publicationState=live`,
       {
         headers: {
           'Content-Type': 'application/json',
