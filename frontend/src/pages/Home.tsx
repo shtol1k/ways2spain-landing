@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import digitalNomadImage from "@/assets/digital-nomad.jpg";
 import Testimonials from "@/components/Testimonials";
 
@@ -81,7 +81,7 @@ const Home = () => {
               </p>
               <ul className="space-y-4 mb-8">
                 {[
-                  "Безкоштовна початкова консультація.",
+                  "Безкоштовна первинна консультація.",
                   "Прозора ціна без прихованих витрат.",
                   <>
                     Підтримка українською, російською та англійською мовами.
@@ -89,13 +89,11 @@ const Home = () => {
                     Ми не співпрацюємо з громадянами РФ.
                   </>,
                   <>
-                    Гарантія повернення коштів у разі відмови (крім витрат на сторонні послуги – переклади, засвідчення документів, тощо).
-                    <br />
-                    Повторна подача безкоштовно.
+                    Гарантія повернення коштів у разі відмови (крім витрат на сторонні послуги – переклади, засвідчення документів, тощо). Повторна подача безкоштовно.
                   </>,
                 ].map((item, index) => (
                   <li key={index} className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-6 h-6 text-secondary flex-shrink-0" />
                     <span className="text-foreground">{item}</span>
                   </li>
                 ))}
