@@ -24,7 +24,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed animate-fade-in">
-            Від консультації до отримання ТІЕ — без плутанини. Легальне життя та робота в Іспанії для віддалених спеціалістів.
+            Від консультації до отримання ТІЕ — без плутанини. Легальне життя та робота в Іспанії для віддалених спеціалістів
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in">
