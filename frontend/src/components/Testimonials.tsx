@@ -193,6 +193,18 @@ const Testimonials = () => {
                         <p className="text-muted-foreground leading-relaxed line-clamp-7">
                           "{testimonial.Testimonial}"
                         </p>
+
+                        {/* Date */}
+                        <time 
+                          className="text-sm text-muted-foreground mt-4 block" 
+                          dateTime={testimonial.Date}
+                        >
+                          {new Date(testimonial.Date).toLocaleDateString('uk-UA', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </time>
                       </CardContent>
                     </Card>
                   </div>
