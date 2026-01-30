@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import digitalNomadImage from "@/assets/digital-nomad.jpg";
 import Testimonials from "@/components/Testimonials";
+import { StrapiDebugPanel } from "@/components/StrapiDebugPanel";
 
 const Home = () => {
   return (
     <div className="min-h-screen">
+      <StrapiDebugPanel />
       <Hero />
       <Features />
       <Testimonials />
