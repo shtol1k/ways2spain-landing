@@ -45,12 +45,21 @@ export interface StrapiResponse {
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
     const baseUrl = import.meta.env.VITE_STRAPI_URL || '';
+    const apiToken = import.meta.env.VITE_STRAPI_API_TOKEN;
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Add Authorization header if token exists
+    if (apiToken) {
+      headers['Authorization'] = `Bearer ${apiToken}`;
+    }
+
     const response = await fetch(
-      `${baseUrl}/api/testimonials?populate=Photo&sort=Date:desc&publicationState=live`,
+      `${baseUrl}/api/testimonials?populate=Photo&sort=Date:desc&publicationState=live&locale=uk-UA`,
       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     );
 
@@ -69,12 +78,21 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 export async function getTestimonial(id: string): Promise<Testimonial> {
   try {
     const baseUrl = import.meta.env.VITE_STRAPI_URL || '';
+    const apiToken = import.meta.env.VITE_STRAPI_API_TOKEN;
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Add Authorization header if token exists
+    if (apiToken) {
+      headers['Authorization'] = `Bearer ${apiToken}`;
+    }
+
     const response = await fetch(
-      `${baseUrl}/api/testimonials/${id}?populate=Photo&publicationState=live`,
+      `${baseUrl}/api/testimonials/${id}?populate=Photo&publicationState=live&locale=uk-UA`,
       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     );
 
