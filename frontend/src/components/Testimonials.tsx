@@ -11,8 +11,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getTestimonials, type Testimonial } from "@/lib/strapi";
 import { TelegramIcon, FacebookIcon, InstagramIcon, XIcon, LinkedInIcon } from "@/components/ui/social-icons";
 
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
-
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,7 +114,7 @@ const Testimonials = () => {
                         <div className="flex items-start gap-4 mb-6">
                           <Avatar className="w-16 h-16">
                             <AvatarImage
-                              src={testimonial.Photo && testimonial.Photo.length > 0 ? `${STRAPI_URL}${testimonial.Photo[0].url}` : undefined}
+                              src={testimonial.Photo && testimonial.Photo.length > 0 ? `${import.meta.env.VITE_STRAPI_URL || ''}${testimonial.Photo[0].url}` : undefined}
                               alt={testimonial.Photo && testimonial.Photo.length > 0 ? testimonial.Photo[0].alternativeText || testimonial.Name : testimonial.Name}
                             />
                             <AvatarFallback>

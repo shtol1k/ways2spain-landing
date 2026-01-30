@@ -1,5 +1,3 @@
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
-
 export interface Testimonial {
   id: number;
   documentId: string;
@@ -46,8 +44,9 @@ export interface StrapiResponse {
 
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
+    const baseUrl = import.meta.env.VITE_STRAPI_URL || '';
     const response = await fetch(
-      `${STRAPI_URL}/api/testimonials?populate=Photo&sort=Date:desc&publicationState=live`,
+      `${baseUrl}/api/testimonials?populate=Photo&sort=Date:desc&publicationState=live`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -69,8 +68,9 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
 export async function getTestimonial(id: string): Promise<Testimonial> {
   try {
+    const baseUrl = import.meta.env.VITE_STRAPI_URL || '';
     const response = await fetch(
-      `${STRAPI_URL}/api/testimonials/${id}?populate=Photo&publicationState=live`,
+      `${baseUrl}/api/testimonials/${id}?populate=Photo&publicationState=live`,
       {
         headers: {
           'Content-Type': 'application/json',

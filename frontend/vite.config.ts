@@ -19,10 +19,31 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     proxy: {
-      '/api': {
+      // Proxy Strapi API requests (testimonials)
+      '/api/testimonials': {
+        target: 'http://localhost:1337',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+      '/api/upload': {
+        target: 'http://localhost:1337',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+      // Proxy Express backend requests (auth, contact)
+      '/api/auth': {
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path,
+      },
+      '/api/contact': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
       },
     },
   },
