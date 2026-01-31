@@ -2,6 +2,7 @@ import Hero from '@/components/Hero'
 import Features from '@/components/Features'
 import Testimonials from '@/components/Testimonials'
 import ProcessSection from '@/components/ProcessSection'
+import CTASection from '@/components/CTASection'
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
       <Features />
       <Testimonials />
       <ProcessSection />
+      <CTASection />
     </div>
   )
 }

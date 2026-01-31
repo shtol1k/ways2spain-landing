@@ -642,6 +642,14 @@ h3 {
   top: -1rem;
 }
 
+.-right-4 {
+  right: -1rem;
+}
+
+.top-12 {
+  top: 3rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -915,6 +923,10 @@ h3 {
 
 .h-20 {
   height: 5rem;
+}
+
+.h-0\.5 {
+  height: .125rem;
 }
 
 .max-h-96 {
@@ -1955,6 +1967,10 @@ h3 {
 
 .text-primary\/10 {
   color: hsl(var(--primary) / .1);
+}
+
+.text-secondary\/20 {
+  color: hsl(var(--secondary) / .2);
 }
 
 .underline-offset-4 {
@@ -3282,6 +3298,10 @@ h3 {
 }
 
 @media (min-width: 1024px) {
+  .lg\:block {
+    display: block;
+  }
+
   .lg\:flex {
     display: flex;
   }
@@ -3296,6 +3316,10 @@ h3 {
 
   .lg\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lg\:flex-nowrap {
