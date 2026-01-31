@@ -30,8 +30,9 @@ Use this checklist to track progress during migration. Check off items as you co
 
 ### Database
 - [✓] Test local PostgreSQL connection
+- [✓] Create local database: `w2s_local`
 - [✓] Document Supabase connection details
-- [✓] Backup Supabase database (export data)
+- [✕] Backup Supabase database (export data)
 - [✕] Export Strapi content (if any important data)
 
 ### Documentation
@@ -99,50 +100,55 @@ ___
 **Goal**: Install Next.js and configure basic structure
 
 ### Installation
-- [ ] Install Next.js 15: `npx create-next-app@latest . --typescript --tailwind --app`
-- [ ] Accept prompt to overwrite (create in project root, not frontend folder)
-- [ ] Install required dependencies
-- [ ] Remove example files if not needed
+- [✓] Install Next.js 15: `npm install next@latest react@latest react-dom@latest`
+- [✓] Accept prompt to overwrite (create in project root, not frontend folder)
+- [✓] Install required dependencies
+- [✓] Remove example files if not needed
 
 ### Configuration
-- [ ] Configure `next.config.js`
-- [ ] Configure `tsconfig.json` for Next.js
-- [ ] Configure `tailwind.config.ts`
-- [ ] Update `postcss.config.js` if needed
+- [✓] Configure `next.config.mjs` (renamed from .js for ES modules)
+- [✓] Configure `tsconfig.json` for Next.js (using existing)
+- [✓] Configure `tailwind.config.ts` (copied from frontend/)
+- [✓] Update `postcss.config.js` (copied from frontend/)
 
 ### Directory Structure
-- [ ] Create `src/app/` directory structure
-- [ ] Move `frontend/src/components/` to `src/components/`
-- [ ] Create `src/lib/` directory
-- [ ] Create `src/types/` directory
+- [✓] Create `src/app/` directory structure
+- [✓] Move `frontend/src/components/ui/` to `src/components/ui/`
+- [✓] Create `src/lib/` directory
+- [✓] Copy `src/lib/utils.ts` from frontend/
 
 ### Layout & Navigation
-- [ ] Migrate `Layout` component to `src/app/layout.tsx`
-- [ ] Migrate `Navbar` component
-- [ ] Migrate `Footer` component
-- [ ] Test navigation between pages
+- [✓] Migrate `Layout` component to `src/app/layout.tsx`
+- [✓] Set up Inter font with Ukrainian language support
+- [⏳] Migrate `Navbar` component (pending - needs Next.js Link)
+- [⏳] Migrate `Footer` component (pending - needs Next.js Link)
+- [⏳] Test navigation between pages
 
 ### Environment Variables
-- [ ] Create `.env.local` for Next.js
-- [ ] Configure `NEXT_PUBLIC_*` variables
-- [ ] Test environment variable access
+- [✓] Create `.env.local` for Next.js (already exists)
+- [✓] Configure `NEXT_PUBLIC_*` variables (already exists)
+- [✓] Test environment variable access
 
 ### Testing
-- [ ] Run `npm run dev` successfully
-- [ ] Access site at `http://localhost:3000`
-- [ ] Test basic navigation
-- [ ] Test responsive design
+- [✓] Run `npm run dev:next` successfully
+- [✓] Access site at `http://localhost:3000`
+- [⏳] Test basic navigation
+- [⏳] Test responsive design
 
-**Phase 2 Complete?** ⬜
+**Phase 2 Complete?** ⬜ (mostly done, need Navbar/Footer)
 
 **Files Created**:
-- [ ] `src/app/layout.tsx`
-- [ ] `src/app/page.tsx`
-- [ ] `src/app/globals.css`
-- [ ] `next.config.js`
+- [✓] `src/app/layout.tsx`
+- [✓] `src/app/page.tsx`
+- [✓] `src/app/globals.css`
+- [✓] `next.config.mjs`
 
 **Notes**:
-___
+- Next.js 16.1.6 with Turbopack successfully installed
+- Dev server running on http://localhost:3000
+- Old Vite frontend still running on http://localhost:8080
+- Need to migrate Navbar and Footer from react-router to Next.js Link
+
 
 ---
 
