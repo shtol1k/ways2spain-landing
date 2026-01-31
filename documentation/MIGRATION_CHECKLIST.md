@@ -17,29 +17,29 @@ Use this checklist to track progress during migration. Check off items as you co
 **Goal**: Setup environment and create migration branch
 
 ### Git & Backup
-- [ ] Create backup branch: `git checkout -b backup-before-migration`
-- [ ] Create migration branch: `git checkout -b migration/nextjs-payload`
-- [ ] Test current site functionality (all pages, forms)
-- [ ] Document current working state
+- [✓] Create backup branch: `git checkout -b backup-before-migration`
+- [✓] Create migration branch: `git checkout -b migration/nextjs-payload`
+- [✓] Test current site functionality (all pages, forms)
+- [✓] Document current working state
 
 ### Environment Variables
-- [ ] Document all `.env` variables
-- [ ] Document all `frontend/.env.local` variables
-- [ ] Document all `cms/.env` variables
-- [ ] Create template `.env.example` for new structure
+- [✓] Document all `.env` variables
+- [✓] Document all `frontend/.env.local` variables
+- [✓] Document all `cms/.env` variables
+- [✓] Create template `.env.example` for new structure
 
 ### Database
-- [ ] Test local PostgreSQL connection
-- [ ] Document Supabase connection details
-- [ ] Backup Supabase database (export data)
-- [ ] Export Strapi content (if any important data)
+- [✓] Test local PostgreSQL connection
+- [✓] Document Supabase connection details
+- [✓] Backup Supabase database (export data)
+- [✕] Export Strapi content (if any important data)
 
 ### Documentation
-- [ ] Review current API endpoints
-- [ ] List all pages and their routes
-- [ ] Document current features and functionality
-- [ ] Note any custom logic or edge cases
-- [ ] Document i18n requirements (uk, en support)
+- [✕] Review current API endpoints
+- [✕] List all pages and their routes
+- [✕] Document current features and functionality
+- [✕] Note any custom logic or edge cases
+- [✕] Document i18n requirements (uk, en support)
 
 **i18n Requirements**:
 - Primary language: Ukrainian (uk)
@@ -63,17 +63,17 @@ ___
 **Goal**: Finalize Payload Access Control implementation plan
 
 ### Planning
-- [ ] Review Payload Access Control documentation
-- [ ] Review Next.js Middleware documentation
-- [ ] Sketch SiteSettings collection structure
-- [ ] Plan middleware logic flow
-- [ ] Plan ComingSoon page design
+- [✕] Review Payload Access Control documentation
+- [✕] Review Next.js Middleware documentation
+- [✕] Sketch SiteSettings collection structure
+- [✕] Plan middleware logic flow
+- [✕] Plan ComingSoon page design
 
 ### Architecture Decisions
-- [ ] Confirm SiteSettings fields
-- [ ] Confirm auth approach (Payload built-in)
-- [ ] Confirm user roles (admin, manager)
-- [ ] Plan login page flow
+- [✓] Confirm SiteSettings fields
+- [✓] Confirm auth approach (Payload built-in)
+- [✓] Confirm user roles (admin, manager)
+- [✓] Plan login page flow
 
 ### User Roles Specification
 - **admin**: Full access
@@ -679,6 +679,59 @@ ___
 - [ ] Backup production database
 
 **Phase 17 Complete?** ⬜
+
+**Notes**:
+___
+
+---
+
+## Phase 18: TailwindCSS v4.1 Migration (Optional)
+
+**Goal**: Upgrade to TailwindCSS v4.1 for better performance and modern CSS features
+
+**When**: After successful production deployment (1 day)
+
+**Benefits**:
+- CSS-first configuration (no config files needed)
+- Better performance and smaller bundle size
+- New utilities: text-shadow, mask, colored drop-shadows
+- Improved browser compatibility
+- Modern CSS features
+
+### Installation
+- [ ] Install TailwindCSS v4.1: `npm install tailwindcss@latest @tailwindcss/postcss@latest`
+- [ ] Update postcss.config.js for v4 plugin
+
+### CSS Migration
+- [ ] Replace `@tailwind` directives with `@import "tailwindcss"`
+- [ ] Convert theme config to CSS `@theme` block
+- [ ] Update custom animations to CSS keyframes
+- [ ] Remove tailwind.config.ts file
+- [ ] Update @tailwindcss/typography if needed
+
+### Testing
+- [ ] Test all shadcn/ui components
+- [ ] Test custom utilities
+- [ ] Test responsive design
+- [ ] Test dark mode (if implemented)
+- [ ] Cross-browser testing
+- [ ] Performance testing
+- [ ] Production build test
+
+### New Features (Optional to Implement)
+- [ ] Text shadows: `text-shadow-md`, `text-shadow-lg`
+- [ ] Mask utilities: `mask-b-from-50%`
+- [ ] Overflow wrapping: `wrap-break-word`
+- [ ] Pointer variants: `pointer-fine:`, `pointer-coarse:`
+- [ ] Safe alignment: `justify-center-safe`
+- [ ] Form validation: `user-valid:border-green-500`
+
+### Documentation
+- [ ] Update README with TailwindCSS v4.1 info
+- [ ] Document any breaking changes
+- [ ] Update component examples if needed
+
+**Phase 18 Complete?** ⬜
 
 **Notes**:
 ___

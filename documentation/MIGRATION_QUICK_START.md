@@ -18,7 +18,7 @@ Before starting Phase 0:
 
 | Phase | Duration | Goal | Status |
 |-------|----------|------|--------|
-| 0. Preparation | 0.5 day | Setup environment | ⏳ |
+| 0. Preparation | 0.5 day | Setup environment | ✅ |
 | 1. Planning | 0.5 day | Access control plan | ⏳ |
 | 2. Next.js Setup | 1 day | Base Next.js app | ⏳ |
 | 3. Home Page | 1 day | Migrate Home page | ⏳ |
@@ -32,8 +32,10 @@ Before starting Phase 0:
 | 13. Testing | 1 day | QA & testing | ⏳ |
 | 14. Deployment | 1 day | Vercel deploy | ⏳ |
 | 15. Cleanup | 0.5 day | Remove old code | ⏳ |
+| 18. TailwindCSS v4.1 | 1 day (optional) | Upgrade to v4.1 | ⏳ |
 
-**Total**: 13-15 days (part-time) or 7-10 days (full-time)
+**Total (without v4.1)**: 13-15 days (part-time) or 7-10 days (full-time)
+**Total (with v4.1)**: 14-16 days (part-time) or 8-11 days (full-time)
 
 ## 🔑 Key Commands
 

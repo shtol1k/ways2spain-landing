@@ -913,8 +913,162 @@ src/types/payload.ts
 
 ---
 
+### Phase 18: TailwindCSS v4.1 Migration (Optional)
+**Time**: 1 day
+**Goal**: Upgrade to TailwindCSS v4.1 for better performance and modern CSS features
+
+**When to do this**: After successful production deployment and stabilization
+
+**Why upgrade to v4.1:**
+- CSS-first configuration (no `tailwind.config.ts` needed)
+- Better performance with native CSS features
+- New utilities: text-shadow, mask, colored drop-shadows
+- Improved browser compatibility
+- Modern `@import` syntax instead of PostCSS plugins
+- Better integration with modern build tools
+
+**Migration Steps:**
+
+1. **Install TailwindCSS v4.1**:
+```bash
+npm install tailwindcss@latest @tailwindcss/postcss@latest
+```
+
+2. **Update CSS imports**:
+```css
+/* src/app/globals.css - BEFORE (v3) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AFTER (v4.1) */
+@import "tailwindcss";
+```
+
+3. **Remove config files**:
+```bash
+# Remove old v3 config files
+rm tailwind.config.ts
+rm postcss.config.js
+```
+
+4. **Convert theme configuration** (if any custom values):
+```css
+/* src/app/globals.css - v4.1 CSS-first config */
+@import "tailwindcss";
+
+@theme {
+  /* Custom colors from shadcn/ui */
+  --color-border: oklab(0.5 0 0);
+  --color-input: oklab(0.5 0 0);
+  --color-ring: oklab(0.5 0 0);
+  
+  /* Custom radius */
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+  
+  /* Custom animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+```
+
+5. **Update postcss.config.js** (if keeping PostCSS):
+```javascript
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+};
+```
+
+6. **Test components thoroughly**:
+- Check all shadcn/ui components
+- Test custom utilities
+- Verify responsive design
+- Check dark mode (if implemented)
+- Test animations and transitions
+
+**New Features to Explore (Post-Migration)**:
+
+- **Text shadows**: `text-shadow-md`, `text-shadow-lg`, `text-shadow-blue-500/50`
+- **Mask utilities**: `mask-b-from-50%`, `mask-radial-from-80%`
+- **Overflow wrapping**: `wrap-break-word`, `wrap-anywhere`
+- **Pointer variants**: `pointer-fine:`, `pointer-coarse:`
+- **Safe alignment**: `justify-center-safe`, `items-center-safe`
+- **Details variant**: `details-content:mt-3`
+- **Form validation**: `user-valid:border-green-500`
+
+**Testing Checklist**:
+- [ ] All pages render correctly
+- [ ] All components display properly
+- [ ] No console errors
+- [ ] Responsive design works
+- [ ] Production build successful
+- [ ] Performance is better or equal
+- [ ] Cross-browser testing (Chrome, Firefox, Safari, Edge)
+
+**Rollback Plan** (if issues occur):
+```bash
+# Revert to v3.4.17
+npm install tailwindcss@3.4.17 @tailwindcss/typography@0.5.16 tailwindcss-animate@1.0.7
+
+# Restore old config files from git
+git checkout HEAD~ -- tailwind.config.ts postcss.config.js
+
+# Update CSS back to v3 syntax
+# Change @import "tailwindcss" back to @tailwind directives
+```
+
+**Benefits of v4.1**:
+- ✅ Faster build times
+- ✅ Smaller CSS bundle size
+- ✅ Better browser compatibility with fallbacks
+- ✅ Modern CSS features (CSS nesting, @property, oklab colors)
+- ✅ Easier configuration (CSS instead of JS)
+- ✅ Better TypeScript support
+- ✅ Active development and long-term support
+
+**Note**: This is an **optional** phase. Your site will work perfectly with TailwindCSS v3.4.17. Only migrate to v4.1 when:
+- Your site is stable in production
+- You have time to test thoroughly
+- You want to use new features
+- You're comfortable with potential minor adjustments
+
+**Resources**:
+- [TailwindCSS v4.1 Release Notes](https://tailwindcss.com/blog/tailwindcss-v4-1)
+- [v4 Upgrade Guide](https://tailwindcss.com/docs/upgrade-guide)
+- [v4 Documentation](https://tailwindcss.com/docs)
+
+**Deliverables**: 
+- ✅ Site upgraded to TailwindCSS v4.1
+- ✅ All components tested and working
+- ✅ Improved performance metrics
+- ✅ Documentation updated
+
+**Phase 18 Complete?** ⬜
+
+---
+
 ## ⏱ Total Time Estimate
 
+**With Phase 18 (TailwindCSS v4.1)**:
+- **Fast Track** (8 hours/day): 9-11 days
+- **Normal Pace** (4 hours/day): 15-19 days
+- **Part-time** (2 hours/day): 26-31 days
+
+**Without Phase 18** (stay on v3.4.17):
 - **Fast Track** (8 hours/day): 8-10 days
 - **Normal Pace** (4 hours/day): 14-18 days
 - **Part-time** (2 hours/day): 25-30 days
