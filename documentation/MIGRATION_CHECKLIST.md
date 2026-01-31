@@ -39,6 +39,17 @@ Use this checklist to track progress during migration. Check off items as you co
 - [ ] List all pages and their routes
 - [ ] Document current features and functionality
 - [ ] Note any custom logic or edge cases
+- [ ] Document i18n requirements (uk, en support)
+
+**i18n Requirements**:
+- Primary language: Ukrainian (uk)
+- Secondary language: English (en)
+- Payload collections: i18n enabled for content types
+- Frontend: Architecture should support both languages from day one
+- Language toggle UI: Will be added in future iterations
+- URL structure: 
+  - Ukrainian: `/` (default, no prefix)
+  - English: `/en/*` (future implementation)
 
 **Phase 0 Complete?** ⬜
 
@@ -63,6 +74,18 @@ ___
 - [ ] Confirm auth approach (Payload built-in)
 - [ ] Confirm user roles (admin, manager)
 - [ ] Plan login page flow
+
+### User Roles Specification
+- **admin**: Full access
+  - Manage site settings (maintenance mode, etc.)
+  - Create/edit/delete all content
+  - Manage users (create admin/manager accounts)
+  - Access site during maintenance mode
+- **manager**: Content management only
+  - Create/edit/delete content
+  - No access to site settings
+  - No access to user management
+  - Cannot access site during maintenance mode
 
 **Phase 1 Complete?** ⬜
 

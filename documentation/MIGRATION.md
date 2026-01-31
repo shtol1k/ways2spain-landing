@@ -53,6 +53,7 @@ This document outlines the complete migration strategy from the current Vite + R
 5. **Better Migrations**: Replace Strapi's problematic auto-sync with Payload's migration system
 6. **Cost Efficiency**: Keep everything on free tiers (Vercel, Supabase)
 7. **Local Development**: Use local PostgreSQL for development
+8. **Multilingual Support**: Architecture should support Ukrainian (primary) and English languages from day one. Frontend language toggle UI will be added in future iterations.
 
 ## 🛠 Technology Stack
 
@@ -62,10 +63,20 @@ This document outlines the complete migration strategy from the current Vite + R
 - **TypeScript**
 - **TailwindCSS** (existing configuration)
 - **shadcn/ui** components (existing)
+- **next-intl** or custom i18n solution for multilingual support (uk, en)
 
 ### Backend/CMS
 - **Payload CMS 3** (latest)
 - **Next.js Route Handlers** (replace Express)
+
+### i18n (Internationalization)
+- **Supported Languages**: Ukrainian (uk) - primary, English (en)
+- **Implementation**: Payload collections have i18n enabled for content
+- **Frontend**: Architecture will support both languages from day one
+- **Language Toggle**: UI component will be added in future iterations
+- **URL Structure**: 
+  - Ukrainian: `/` (default, no prefix)
+  - English: `/en/*` (future implementation)
 
 ### Database
 - **Local**: PostgreSQL for development
@@ -120,6 +131,18 @@ SiteSettings Collection (Payload)
 ├── maintenanceMessage: textarea
 └── Global settings
 
+User Roles:
+├── admin: Full access to all features and settings
+│   - Manage site settings (maintenance mode, etc.)
+│   - Create/edit/delete all content
+│   - Manage users (create admin/manager accounts)
+│   - Access admin panel during maintenance
+└── manager: Limited access to content management only
+    - Create/edit/delete content (Testimonials, Articles, etc.)
+    - No access to site settings
+    - No access to user management
+    - Cannot access site during maintenance mode
+
 Access Control Flow:
 ┌─────────────────┐
 │ User visits site│
@@ -131,18 +154,22 @@ Access Control Flow:
 │ Checks:                  │
 │ 1. Is maintenanceMode on?│
 │ 2. Is user authenticated?│
+│ 3. What is user role?    │
 └────────┬────────────────┘
          │
          ├─→ Maintenance ON + NOT Auth → ComingSoon Page
+         ├─→ Maintenance ON + Auth(admin) → Full Site
+         ├─→ Maintenance ON + Auth(manager) → ComingSoon Page (restricted)
          │
-         └─→ Maintenance OFF OR Auth → Full Site
+         └─→ Maintenance OFF → Full Site (public access)
 ```
 
 **Components to Create**:
 - SiteSettings collection (Payload)
+- Users collection with role-based access control
 - Next.js Middleware
 - ComingSoon Page
-- Login Page (for admin access)
+- Login Page (for admin and manager access)
 
 **Deliverables**: Detailed implementation plan for Phase 13
 
@@ -206,6 +233,7 @@ src/components/
 - [ ] Install Payload CMS
 - [ ] Create Payload config file
 - [ ] Configure database connection (local + Supabase)
+- [ ] Create Users collection with role-based access control
 - [ ] Create Testimonials collection
 - [ ] Configure i18n (uk, en locales)
 - [ ] Setup Cloudflare R2 for media storage
@@ -216,11 +244,56 @@ src/components/
 ```
 payload.config.ts
 src/collections/
+├── Users.ts                    # Custom Users collection with roles
 └── Testimonials.ts
 src/app/admin/[[...slug]]/route.ts  # Payload admin route
 ```
 
-**Deliverables**: Working Payload admin with Testimonials collection
+**Users Collection Structure**:
+```typescript
+// src/collections/Users.ts
+{
+  fields: [
+    // Built-in fields: email, password
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'role',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Admin', value: 'admin' },     // Full access
+        { label: 'Manager', value: 'manager' }, // Content management only
+      ],
+      defaultValue: 'manager',
+      admin: {
+        description: 'Admin: Full access including settings. Manager: Content management only.',
+      },
+    },
+  ],
+  access: {
+    read: () => true, // Public read (for authenticated context)
+    update: ({ req }) => {
+      const user = req.user;
+      if (!user) return false;
+      // Admins can update any user
+      // Managers can only update themselves
+      return user.role === 'admin' || user.id === req.user.id;
+    },
+    delete: ({ req }) => {
+      // Only admins can delete users
+      const user = req.user;
+      if (!user) return false;
+      return user.role === 'admin';
+    },
+  },
+}
+```
+
+**Deliverables**: Working Payload admin with Testimonials collection and role-based Users
 
 ---
 
@@ -408,10 +481,10 @@ export const SiteSettings: CollectionConfig = {
   access: {
     read: () => true,
     update: ({ req }) => {
-      // Only admins can update site settings
+      // Only admins can update site settings (not managers)
       const user = req.user;
       if (!user) return false;
-      return user.role === 'admin';
+      return user.role === 'admin'; // Only admin role, manager cannot update
     },
   },
   fields: [
