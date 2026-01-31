@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///turbopack:///[project]/src/app/(payload)/custom.scss"],"sourcesContent":["/* Custom Payload Admin Panel Styles */\n/* Add your custom styles here */\n\n// Example: Override primary color\n:root {\n  --payload-color-primary: #3b82f6;\n  --payload-color-primary-dark: #2563eb;\n}\n\n// Example: Custom font\n// .payload-app {\n//   font-family: 'Your Custom Font', sans-serif;\n// }\n"],"names":[],"mappings":"AAIA"}}]
+}

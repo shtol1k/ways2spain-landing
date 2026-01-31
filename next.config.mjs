@@ -1,3 +1,5 @@
+import { withPayload } from '@payloadcms/next/withPayload'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -17,4 +19,5 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+// Wrap with Payload plugin for Next.js compatibility
+export default withPayload(nextConfig)

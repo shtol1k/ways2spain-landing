@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/atamanov/Documents/Projects/ways2spain-landing/src/app/%28payload%29/layout.tsx"],"sourcesContent":["import { PayloadAdminLayout } from '@payloadcms/next/app/layout'\nimport './custom.scss'\n\nexport default PayloadAdminLayout\nexport const runtime = 'nodejs'\n"],"names":[],"mappings":";;;;;;;;;;;;;uCAGe;AACR,MAAM,UAAU"}}]
+}
