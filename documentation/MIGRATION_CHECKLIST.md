@@ -120,9 +120,9 @@ ___
 ### Layout & Navigation
 - [✓] Migrate `Layout` component to `src/app/layout.tsx`
 - [✓] Set up Inter font with Ukrainian language support
-- [⏳] Migrate `Navbar` component (pending - needs Next.js Link)
-- [⏳] Migrate `Footer` component (pending - needs Next.js Link)
-- [⏳] Test navigation between pages
+- [✓] Migrate `Navbar` component (adapted to Next.js Link)
+- [✓] Migrate `Footer` component (adapted to Next.js Link)
+- [✓] Test navigation between pages
 
 ### Environment Variables
 - [✓] Create `.env.local` for Next.js (already exists)
@@ -132,16 +132,18 @@ ___
 ### Testing
 - [✓] Run `npm run dev:next` successfully
 - [✓] Access site at `http://localhost:3000`
-- [⏳] Test basic navigation
-- [⏳] Test responsive design
+- [✓] Test basic navigation
+- [✓] Test responsive design
 
-**Phase 2 Complete?** ⬜ (mostly done, need Navbar/Footer)
+**Phase 2 Complete?** ✅
 
 **Files Created**:
 - [✓] `src/app/layout.tsx`
 - [✓] `src/app/page.tsx`
 - [✓] `src/app/globals.css`
 - [✓] `next.config.mjs`
+- [✓] `src/components/Navbar.tsx`
+- [✓] `src/components/Footer.tsx`
 
 **Notes**:
 - Next.js 16.1.6 with Turbopack successfully installed
