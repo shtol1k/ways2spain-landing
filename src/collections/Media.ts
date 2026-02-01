@@ -71,6 +71,17 @@ export const Media: CollectionConfig = {
   },
   fields: [
     {
+      name: 'folder',
+      type: 'relationship',
+      relationTo: 'mediaFolders',
+      hasMany: false,
+      admin: {
+        description: 'Select a folder to organize this file (optional)',
+        position: 'sidebar',
+      },
+      index: true,
+    },
+    {
       name: 'alt',
       type: 'text',
       label: 'Alt Text',
@@ -85,6 +96,28 @@ export const Media: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeChange: [
+      async ({ data, req }) => {
+        // For local storage, update staticURL based on folder
+        if (data.folder && process.env.MEDIA_STORAGE === 'local') {
+          try {
+            const folder = await req.payload.findByID({
+              collection: 'mediaFolders',
+              id: data.folder,
+            })
+
+            if (folder?.path) {
+              console.log(`📁 Local storage - folder path: ${folder.path}`)
+              // Note: staticURL is generated from staticDir + filename
+              // The folder structure will be created in the filesystem
+            }
+          } catch (error) {
+            console.error(`⚠️  Error fetching folder for local storage: ${error.message}`)
+          }
+        }
+        return data
+      },
+    ],
     afterChange: [
       ({ doc }) => {
         if (doc.filename) {

@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { Users } from './src/collections/Users'
 import { Testimonials } from './src/collections/Testimonials'
 import { Media } from './src/collections/Media'
+import { MediaFolders } from './src/collections/MediaFolders'
 
 export default buildConfig({
   // Rich text editor
@@ -42,6 +43,7 @@ export default buildConfig({
   // Collections
   collections: [
     Users,
+    MediaFolders,
     Testimonials,
     Media,
   ],
@@ -76,7 +78,33 @@ export default buildConfig({
     s3Storage({
       collections: {
         media: {
-          prefix: 'media', // Store media files in /media folder
+          // Dynamic prefix based on folder
+          prefix: async ({ filename, prefix, doc, req }) => {
+            // If no folder specified, use default 'media' prefix
+            if (!doc?.folder) {
+              console.log(`📁 No folder selected, using default prefix: media`)
+              return 'media'
+            }
+
+            // Get folder path from database
+            try {
+              const folder = await req.payload.findByID({
+                collection: 'mediaFolders',
+                id: doc.folder,
+              })
+
+              if (folder?.path) {
+                console.log(`📁 Using folder path: ${folder.path}`)
+                return folder.path
+              }
+            } catch (error) {
+              console.error(`⚠️  Error fetching folder: ${error.message}`)
+            }
+
+            // Fallback to default prefix
+            console.log(`📁 Fallback to default prefix: media`)
+            return 'media'
+          },
           generateFileURL: ({ filename, prefix }) => {
             // If filename is null/undefined (e.g., for image sizes that weren't generated),
             // return empty string as URL is not available
