@@ -55,7 +55,7 @@ const Page = ({ params, searchParams })=>(0, __TURBOPACK__imported__module__$5b$
     });
 const __TURBOPACK__default__export__ = Page;
 const runtime = 'nodejs';
-const dynamic = 'force-static';
+const dynamic = 'force-dynamic';
 __turbopack_async_result__();
 } catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/src/app/(payload)/admin/[[...segments]]/page.tsx [app-rsc] (ecmascript, Next.js Server Component)", ((__turbopack_context__) => {
