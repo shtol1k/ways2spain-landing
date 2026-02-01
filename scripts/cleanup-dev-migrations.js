@@ -5,6 +5,10 @@
  */
 
 import pg from 'pg';
+import dotenv from 'dotenv';
+
+// Load .env.local for local development
+dotenv.config({ path: '.env.local' });
 
 const { Client } = pg;
 
@@ -12,6 +16,7 @@ const dbUrl = process.env.DATABASE_URL;
 
 if (!dbUrl) {
   console.error('❌ DATABASE_URL environment variable is not set');
+  console.error('💡 Tip: Make sure .env.local file exists with DATABASE_URL');
   process.exit(1);
 }
 
@@ -32,6 +37,7 @@ try {
 
   if (!checkTable.rows[0].exists) {
     console.log('⚠️  payload_migrations table does not exist yet. No cleanup needed.');
+    console.log('💡 This is normal for first-time setup. Proceeding with migrations...');
     process.exit(0);
   }
 

@@ -17,6 +17,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || 'postgresql://atamanov@localhost:5432/w2s_local',
     },
+    // Disable push mode - we use migrations for all schema changes
+    // This ensures explicit, version-controlled database modifications
+    // See: documentation/MIGRATION_WORKFLOW.md
+    push: false,
     // Enable migrations in production (auto-run on server startup)
     // Note: For serverless (Vercel), it's better to run migrations in CI/build
     // This is disabled for Vercel to avoid cold start delays
