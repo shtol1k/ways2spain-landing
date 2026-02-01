@@ -19,7 +19,7 @@
     "lint:cms": "cd cms && npm run lint",
     "preview": "cd frontend && npm run preview",
     "dev:next": "next dev",
-    "build:next": "next build",
+    "build:next": "payload generate:importmap && next build",
     "migrate:generate": "payload generate:sql",
     "migrate:deploy": "payload migrate:deploy",
     "migrate:refresh": "payload migrate:refresh",
