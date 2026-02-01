@@ -19,7 +19,7 @@ Replace your local DATABASE_URL with Supabase connection:
 # DATABASE_URL=postgresql://atamanov@localhost:5432/w2s_local
 
 # Use Supabase instead
-DATABASE_URL=postgresql://postgres.cfoowsxseysrgemofzdf:Synjib-fipku1-bognys@aws-1-eu-west-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://postgres.YOUR_PROJECT_ID:YOUR_PASSWORD@aws-0-YOUR_REGION.pooler.supabase.com:6543/postgres
 ```
 
 ### Step 2: Run initialization script

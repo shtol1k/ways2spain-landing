@@ -47,12 +47,12 @@ email: your-email@example.com
 Check these environment variables in Vercel:
 
 ```bash
-R2_ACCOUNT_ID=d5e3ff38afecff98a76870ebead46b26
+R2_ACCOUNT_ID=your_account_id_here
 R2_REGION=eu
-R2_ACCESS_KEY_ID=bebc77b4ffd71c3f4b44e0701c83518b
-R2_SECRET_ACCESS_KEY=5e7a00d49a14216ded4905e930f98a505167a59fe9a4256cb898de305e690389
+R2_ACCESS_KEY_ID=your_access_key_id_here
+R2_SECRET_ACCESS_KEY=your_secret_access_key_here
 R2_BUCKET_NAME=w2s-media
-R2_PUBLIC_URL=https://pub-4a398d8b77104a9e883ddfbb3db801ea.r2.dev
+R2_PUBLIC_URL=https://your-bucket-url.r2.dev
 ```
 
 **All must be set!**
