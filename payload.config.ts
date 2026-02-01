@@ -105,16 +105,30 @@ export default buildConfig({
       // Check if MEDIA_STORAGE is explicitly set to 'r2'
       // Or if running in production with R2 credentials
       disableLocalStorage: (() => {
+        // Debug logging (check Vercel logs)
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('🔍 Storage Configuration Debug:')
+          console.log('  - MEDIA_STORAGE:', process.env.MEDIA_STORAGE)
+          console.log('  - R2_BUCKET_NAME:', process.env.R2_BUCKET_NAME)
+          console.log('  - R2_ACCESS_KEY_ID:', process.env.R2_ACCESS_KEY_ID ? 'set' : 'NOT SET')
+          console.log('  - R2_PUBLIC_URL:', process.env.R2_PUBLIC_URL || 'NOT SET')
+          console.log('  - NODE_ENV:', process.env.NODE_ENV)
+        }
+
         // Explicit local storage setting
         if (process.env.MEDIA_STORAGE === 'local') {
+          console.log('📁 Using LOCAL storage (explicit)')
           return false
         }
         // Explicit R2 storage setting
         if (process.env.MEDIA_STORAGE === 'r2') {
+          console.log('☁️  Using R2 storage (explicit)')
           return true
         }
         // Auto-detect: if R2_BUCKET_NAME is set, assume R2
-        return !!process.env.R2_BUCKET_NAME
+        const autoDetect = !!process.env.R2_BUCKET_NAME
+        console.log('🤖 Auto-detect:', autoDetect ? 'R2' : 'local')
+        return autoDetect
       })(),
     }),
   ],
