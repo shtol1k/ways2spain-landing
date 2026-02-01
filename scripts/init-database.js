@@ -7,7 +7,6 @@
  *   2. Run: node scripts/init-database.js
  */
 
-import payload from 'payload'
 import dotenv from 'dotenv'
 
 // Load environment variables
@@ -24,22 +23,29 @@ const initDatabase = async () => {
   }
 
   try {
-    // Import Payload config
-    const payloadConfig = (await import('../payload.config.ts')).default
+    // Import Payload (this will trigger initialization with config)
+    const payload = await import('payload')
     
-    // Initialize Payload
-    await payload.init(payloadConfig)
+    // Import Payload config
+    const config = await import('../payload.config.js')
+    
+    // Initialize Payload with config
+    await payload.default.init({
+      secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-this-in-production',
+      local: true,
+      ...config.default,
+    })
     
     console.log('✅ Payload initialized successfully!')
     console.log('📋 Database tables created/verified:')
-    console.log('   - users')
+    console.log('   - users (with authentication)')
     console.log('   - users_sessions')
     console.log('   - testimonials')
     console.log('   - media')
     console.log('   - media_sizes (thumbnail, medium, large)')
     
     // Close database connection
-    await payload.close()
+    await payload.default.close()
     
     console.log('')
     console.log('✨ Database initialization complete!')
@@ -47,13 +53,15 @@ const initDatabase = async () => {
     console.log('🎯 Next steps:')
     console.log('   1. Go to your Supabase Dashboard → Table Editor')
     console.log('   2. Verify tables were created')
-    console.log('   3. Create first admin user at /admin/create-first-user')
+    console.log('   3. Go to /admin on Vercel deployment')
+    console.log('   4. Create first admin user')
     
   } catch (error) {
     console.error('❌ Error initializing database:', error.message)
     if (error.code === 'ECONNREFUSED') {
       console.log('💡 Check your DATABASE_URL and network connection')
     }
+    console.error('Full error:', error)
     process.exit(1)
   }
 }

@@ -102,7 +102,20 @@ export default buildConfig({
         forcePathStyle: true, // Required for R2 compatibility
       },
       // Disable local storage when R2 is configured
-      disableLocalStorage: !!process.env.R2_BUCKET_NAME,
+      // Check if MEDIA_STORAGE is explicitly set to 'r2'
+      // Or if running in production with R2 credentials
+      disableLocalStorage: (() => {
+        // Explicit local storage setting
+        if (process.env.MEDIA_STORAGE === 'local') {
+          return false
+        }
+        // Explicit R2 storage setting
+        if (process.env.MEDIA_STORAGE === 'r2') {
+          return true
+        }
+        // Auto-detect: if R2_BUCKET_NAME is set, assume R2
+        return !!process.env.R2_BUCKET_NAME
+      })(),
     }),
   ],
 })
