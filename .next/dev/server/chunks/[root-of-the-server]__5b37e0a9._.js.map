@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 40, "column": 0}, "map": {"version":3,"sources":["file:///Users/atamanov/Documents/Projects/ways2spain-landing/src/app/admin/%5B%5B...slug%5D%5D/route.ts"],"sourcesContent":["// Note: Payload admin panel requires additional setup\n// Due to Turbopack incompatibility with @payloadcms/db-postgres adapter\n// Admin panel will be configured in a later phase\n// \n// For now, we can use Payload collections through API endpoints\n\nexport const runtime = 'nodejs'\n\nexport async function GET() {\n  return Response.json({\n    message: 'Payload admin panel coming soon',\n    status: 'Phase 4 in progress',\n  })\n}\n"],"names":[],"mappings":"AAAA,sDAAsD;AACtD,wEAAwE;AACxE,kDAAkD;AAClD,GAAG;AACH,gEAAgE;;;;;;;AAEzD,MAAM,UAAU;AAEhB,eAAe;IACpB,OAAO,SAAS,IAAI,CAAC;QACnB,SAAS;QACT,QAAQ;IACV;AACF"}}]
-}

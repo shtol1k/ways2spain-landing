@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["/**\n * Vercel Edge Middleware для перевірки авторизації\n * Працює тільки в preview та development енвайронментах\n *\n * ВАЖЛИВО: Middleware працює ДО Vercel rewrites.\n * Замість редіректу в middleware, ми дозволяємо завантажити index.html,\n * а перевірку авторизації та редірект робить React на клієнті.\n */\nexport { config, default } from './middleware/index.js';\n\n\n\n\n"],"names":[],"mappings":"AAAA;;;;;;;CAOC"}}]
-}
