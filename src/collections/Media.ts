@@ -25,25 +25,28 @@ export const Media: CollectionConfig = {
     },
   },
   upload: {
-    staticDir: 'public/media',
-    staticURL: '/media',
-    disableLocalStorage: true,
+    // Note: staticDir and staticURL are handled by s3Storage plugin
+    // when R2 is configured. For local development without R2, 
+    // files will still work via the plugin's fallback.
     adminThumbnail: 'thumbnail',
     imageSizes: [
       {
         name: 'thumbnail',
-        width: 300,
-        height: 300,
+        width: 150,
+        height: 150,
+        fit: 'cover', // Crop to exact size for consistent thumbnails
       },
       {
         name: 'medium',
-        width: 800,
-        height: 600,
+        width: 600,
+        height: 450,
+        fit: 'inside', // Fit within bounds, maintain aspect ratio
       },
       {
         name: 'large',
-        width: 1920,
-        height: 1080,
+        width: 1200,
+        height: 800,
+        fit: 'inside',
       },
     ],
   },
@@ -62,4 +65,15 @@ export const Media: CollectionConfig = {
       label: 'Caption',
     },
   ],
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        if (doc.filename) {
+          const isR2 = doc.url?.includes('r2.dev') || doc.url?.includes('cloudflarestorage')
+          console.log(`✅ Media uploaded${isR2 ? ' to R2' : ' locally'}: ${doc.filename}`)
+          console.log(`🔗 URL: ${doc.url}`)
+        }
+      },
+    ],
+  },
 }

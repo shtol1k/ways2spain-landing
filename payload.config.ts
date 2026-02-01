@@ -1,6 +1,7 @@
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { s3Storage } from '@payloadcms/storage-s3'
 import sharp from 'sharp'
 import { Users } from './src/collections/Users'
 import { Testimonials } from './src/collections/Testimonials'
@@ -64,7 +65,44 @@ export default buildConfig({
     outputFile: './src/types/payload.ts',
   },
 
-  // Media configuration (local storage for now)
-  // Cloudflare R2 will be configured later
-  plugins: [],
+  // Cloudflare R2 Storage Plugin (S3-compatible)
+  // In production, files are stored in Cloudflare R2
+  // In development, files are stored locally
+  plugins: [
+    s3Storage({
+      collections: {
+        media: {
+          prefix: 'media', // Store media files in /media folder
+          generateFileURL: ({ filename, prefix }) => {
+            // If filename is null/undefined (e.g., for image sizes that weren't generated),
+            // return empty string as URL is not available
+            if (!filename) {
+              return ''
+            }
+            // Use R2 public URL for production, local for development
+            if (process.env.R2_PUBLIC_URL) {
+              return `${process.env.R2_PUBLIC_URL}/${prefix}/${filename}`
+            }
+            // For local development without R2
+            return `/api/media/file/${filename}`
+          },
+        },
+      },
+      bucket: process.env.R2_BUCKET_NAME || 'w2s-media',
+      config: {
+        // Cloudflare R2 endpoint format with region support (e.g., 'eu' for EU region)
+        endpoint: process.env.R2_REGION
+          ? `https://${process.env.R2_ACCOUNT_ID}.${process.env.R2_REGION}.r2.cloudflarestorage.com`
+          : `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+        },
+        region: 'auto', // R2 uses 'auto' for region
+        forcePathStyle: true, // Required for R2 compatibility
+      },
+      // Disable local storage when R2 is configured
+      disableLocalStorage: !!process.env.R2_BUCKET_NAME,
+    }),
+  ],
 })
