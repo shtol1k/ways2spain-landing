@@ -116,5 +116,15 @@ export default buildConfig({
     console.log(`  - Plugins: ${storageMode === 'local' ? 'NONE (using local staticDir)' : 's3Storage (R2)'}`)
     console.log(`  - Local files will be saved to: public/media/`)
     console.log(`  - R2 files will be saved to: ${process.env.R2_PUBLIC_URL}`)
+    
+    // Auth configuration debug
+    console.log('🔐 Payload Auth Configuration:')
+    console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`)
+    console.log(`  - serverURL: ${process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')}`)
+    console.log(`  - secure cookie: ${process.env.NODE_ENV === 'production'}`)
+    console.log(`  - CORS origins: ${JSON.stringify([
+      process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+      'http://localhost:3000'
+    ])}`)
   },
 })
