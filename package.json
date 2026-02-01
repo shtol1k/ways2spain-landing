@@ -22,7 +22,7 @@
     "build:next": "payload generate:importmap && next build",
     "payload": "payload",
     "migrate:generate": "payload generate:sql",
-    "migrate": "payload migrate",
+    "migrate": "payload migrate --force-accept-warning",
     "migrate:refresh": "payload migrate:refresh",
     "migrate:supabase": "node scripts/migrate-supabase.js",
     "db:init": "tsx scripts/init-database.js",

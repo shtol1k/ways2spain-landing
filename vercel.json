@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run migrate && npm run build:next",
+  "buildCommand": "npx payload migrate --force-accept-warning && npm run build:next",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps"
