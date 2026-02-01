@@ -42,9 +42,11 @@ export const Media: CollectionConfig = {
     },
   },
   upload: {
-    // Note: staticDir and staticURL are handled by s3Storage plugin
-    // when R2 is configured. For local development without R2, 
-    // files will still work via the plugin's fallback.
+    // Local storage directory (for development)
+    staticDir: 'public/media',
+    staticURL: '/media',
+    // Note: staticDir and staticURL are used for local storage when disableLocalStorage is false
+    // When R2 is configured, s3Storage plugin handles uploads instead
     adminThumbnail: 'thumbnail',
     imageSizes: [
       {

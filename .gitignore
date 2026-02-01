@@ -30,8 +30,9 @@ dist-ssr
 .env.*
 .vercel
 
-# Local media storage (if using local storage temporarily)
-/public/media/
+# Local media storage (development only - ignore uploaded files)
+public/media/*
+!public/media/.gitkeep
 /media/
 
 # Next.js build output
