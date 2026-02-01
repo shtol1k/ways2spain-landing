@@ -82,6 +82,14 @@ export const Media: CollectionConfig = {
       index: true,
     },
     {
+      name: 'folderPath',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        hidden: true,
+      },
+    },
+    {
       name: 'alt',
       type: 'text',
       label: 'Alt Text',
@@ -98,8 +106,8 @@ export const Media: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, req }) => {
-        // For local storage, update staticURL based on folder
-        if (data.folder && process.env.MEDIA_STORAGE === 'local') {
+        // If folder is selected, fetch its path and store it
+        if (data.folder) {
           try {
             const folder = await req.payload.findByID({
               collection: 'mediaFolders',
@@ -107,14 +115,17 @@ export const Media: CollectionConfig = {
             })
 
             if (folder?.path) {
-              console.log(`📁 Local storage - folder path: ${folder.path}`)
-              // Note: staticURL is generated from staticDir + filename
-              // The folder structure will be created in the filesystem
+              console.log(`📁 Folder selected: ${folder.name} (path: ${folder.path})`)
+              data.folderPath = folder.path
             }
           } catch (error) {
-            console.error(`⚠️  Error fetching folder for local storage: ${error.message}`)
+            console.error(`⚠️  Error fetching folder: ${error.message}`)
+            data.folderPath = 'media' // fallback
           }
+        } else {
+          data.folderPath = 'media' // default folder
         }
+
         return data
       },
     ],
@@ -124,6 +135,7 @@ export const Media: CollectionConfig = {
           const isR2 = doc.url?.includes('r2.dev') || doc.url?.includes('cloudflarestorage')
           console.log(`✅ Media uploaded${isR2 ? ' to R2' : ' locally'}: ${doc.filename}`)
           console.log(`🔗 URL: ${doc.url}`)
+          console.log(`📁 Folder path: ${doc.folderPath || 'media'}`)
           
           // Log which sizes were created
           if (doc.sizes) {
