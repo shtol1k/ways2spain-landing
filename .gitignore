@@ -40,3 +40,6 @@ out/
 
 # Next.js cache
 .turbo/
+
+# Documentation (contains sensitive info and examples)
+documentation/
