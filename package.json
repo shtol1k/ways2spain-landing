@@ -19,7 +19,11 @@
     "lint:cms": "cd cms && npm run lint",
     "preview": "cd frontend && npm run preview",
     "dev:next": "next dev",
-    "build:next": "next build"
+    "build:next": "next build",
+    "migrate:generate": "payload generate:sql",
+    "migrate:deploy": "payload migrate:deploy",
+    "migrate:refresh": "payload migrate:refresh",
+    "db:init": "tsx scripts/init-database.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.980.0",
