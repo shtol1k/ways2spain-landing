@@ -47,13 +47,17 @@ export default buildConfig({
   ],
 
   // Server configuration
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  // Auto-detect server URL from Vercel or use explicit env var
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL 
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   cors: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    process.env.PAYLOAD_PUBLIC_SERVER_URL 
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
     'http://localhost:3000',
   ],
   csrf: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+    process.env.PAYLOAD_PUBLIC_SERVER_URL 
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
     'http://localhost:3000',
   ],
 
