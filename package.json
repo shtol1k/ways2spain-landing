@@ -23,6 +23,7 @@
     "migrate:generate": "payload generate:sql",
     "migrate:deploy": "payload migrate:deploy",
     "migrate:refresh": "payload migrate:refresh",
+    "migrate:supabase": "node scripts/migrate-supabase.js",
     "db:init": "tsx scripts/init-database.js",
     "db:test": "node scripts/test-db-connection.js",
     "db:debug-user": "node scripts/debug-user-role.js",
