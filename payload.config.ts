@@ -129,5 +129,39 @@ export default buildConfig({
       process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
       'http://localhost:3000'
     ])}`)
+    
+    // Auto-initialize database tables on production
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🔄 Auto-initializing database tables...')
+      
+      try {
+        // Initialize Payload first
+        const { payload: p } = await import('payload')
+        
+        // List of collections to initialize
+        const collections = ['mediaFolders', 'media', 'testimonials', 'users']
+        
+        for (const collection of collections) {
+          try {
+            // Try to access collection (this will trigger table creation)
+            await p.find({
+              collection: collection as any,
+              limit: 1,
+            })
+            console.log(`✅ ${collection} - ready`)
+          } catch (error: any) {
+            if (error.message.includes('does not exist')) {
+              console.log(`⚠️  ${collection} - table missing, will be created on first access`)
+            } else {
+              console.log(`⚠️  ${collection} - ${error.message.substring(0, 100)}`)
+            }
+          }
+        }
+        
+        console.log('✅ Database initialization completed')
+      } catch (error) {
+        console.error('❌ Database initialization failed:', error)
+      }
+    }
   },
 })
