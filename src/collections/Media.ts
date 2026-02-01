@@ -72,6 +72,21 @@ export const Media: CollectionConfig = {
           const isR2 = doc.url?.includes('r2.dev') || doc.url?.includes('cloudflarestorage')
           console.log(`✅ Media uploaded${isR2 ? ' to R2' : ' locally'}: ${doc.filename}`)
           console.log(`🔗 URL: ${doc.url}`)
+          
+          // Log which sizes were created
+          if (doc.sizes) {
+            const sizeNames = Object.keys(doc.sizes)
+            console.log(`📐 Created sizes (${sizeNames.length}): ${sizeNames.join(', ')}`)
+            
+            // Check if thumbnail was created
+            if (sizeNames.includes('thumbnail')) {
+              console.log(`✅ Thumbnail created: ${doc.sizes.thumbnail.url}`)
+            } else {
+              console.log(`⚠️  WARNING: Thumbnail was NOT created! Original size might be too small.`)
+            }
+          } else {
+            console.log(`⚠️  WARNING: No sizes created at all!`)
+          }
         }
       },
     ],
