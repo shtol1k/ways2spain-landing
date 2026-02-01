@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build:next",
+  "buildCommand": "npm run build:next && npx payload migrate:deploy",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps"
