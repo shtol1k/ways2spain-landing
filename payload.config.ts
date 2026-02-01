@@ -72,7 +72,7 @@ export default buildConfig({
   // Cloudflare R2 Storage Plugin (S3-compatible)
   // In production, files are stored in Cloudflare R2
   // In development, files are stored locally
-  plugins: [
+  plugins: process.env.MEDIA_STORAGE === 'local' ? [] : [
     s3Storage({
       collections: {
         media: {
@@ -105,35 +105,16 @@ export default buildConfig({
         region: 'auto', // R2 uses 'auto' for region
         forcePathStyle: true, // Required for R2 compatibility
       },
-      // Disable local storage when R2 is configured
-      // Check if MEDIA_STORAGE is explicitly set to 'r2'
-      // Or if running in production with R2 credentials
-      disableLocalStorage: (() => {
-        // Debug logging (check Vercel logs)
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('🔍 Storage Configuration Debug:')
-          console.log('  - MEDIA_STORAGE:', process.env.MEDIA_STORAGE)
-          console.log('  - R2_BUCKET_NAME:', process.env.R2_BUCKET_NAME)
-          console.log('  - R2_ACCESS_KEY_ID:', process.env.R2_ACCESS_KEY_ID ? 'set' : 'NOT SET')
-          console.log('  - R2_PUBLIC_URL:', process.env.R2_PUBLIC_URL || 'NOT SET')
-          console.log('  - NODE_ENV:', process.env.NODE_ENV)
-        }
-
-        // Explicit local storage setting
-        if (process.env.MEDIA_STORAGE === 'local') {
-          console.log('📁 Using LOCAL storage (explicit)')
-          return false
-        }
-        // Explicit R2 storage setting
-        if (process.env.MEDIA_STORAGE === 'r2') {
-          console.log('☁️  Using R2 storage (explicit)')
-          return true
-        }
-        // Auto-detect: if R2_BUCKET_NAME is set, assume R2
-        const autoDetect = !!process.env.R2_BUCKET_NAME
-        console.log('🤖 Auto-detect:', autoDetect ? 'R2' : 'local')
-        return autoDetect
-      })(),
     }),
   ],
+  
+  // Debug logging
+  onInit: async () => {
+    const storageMode = process.env.MEDIA_STORAGE
+    console.log('🔍 Payload Storage Configuration:')
+    console.log(`  - MEDIA_STORAGE: ${storageMode}`)
+    console.log(`  - Plugins: ${storageMode === 'local' ? 'NONE (using local staticDir)' : 's3Storage (R2)'}`)
+    console.log(`  - Local files will be saved to: public/media/`)
+    console.log(`  - R2 files will be saved to: ${process.env.R2_PUBLIC_URL}`)
+  },
 })
