@@ -35,7 +35,7 @@ export default buildConfig({
   cookies: {
     suffix: 'w2s-payload', // Unique suffix to avoid cookie conflicts
     sameSite: 'lax',
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // true for production (HTTPS)
     domain: undefined, // Let browser handle domain automatically
   },
 
