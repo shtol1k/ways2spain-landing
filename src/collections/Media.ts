@@ -8,9 +8,26 @@ export const Media: CollectionConfig = {
   access: {
     read: () => true, // Public read for displaying on website
     create: ({ req }) => {
+      // Debug logging (check Vercel logs)
+      console.log('🔍 Media create attempt:')
+      console.log('  - Has user:', !!req.user)
+      console.log('  - User:', req.user ? {
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        role: req.user.role,
+      } : 'NO USER')
+      
       const user = req.user
-      if (!user) return false
-      return user.role === 'admin' || user.role === 'manager'
+      if (!user) {
+        console.log('  ❌ No user found - not authenticated')
+        return false
+      }
+      
+      const hasAccess = user.role === 'admin' || user.role === 'manager'
+      console.log('  - Role check:', user.role, '→', hasAccess ? '✅ ALLOWED' : '❌ DENIED')
+      
+      return hasAccess
     },
     update: ({ req }) => {
       const user = req.user
