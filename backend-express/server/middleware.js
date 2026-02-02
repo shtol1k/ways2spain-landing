@@ -16,6 +16,16 @@ function generateAuthToken(username, password, secret) {
  * Middleware для перевірки чи потрібна авторизація для поточного середовища
  */
 export function checkAuthRequired(req, res, next) {
+  // 🔒 TEMPORARILY DISABLED FOR LOCAL DEVELOPMENT
+  // Авторизацію вимкнено для розробки Next.js версії
+  // Якщо потрібно увімкнути - зміни false на true нижче
+  const AUTH_DISABLED = true;
+
+  if (AUTH_DISABLED) {
+    console.log(`[Auth] ⚠️ Authorization DISABLED for local development`);
+    return next();
+  }
+
   // В production не потрібна авторизація
   if (process.env.NODE_ENV === 'production') {
     return next();

@@ -61,6 +61,21 @@ export function useAuth() {
  * бо import.meta.env.PROD може бути true на Vercel навіть для preview
  */
 export function isAuthRequired(): boolean {
+  // 🔒 TEMPORARILY DISABLED FOR LOCAL DEVELOPMENT
+  // Авторизацію вимкнено для розробки Next.js версії
+  // Якщо потрібно увімкнути - зміни false на true нижче
+  const AUTH_DISABLED = true;
+
+  if (AUTH_DISABLED && typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+    
+    if (isLocalhost) {
+      console.log('[Auth] ⚠️ Authorization DISABLED for localhost development');
+      return false;
+    }
+  }
+
   // Перевіряємо через hostname (для Vercel preview deployments)
   // Це має бути ПЕРШОЮ перевіркою, бо import.meta.env може бути некоректним
   if (typeof window !== 'undefined') {
