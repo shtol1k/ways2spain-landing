@@ -17,16 +17,16 @@ export const Media: CollectionConfig = {
         name: req.user.name,
         role: req.user.role,
       } : 'NO USER')
-      
+
       const user = req.user
       if (!user) {
         console.log('  ❌ No user found - not authenticated')
         return false
       }
-      
+
       const hasAccess = user.role === 'admin' || user.role === 'manager'
       console.log('  - Role check:', user.role, '→', hasAccess ? '✅ ALLOWED' : '❌ DENIED')
-      
+
       return hasAccess
     },
     update: ({ req }) => {
@@ -42,11 +42,9 @@ export const Media: CollectionConfig = {
     },
   },
   upload: {
-    // Local storage directory (for development)
+    // Local storage directory (for development when not using R2)
     staticDir: 'public/media',
-    staticURL: '/media',
-    // Note: staticDir and staticURL are used for local storage when disableLocalStorage is false
-    // When R2 is configured, s3Storage plugin handles uploads instead
+    // Note: staticURL was removed in Payload 3.x, use generateFileURL in s3Storage plugin instead
     adminThumbnail: 'thumbnail',
     imageSizes: [
       {
@@ -105,40 +103,12 @@ export const Media: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
-        // If folder is selected, fetch its path and store it
-        if (data.folder) {
-          try {
-            // Check if req and req.payload exist
-            if (!req?.payload) {
-              console.warn('⚠️  req.payload not available in beforeChange hook')
-              data.folderPath = 'media' // fallback
-              return data
-            }
-
-            const folder = await req.payload.findByID({
-              collection: 'mediaFolders',
-              id: data.folder,
-            })
-
-            if (folder?.path) {
-              console.log(`📁 Folder selected: ${folder.name} (path: ${folder.path})`)
-              data.folderPath = folder.path
-            } else {
-              console.warn(`⚠️  Folder not found: ${data.folder}, using default path`)
-              data.folderPath = 'media' // fallback
-            }
-          } catch (error) {
-            console.error(`⚠️  Error fetching folder: ${error.message}`)
-            console.error(`⚠️  Stack: ${error.stack}`)
-            data.folderPath = 'media' // fallback
-          }
-        } else {
-          // No folder selected, use default
-          data.folderPath = 'media'
-          console.log(`📁 No folder selected, using default path: media`)
-        }
-
+      async ({ data }) => {
+        // SIMPLIFIED: Always set folderPath to 'media' to diagnose the issue
+        // The folder relationship lookup was potentially causing failures
+        // TODO: Re-enable folder lookup after confirming basic upload works
+        data.folderPath = 'media'
+        console.log(`📁 Setting folderPath: media (simplified hook)`)
         return data
       },
     ],
@@ -149,12 +119,12 @@ export const Media: CollectionConfig = {
           console.log(`✅ Media uploaded${isR2 ? ' to R2' : ' locally'}: ${doc.filename}`)
           console.log(`🔗 URL: ${doc.url}`)
           console.log(`📁 Folder path: ${doc.folderPath || 'media'}`)
-          
+
           // Log which sizes were created
           if (doc.sizes) {
             const sizeNames = Object.keys(doc.sizes)
             console.log(`📐 Created sizes (${sizeNames.length}): ${sizeNames.join(', ')}`)
-            
+
             // Check if thumbnail was created
             if (sizeNames.includes('thumbnail')) {
               console.log(`✅ Thumbnail created: ${doc.sizes.thumbnail.url}`)
