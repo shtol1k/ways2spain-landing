@@ -81,7 +81,7 @@ export default function ConsultationPage() {
           </p>
         </div>
 
-        {/* Google Calendar iframe - responsive */}
+        {/* Google Calendar iframe - responsive with loading optimization */}
         <div className="rounded-xl overflow-hidden border border-border shadow-elegant mb-12">
           <iframe
             src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3jTGctAysecOcYEy5V3MKyBfqGNW1UlWUBxuNtv5XJrgNBSre5zhTu18d5jw8-TMYeB6BCl9uz?gv=true"
@@ -89,6 +89,8 @@ export default function ConsultationPage() {
             className="w-full h-[500px] md:h-[600px] lg:h-[800px]"
             frameBorder="0"
             title="Google Calendar Appointment Scheduling"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Mail, Phone, Send, Instagram } from "lucide-react";
 
+const CURRENT_YEAR = 2026;
+
 const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground py-16">
@@ -62,10 +64,10 @@ const Footer = () => {
             <h4 className="font-bold mb-4 text-lg">Навігація</h4>
             <ul className="space-y-2">
               {[
-                { path: "/", label: "Головна" },
-                { path: "/visa", label: "Про візу" },
-                { path: "/services", label: "Послуги" },
-                { path: "/about", label: "Про нас" },
+                {path: "/", label: "Головна"},
+                {path: "/visa", label: "Про візу"},
+                {path: "/services", label: "Послуги"},
+                {path: "/about", label: "Про нас"},
               ].map((link) => (
                 <li key={link.path}>
                   <Link
@@ -84,9 +86,9 @@ const Footer = () => {
             <h4 className="font-bold mb-4 text-lg">Ресурси</h4>
             <ul className="space-y-2">
               {[
-                { path: "/calculator", label: "Калькулятор" },
-                { path: "/blog", label: "Блог" },
-                { path: "/contact", label: "Контакти" },
+                {path: "/calculator", label: "Калькулятор"},
+                {path: "/blog", label: "Блог"},
+                {path: "/contact", label: "Контакти"},
               ].map((link) => (
                 <li key={link.path}>
                   <Link
@@ -102,7 +104,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-primary-foreground/10 text-center text-primary-foreground/60 text-sm">
-          <p>&copy; {new Date().getFullYear()} Ways 2 Spain. Всі права захищені.</p>
+          <p>&copy; {CURRENT_YEAR} Ways 2 Spain. Всі права захищені.</p>
         </div>
       </div>
     </footer>
