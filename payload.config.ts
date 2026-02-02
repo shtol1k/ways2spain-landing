@@ -16,10 +16,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || 'postgresql://atamanov@localhost:5432/w2s_local',
     },
-    // TEMPORARILY enabled push mode to create Folders feature schema
-    // Payload Folders requires additional columns in system tables (payload_locked_documents_rels, etc.)
-    // TODO: Set back to false after folders schema is created, then use migrations only
-    push: true,
+    // Disable push mode - use migrations only for schema changes
+    // To add new fields: npx payload migrate:create --name your-migration-name
+    // Migrations run automatically on Vercel deploy (see vercel.json buildCommand)
+    push: false,
   }),
 
   // Sharp for image processing
