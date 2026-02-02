@@ -16,8 +16,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || 'postgresql://atamanov@localhost:5432/w2s_local',
     },
-    // Disable push mode - we use migrations for all schema changes
-    push: false,
+    // TEMPORARILY enabled push mode to create Folders feature schema
+    // Payload Folders requires additional columns in system tables (payload_locked_documents_rels, etc.)
+    // TODO: Set back to false after folders schema is created, then use migrations only
+    push: true,
   }),
 
   // Sharp for image processing
