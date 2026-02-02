@@ -51,12 +51,18 @@ export default buildConfig({
 
   // Server configuration
   // Uses VERCEL_URL automatically on Vercel deployments, localhost for local dev
-  serverURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+  // Note: On Vercel preview deployments, VERCEL_BRANCH_URL contains the actual URL being used
+  serverURL: process.env.VERCEL_BRANCH_URL
+    ? `https://${process.env.VERCEL_BRANCH_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000',
   cors: [
     // Production & Dev domains
     'https://ways2spain.com',
     'https://dev.ways2spain.com',
-    // Auto-generated Vercel preview URLs
+    // Auto-generated Vercel URLs (both canonical and branch-specific)
+    ...(process.env.VERCEL_BRANCH_URL ? [`https://${process.env.VERCEL_BRANCH_URL}`] : []),
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     // Local development
     'http://localhost:3000',
@@ -65,7 +71,8 @@ export default buildConfig({
     // Production & Dev domains
     'https://ways2spain.com',
     'https://dev.ways2spain.com',
-    // Auto-generated Vercel preview URLs
+    // Auto-generated Vercel URLs (both canonical and branch-specific)
+    ...(process.env.VERCEL_BRANCH_URL ? [`https://${process.env.VERCEL_BRANCH_URL}`] : []),
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     // Local development
     'http://localhost:3000',
@@ -130,7 +137,14 @@ export default buildConfig({
 
     console.log('🔐 Payload Auth Configuration:')
     console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`)
-    console.log(`  - serverURL: ${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}`)
+    console.log(`  - VERCEL_URL: ${process.env.VERCEL_URL || 'not set'}`)
+    console.log(`  - VERCEL_BRANCH_URL: ${process.env.VERCEL_BRANCH_URL || 'not set'}`)
+    const serverURL = process.env.VERCEL_BRANCH_URL
+      ? `https://${process.env.VERCEL_BRANCH_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
+    console.log(`  - serverURL: ${serverURL}`)
     console.log(`  - secure cookie: ${process.env.NODE_ENV === 'production'}`)
   },
 })
