@@ -50,16 +50,24 @@ export default buildConfig({
   ],
 
   // Server configuration
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+  // Uses VERCEL_URL automatically on Vercel deployments, localhost for local dev
+  serverURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
   cors: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+    // Production & Dev domains
+    'https://ways2spain.com',
+    'https://dev.ways2spain.com',
+    // Auto-generated Vercel preview URLs
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    // Local development
     'http://localhost:3000',
   ],
   csrf: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+    // Production & Dev domains
+    'https://ways2spain.com',
+    'https://dev.ways2spain.com',
+    // Auto-generated Vercel preview URLs
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    // Local development
     'http://localhost:3000',
   ],
 
@@ -122,7 +130,7 @@ export default buildConfig({
 
     console.log('🔐 Payload Auth Configuration:')
     console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`)
-    console.log(`  - serverURL: ${process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')}`)
+    console.log(`  - serverURL: ${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}`)
     console.log(`  - secure cookie: ${process.env.NODE_ENV === 'production'}`)
   },
 })
