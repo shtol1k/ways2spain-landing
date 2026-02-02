@@ -2,11 +2,11 @@ import { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  // Enable built-in Payload Folders feature (beta)
+  // Provides: nested folders, drag-and-drop, browse-by-folder view
+  folders: true,
   admin: {
     useAsTitle: 'filename',
-    // Enable built-in Payload Folders feature (beta)
-    // Provides: nested folders, drag-and-drop, browse-by-folder view
-    folders: true,
   },
   access: {
     read: () => true, // Public read for displaying on website

@@ -69,6 +69,11 @@ export default buildConfig({
     outputFile: './src/types/payload.ts',
   },
 
+  // Folders feature (beta) - enables folder organization for collections
+  folders: {
+    browseByFolder: true, // Enable "browse by folder" view in Admin UI
+  },
+
   // Cloudflare R2 Storage Plugin (S3-compatible)
   plugins: process.env.MEDIA_STORAGE === 'local' ? [] : [
     s3Storage({
