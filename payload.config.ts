@@ -6,7 +6,6 @@ import sharp from 'sharp'
 import { Users } from './src/collections/Users'
 import { Testimonials } from './src/collections/Testimonials'
 import { Media } from './src/collections/Media'
-import { MediaFolders } from './src/collections/MediaFolders'
 
 export default buildConfig({
   // Rich text editor
@@ -18,13 +17,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || 'postgresql://atamanov@localhost:5432/w2s_local',
     },
     // Disable push mode - we use migrations for all schema changes
-    // This ensures explicit, version-controlled database modifications
-    // See: documentation/MIGRATION_WORKFLOW.md
     push: false,
-    // Enable migrations in production (auto-run on server startup)
-    // Note: For serverless (Vercel), it's better to run migrations in CI/build
-    // This is disabled for Vercel to avoid cold start delays
-    // prodMigrations: false,
   }),
 
   // Sharp for image processing
@@ -37,27 +30,24 @@ export default buildConfig({
       title: 'Ways2Spain Admin',
       description: 'Content Management System',
     },
-    // Custom branding will be added later
   },
 
   // Cookies and sessions configuration
   cookies: {
-    suffix: 'w2s-payload', // Unique suffix to avoid cookie conflicts
+    suffix: 'w2s-payload',
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production', // true for production (HTTPS)
-    domain: undefined, // Let browser handle domain automatically
+    secure: process.env.NODE_ENV === 'production',
+    domain: undefined,
   },
 
   // Collections
   collections: [
     Users,
-    MediaFolders,
     Testimonials,
     Media,
   ],
 
   // Server configuration
-  // Auto-detect server URL from Vercel or use explicit env var
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   cors: [
@@ -80,24 +70,18 @@ export default buildConfig({
   },
 
   // Cloudflare R2 Storage Plugin (S3-compatible)
-  // In production, files are stored in Cloudflare R2
-  // In development, files are stored locally
   plugins: process.env.MEDIA_STORAGE === 'local' ? [] : [
     s3Storage({
       collections: {
         media: {
-          // Use default prefix - folder structure will be handled via hooks
           prefix: 'media',
           generateFileURL: ({ filename, prefix }) => {
-            // If filename is null/undefined (e.g., for image sizes that weren't generated),
-            // return undefined to let Payload handle it with its default behavior
-            // IMPORTANT: Empty string '' causes React rendering crash in Media detail view!
+            // IMPORTANT: Return undefined (not empty string!) when filename is missing
+            // Empty string causes React rendering crash in Payload Admin UI
             if (!filename) {
-              // TypeScript workaround: return undefined as unknown as string
-              // This won't actually be used - Payload will skip sizes with no filename
               return undefined as unknown as string
             }
-            // Use R2 public URL for production, local for development
+            // Use R2 public URL for production
             if (process.env.R2_PUBLIC_URL) {
               return `${process.env.R2_PUBLIC_URL}/${prefix}/${filename}`
             }
@@ -108,7 +92,6 @@ export default buildConfig({
       },
       bucket: process.env.R2_BUCKET_NAME || 'w2s-media',
       config: {
-        // Cloudflare R2 endpoint format with region support (e.g., 'eu' for EU region)
         endpoint: process.env.R2_REGION
           ? `https://${process.env.R2_ACCOUNT_ID}.${process.env.R2_REGION}.r2.cloudflarestorage.com`
           : `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -116,8 +99,8 @@ export default buildConfig({
           accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
           secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
         },
-        region: 'auto', // R2 uses 'auto' for region
-        forcePathStyle: true, // Required for R2 compatibility
+        region: 'auto',
+        forcePathStyle: true,
       },
     }),
   ],
@@ -128,20 +111,11 @@ export default buildConfig({
     console.log('🔍 Payload Storage Configuration:')
     console.log(`  - MEDIA_STORAGE: ${storageMode}`)
     console.log(`  - Plugins: ${storageMode === 'local' ? 'NONE (using local staticDir)' : 's3Storage (R2)'}`)
-    console.log(`  - Local files will be saved to: public/media/`)
-    console.log(`  - R2 files will be saved to: ${process.env.R2_PUBLIC_URL}`)
+    console.log(`  - R2 URL: ${process.env.R2_PUBLIC_URL}`)
 
-    // Auth configuration debug
     console.log('🔐 Payload Auth Configuration:')
     console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`)
     console.log(`  - serverURL: ${process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')}`)
     console.log(`  - secure cookie: ${process.env.NODE_ENV === 'production'}`)
-    console.log(`  - CORS origins: ${JSON.stringify([
-      process.env.PAYLOAD_PUBLIC_SERVER_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
-      'http://localhost:3000'
-    ])}`)
-
-    // Note: Migrations are handled by postinstall script (payload migrate)
-    // No need for manual initialization
   },
 })

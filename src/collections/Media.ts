@@ -42,9 +42,10 @@ export const Media: CollectionConfig = {
     },
   },
   upload: {
-    // Local storage directory (for development when not using R2)
+    // Local storage directory (for development when R2 is not used)
     staticDir: 'public/media',
-    // Note: staticURL was removed in Payload 3.x, use generateFileURL in s3Storage plugin instead
+    // Note: staticURL was removed in Payload 3.x
+    // URL generation is handled by s3Storage plugin's generateFileURL
     adminThumbnail: 'thumbnail',
     imageSizes: [
       {
@@ -69,25 +70,6 @@ export const Media: CollectionConfig = {
   },
   fields: [
     {
-      name: 'folder',
-      type: 'relationship',
-      relationTo: 'mediaFolders',
-      hasMany: false,
-      admin: {
-        description: 'Select a folder to organize this file (optional)',
-        position: 'sidebar',
-      },
-      index: true,
-    },
-    {
-      name: 'folderPath',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        hidden: true,
-      },
-    },
-    {
       name: 'alt',
       type: 'text',
       label: 'Alt Text',
@@ -102,23 +84,12 @@ export const Media: CollectionConfig = {
     },
   ],
   hooks: {
-    beforeChange: [
-      async ({ data }) => {
-        // SIMPLIFIED: Always set folderPath to 'media' to diagnose the issue
-        // The folder relationship lookup was potentially causing failures
-        // TODO: Re-enable folder lookup after confirming basic upload works
-        data.folderPath = 'media'
-        console.log(`📁 Setting folderPath: media (simplified hook)`)
-        return data
-      },
-    ],
     afterChange: [
       ({ doc }) => {
         if (doc.filename) {
           const isR2 = doc.url?.includes('r2.dev') || doc.url?.includes('cloudflarestorage')
           console.log(`✅ Media uploaded${isR2 ? ' to R2' : ' locally'}: ${doc.filename}`)
           console.log(`🔗 URL: ${doc.url}`)
-          console.log(`📁 Folder path: ${doc.folderPath || 'media'}`)
 
           // Log which sizes were created
           if (doc.sizes) {
