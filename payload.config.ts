@@ -58,16 +58,16 @@ export default buildConfig({
 
   // Server configuration
   // Auto-detect server URL from Vercel or use explicit env var
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL 
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   cors: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL 
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+    process.env.PAYLOAD_PUBLIC_SERVER_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
     'http://localhost:3000',
   ],
   csrf: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL 
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+    process.env.PAYLOAD_PUBLIC_SERVER_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
     'http://localhost:3000',
   ],
 
@@ -90,9 +90,12 @@ export default buildConfig({
           prefix: 'media',
           generateFileURL: ({ filename, prefix }) => {
             // If filename is null/undefined (e.g., for image sizes that weren't generated),
-            // return empty string as URL is not available
+            // return undefined to let Payload handle it with its default behavior
+            // IMPORTANT: Empty string '' causes React rendering crash in Media detail view!
             if (!filename) {
-              return ''
+              // TypeScript workaround: return undefined as unknown as string
+              // This won't actually be used - Payload will skip sizes with no filename
+              return undefined as unknown as string
             }
             // Use R2 public URL for production, local for development
             if (process.env.R2_PUBLIC_URL) {
@@ -118,7 +121,7 @@ export default buildConfig({
       },
     }),
   ],
-  
+
   // Debug logging
   onInit: async () => {
     const storageMode = process.env.MEDIA_STORAGE
