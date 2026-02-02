@@ -109,6 +109,13 @@ export const Media: CollectionConfig = {
         // If folder is selected, fetch its path and store it
         if (data.folder) {
           try {
+            // Check if req and req.payload exist
+            if (!req?.payload) {
+              console.warn('⚠️  req.payload not available in beforeChange hook')
+              data.folderPath = 'media' // fallback
+              return data
+            }
+
             const folder = await req.payload.findByID({
               collection: 'mediaFolders',
               id: data.folder,
@@ -117,13 +124,19 @@ export const Media: CollectionConfig = {
             if (folder?.path) {
               console.log(`📁 Folder selected: ${folder.name} (path: ${folder.path})`)
               data.folderPath = folder.path
+            } else {
+              console.warn(`⚠️  Folder not found: ${data.folder}, using default path`)
+              data.folderPath = 'media' // fallback
             }
           } catch (error) {
             console.error(`⚠️  Error fetching folder: ${error.message}`)
+            console.error(`⚠️  Stack: ${error.stack}`)
             data.folderPath = 'media' // fallback
           }
         } else {
-          data.folderPath = 'media' // default folder
+          // No folder selected, use default
+          data.folderPath = 'media'
+          console.log(`📁 No folder selected, using default path: media`)
         }
 
         return data
