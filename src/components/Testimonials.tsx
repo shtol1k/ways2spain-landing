@@ -11,77 +11,55 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { FacebookIcon, LinkedInIcon } from "@/components/ui/social-icons";
+import { getTestimonials, getImageUrl, type Testimonial as PayloadTestimonial } from "@/lib/api";
 
+// Adapt Payload testimonial to component format
 interface Testimonial {
   id: string;
   name: string;
   title: string;
   testimonial: string;
   date: string;
-  facebook: string;
-  linkedin: string;
+  facebook?: string;
+  linkedin?: string;
   photo?: string;
 }
 
-const testimonialsData: Testimonial[] = [
-  {
-    id: "1",
-    name: "Юлія Петренко",
-    title: "Digital Marketer",
-    testimonial: "Як фрілансер, боялася, що не зможу підтвердити стабільний дохід. Але мені детально пояснили, які документи потрібні, і допомогли все правильно оформити. Візу схвалили з першого разу! Дуже задоволена результатом.",
-    date: "19.01.25",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-  {
-    id: "2",
-    name: "Дмитро Мельник",
-    title: "Full-stack Developer",
-    testimonial: "Перехід з тимчасового захисту на офіційний ВНЖ — це було найкраще рішення для мене та моєї родини. Команда допомогла з усіма документами, перекладами та записом. Тепер маємо спокій та стабільність в Іспанії.",
-    date: "19.01.25",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-  {
-    id: "3",
-    name: "Олександра Коваленко",
-    title: "UX Designer",
-    testimonial: "Дякую за професійний супровід! Процес оформлення Digital Nomad Visa здавався складним, але з вашою допомогою все пройшло швидко і без стресу. Отримала TIE за 2 місяці. Рекомендую всім, хто хоче легально жити в Іспанії!",
-    date: "19.01.25",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-  {
-    id: "4",
-    name: "Марина Шевченко",
-    title: "Content Manager",
-    testimonial: "Не можу не відзначити увагу до деталей і постійну підтримку на кожному етапі. Особливо допомогла консультація по податках — зекономила багато грошей завдяки пільговому режиму 24%. Дуже вдячна!",
-    date: "19.01.25",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-  {
-    id: "5",
-    name: "Андрій Бондаренко",
-    title: "Content Manager",
-    testimonial: "Оформлювали візу для всієї родини — я, дружина і двоє дітей. Весь процес зайняв 3 місяці від консультації до отримання карток резидента. Все чітко, прозоро, без прихованих платежів. Рекомендую!",
-    date: "19.01.25",
-    facebook: "https://facebook.com",
-    linkedin: "https://linkedin.com",
-  },
-];
-
 const Testimonials = () => {
-  const [testimonials] = useState<Testimonial[]>(testimonialsData);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate loading to show skeleton state
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    async function fetchTestimonials() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const data = await getTestimonials('uk');
+        
+        // Adapt Payload data to component format
+        const adapted: Testimonial[] = data.map((item: PayloadTestimonial) => ({
+          id: item.id,
+          name: item.name,
+          title: item.title,
+          testimonial: item.testimonial,
+          date: item.date,
+          facebook: item.socialLinks?.facebook,
+          linkedin: item.socialLinks?.linkedin,
+          photo: getImageUrl(item.photo),
+        }));
+        
+        setTestimonials(adapted);
+      } catch (err) {
+        console.error('Failed to fetch testimonials:', err);
+        setError('Не вдалося завантажити відгуки. Спробуйте пізніше.');
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    return () => clearTimeout(timer);
+    fetchTestimonials();
   }, []);
 
   if (loading) {
@@ -102,7 +80,25 @@ const Testimonials = () => {
     );
   }
 
-  if (testimonials.length === 0) {
+  if (error) {
+    return (
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="mb-6">Відгуки наших клієнтів</h2>
+            <p className="text-xl text-muted-foreground">
+              Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-destructive">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0 && !loading) {
     return (
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
