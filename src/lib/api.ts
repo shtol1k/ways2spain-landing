@@ -3,7 +3,9 @@
  * Handles all communication with Payload REST API
  */
 
-const API_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+// Use relative path for API requests - works on any domain without env configuration
+// The browser will automatically use the current origin (e.g., localhost:3000 or your-domain.vercel.app)
+const API_URL = '';
 
 export interface Testimonial {
   id: string;
@@ -111,14 +113,14 @@ export async function getTestimonialById(id: string, locale: string = 'uk'): Pro
  */
 export function getImageUrl(photo?: Testimonial['photo']): string | undefined {
   if (!photo) return undefined;
-  
+
   // If photo has url property, use it
   if (photo.url) return photo.url;
-  
+
   // If photo has filename, construct URL
   if (photo.filename) {
     return `${API_URL}/api/media/file/${photo.filename}`;
   }
-  
+
   return undefined;
 }
