@@ -4,6 +4,9 @@ export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
     useAsTitle: 'filename',
+    // Enable built-in Payload Folders feature (beta)
+    // Provides: nested folders, drag-and-drop, browse-by-folder view
+    folders: true,
   },
   access: {
     read: () => true, // Public read for displaying on website
