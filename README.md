@@ -1,111 +1,198 @@
-# Ways2Spain Landing Page
+# Ways2Spain
 
-Монорепозиторій для сайту Ways2Spain з фронтендом на React та Strapi CMS.
+Сайт для допомоги з релокацією в Іспанію. Побудований на Next.js 16 + Payload CMS 3.
 
-## Структура проекту
+## 🏗️ Архітектура
+
+```
+┌─────────────────────────────────────────────────────┐
+│              Next.js + Payload CMS                 │
+│              (Single Server)                        │
+│                      :3000                          │
+│                                                     │
+│  ┌────────────┐  ┌────────────┐  ┌─────────────┐  │
+│  │   Pages    │  │     API    │  │   Payload   │  │
+│  │  (App Dir) │  │  (Routes)  │  │    Admin    │  │
+│  └────────────┘  └────────────┘  └─────────────┘  │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  Supabase   │
+                    │ (Database)  │
+                    └─────────────┘
+```
+
+## 🚀 Технологічний стек
+
+### Frontend
+- **Next.js 16** з App Router
+- **React 19** з Server Components
+- **TypeScript** 5.8+
+- **TailwindCSS** 3.4+
+- **shadcn/ui** компоненти
+
+### Backend/CMS
+- **Payload CMS 3.74**
+- **Next.js Route Handlers**
+- **PostgreSQL** (Supabase в production)
+
+### Storage
+- **Cloudflare R2** для медіа-файлів
+
+## 📁 Структура проекту
 
 ```
 ways2spain-landing/
-├── frontend/              # React фронтенд (Vite + TypeScript)
-├── cms/                  # Strapi CMS (буде встановлено на наступному кроці)
-├── backend-express/       # Попередній Express бекенд (збережено як резерв)
-├── shared/               # Спільні типи та утиліти
-│   └── types/           # TypeScript типи для API
-├── scripts/             # Допоміжні скрипти
-├── package.json         # Кореневий package.json з монорепозиторними скриптами
-└── vercel.json          # Конфігурація для розгортання на Vercel
+├── src/
+│   ├── app/                  # Next.js App Router
+│   │   ├── (payload)/        # Payload admin та API
+│   │   ├── (site)/           # Публічні сторінки сайту
+│   │   └── api/              # API route handlers
+│   ├── collections/          # Payload collections
+│   ├── components/           # React компоненти
+│   │   └── ui/              # shadcn/ui компоненти
+│   ├── lib/                 # Утиліти
+│   └── migrations/          # Database migrations
+├── public/                   # Статичні assets
+├── documentation/           # Документація проекту
+├── scripts/                 # Helper scripts
+├── payload.config.ts        # Payload конфігурація
+├── next.config.mjs          # Next.js конфігурація
+└── package.json
 ```
 
-## Встановлення та запуск
+## 🛠️ Встановлення
 
 ### Передумови
 
-- Node.js (рекомендовано v18+)
-- npm або yarn
+- Node.js 20+
+- PostgreSQL для локальної розробки
+- npm або bun
 
-### Встановлення залежностей
+### Локальна розробка
 
 ```bash
-# Встановлення залежностей для всього проекту
+# 1. Клонування репозиторію
+git clone <repo-url>
+cd ways2spain-landing
+
+# 2. Встановлення залежностей
 npm install
 
-# Встановлення залежностей для фронтенду
-cd frontend && npm install
+# 3. Налаштування змінних оточення
+# Створіть файл .env.local з необхідними змінними (див. нижче)
 
-# Після встановлення Strapi:
-cd cms && npm install
-```
+# 4. Ініціалізація бази даних
+npm run db:init
 
-### Запуск проекту
-
-```bash
-# Запуск фронтенду та CMS одночасно
+# 5. Запуск dev server
 npm run dev
-
-# Запуск тільки фронтенду
-npm run dev:frontend
-
-# Запуск тільки CMS
-npm run dev:cms
-
-# Запуск старого Express бекенду (якщо потрібно)
-npm run dev:express
 ```
 
-### Збірка проекту
+Сайт буде доступний за адресою http://localhost:3000
+Admin панель: http://localhost:3000/admin
+
+## 🔐 Змінні оточення
+
+Створіть файл `.env.local` в корені проекту:
 
 ```bash
-# Збірка фронтенду та CMS
-npm run build
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/ways2spain
 
-# Збірка тільки фронтенду
-npm run build:frontend
+# Payload
+PAYLOAD_SECRET=your-secret-key-here
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 
-# Збірка тільки CMS
-npm run build:cms
+# Cloudflare R2 (опціонально)
+R2_ACCOUNT_ID=your-account-id
+R2_ACCESS_KEY_ID=your-access-key
+R2_SECRET_ACCESS_KEY=your-secret-key
+R2_BUCKET_NAME=ways2spain-media
+R2_PUBLIC_URL=https://your-r2-domain.r2.dev
+
+# Contact form (опціонально)
+GMAIL_USER=your-email@gmail.com
+GMAIL_APP_PASSWORD=your-app-password
+NOTION_API_KEY=your-notion-token
+NOTION_DATABASE_ID=your-database-id
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_CHAT_ID=your-chat-id
 ```
 
-## Встановлення Strapi
-
-Наступним кроком буде встановлення Strapi в папку `cms/`:
+## 📜 Доступні скрипти
 
 ```bash
-# Створення нового проекту Strapi
-npx create-strapi-app@latest cms --quickstart --no-run
+# Development
+npm run dev              # Запуск Next.js dev server
 
-# Або з TypeScript
-npx create-strapi-app@latest cms --quickstart --typescript --no-run
+# Build
+npm run build            # Production build
+npm start                # Запуск production server
+
+# Database
+npm run migrate          # Запуск міграцій
+npm run migrate:refresh  # Перестворення міграцій
+npm run db:init          # Ініціалізація бази даних
+npm run db:test          # Перевірка з'єднання з БД
+
+# Payload
+npm run payload          # Payload CLI
 ```
 
-## Розгортання
+## 📚 Документація
 
-Проект налаштований для розгортання на Vercel з автоматичною конфігурацією для фронтенду та Strapi.
+- [ARCHITECTURE.md](documentation/ARCHITECTURE.md) - Детальний опис архітектури
+- [DEVELOPMENT.md](documentation/DEVELOPMENT.md) - Local development setup
+- [DEPLOYMENT.md](documentation/DEPLOYMENT.md) - Deployment guide
+- [MIGRATION.md](documentation/MIGRATION.md) - Історія міграції
 
-## Робота з контентом
+## 🚀 Deployment
 
-Після встановлення Strapi:
+Проект налаштований для розгортання на Vercel.
 
-1. Запустіть CMS: `npm run dev:cms`
-2. Відкрийте адмінпанель: http://localhost:1337/admin
-3. Створіть контент-типи відповідно до типів в `shared/types/index.ts`
-4. Налаштуйте API та права доступу
-5. Інтегруйте фронтенд з API Strapi
+1. Підключіть репозиторій до Vercel
+2. Налаштуйте змінні оточення в Vercel Dashboard
+3. Деплой автоматичний при кожному push в main
 
-## Корисні команди
+Дивіться [DEPLOYMENT.md](documentation/DEPLOYMENT.md) для детальної інструкції.
 
-```bash
-# Перевірка linting
-npm run lint
+## 🧪 Розробка
 
-# Очищення портів перед запуском
-npm run dev:clean
+### Payload Collections
 
-# Попередній перегляд фронтенду
-npm run preview
-```
+- **Users** - Користувачі з ролями (admin, manager)
+- **Testimonials** - Відгуки клієнтів
+- **Media** - Медіа-файли
 
-## Документація
+### Сторінки
 
-- [Документація Strapi](https://docs.strapi.io/)
-- [Документація Vite](https://vitejs.dev/)
-- [Документація React Router](https://reactrouter.com/)
+- `/` - Головна сторінка
+- `/about` - Про нас
+- `/services` - Послуги
+- `/services/[id]` - Детальна сторінка послуги
+- `/blog` - Блог
+- `/contact` - Контактна форма
+- `/visa` - Віза
+- `/calculator` - Калькулятор вартості
+- `/consultation` - Консультація
+
+### API Routes
+
+- `/api/contact` - Contact form handler
+- `/api/[...slug]` - Payload REST API
+- `/graphql` - Payload GraphQL API
+
+## 🤝 Contributing
+
+1. Fork проекту
+2. Створіть feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit ваші зміни (`git commit -m 'Add amazing feature'`)
+4. Push в branch (`git push origin feature/amazing-feature`)
+5. Відкрийте Pull Request
+
+## 📄 Ліцензія
+
+© 2025 Ways2Spain. All rights reserved.

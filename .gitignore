@@ -29,3 +29,18 @@ dist-ssr
 .env.production
 .env.*
 .vercel
+
+# Local media storage (development only - ignore uploaded files)
+public/media/*
+!public/media/.gitkeep
+/media/
+
+# Next.js build output
+.next/
+out/
+
+# Next.js cache
+.turbo/
+
+# Documentation (contains sensitive info and examples)
+documentation/
