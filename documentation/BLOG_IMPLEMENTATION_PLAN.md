@@ -19,12 +19,12 @@
 
 ## Фаза 1: Backend - Колекції Payload
 
-### 1.1 Колекція Categories
+### 1.1 Колекція Categories ✅
 
 - [x] Створити колекцію `Categories` з полями:
-  - `name` (text, required, localized) — назва категорії
+  - `name` (text, required) — назва категорії
   - `slug` (text, unique) — URL-friendly ідентифікатор
-  - `description` (textarea, localized) — опис категорії
+  - `description` (textarea) — опис категорії
   - `order` (number) — порядок сортування
 - [x] Створити міграцію для таблиці categories
   - Файл: `20260203_180000_create-categories-table.ts`
@@ -32,13 +32,10 @@
 - [x] Налаштувати права доступу (read: public, write: admin/manager)
 - [x] Додати початкові категорії (seed data через міграцію):
   - Файл: `20260203_180100_seed-blog-categories.ts`
-  - Інструкції
-  - Документи
-  - Податки
-  - Поради
-  - Родина
-  - Порівняння
-- [ ] **ОЧІКУЄ**: Запустити міграції локально (`npx payload migrate`)
+  - Інструкції, Документи, Податки, Поради, Родина, Порівняння
+- [x] Запустити міграції (`npx payload migrate`)
+- [x] Виправити проблему з `payload_locked_documents_rels`
+  - Файл: `20260203_180200_add-categories-to-locked-docs.ts`
 
 ### 1.2 Колекція Tags
 
@@ -264,10 +261,38 @@
 5. `seed_categories` — початкові дані для категорій
 6. `migrate_blog_content` — перенесення існуючих статей
 
+### ⚠️ ВАЖЛИВО: Правила роботи з міграціями
+
+> Детальна документація: **[PAYLOAD_MIGRATIONS_GUIDE.md](./PAYLOAD_MIGRATIONS_GUIDE.md)**
+
+**Основне правило:**
+> Завжди використовуй `npx payload migrate:create` для змін схеми БД!
+
+**Чому НЕ ручні міграції для схеми:**
+- Payload автоматично додає зв'язки до `payload_locked_documents_rels`
+- Генерує правильні індекси
+- Враховує системні таблиці
+
+**Workflow для нової колекції:**
+```bash
+# 1. Створити файл колекції в src/collections/
+# 2. Додати до payload.config.ts
+# 3. Згенерувати міграцію АВТОМАТИЧНО:
+npx payload migrate:create --name add-tags-collection
+# 4. Запустити міграцію:
+npx payload migrate
+# 5. (Опціонально) Seed-дані — окрема ручна міграція
+```
+
+**Ручні міграції — тільки для:**
+- Seed-дані (INSERT)
+- Міграція/трансформація даних
+- Очищення застарілих таблиць
+
 ### Корисні команди
 
 ```bash
-# Створити нову міграцію
+# Створити нову міграцію (АВТОМАТИЧНО)
 npx payload migrate:create --name add-posts-collection
 
 # Запустити міграції локально
@@ -275,6 +300,9 @@ npx payload migrate
 
 # Перевірити статус міграцій
 npx payload migrate:status
+
+# Відкотити останню міграцію
+npx payload migrate:down
 ```
 
 ### Конвенції іменування
@@ -289,7 +317,7 @@ npx payload migrate:status
 
 | Фаза | Статус | Прогрес |
 |------|--------|---------|
-| 1.1 Categories | ✅ Готово | 5/6 |
+| 1.1 Categories | ✅ Готово | 7/7 |
 | 1.2 Tags | ⏳ Очікує | 0/4 |
 | 1.3 Authors | ⏳ Очікує | 0/4 |
 | 1.4 Posts | ⏳ Очікує | 0/8 |
@@ -308,4 +336,4 @@ npx payload migrate:status
 
 ---
 
-*Останнє оновлення: 2026-02-03*
+*Останнє оновлення: 2026-02-03 21:15*

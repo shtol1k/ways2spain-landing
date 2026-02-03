@@ -7,6 +7,7 @@ import { Users } from './src/collections/Users'
 import { Testimonials } from './src/collections/Testimonials'
 import { Media } from './src/collections/Media'
 import { Categories } from './src/collections/Categories'
+import { Tags } from './src/collections/Tags'
 
 export default buildConfig({
   // Rich text editor
@@ -43,6 +44,7 @@ export default buildConfig({
     Testimonials,
     Media,
     Categories,
+    Tags,
   ],
 
   // Server configuration
