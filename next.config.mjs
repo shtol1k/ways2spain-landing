@@ -17,6 +17,13 @@ const nextConfig = {
       },
     ],
   },
+  // Disable webpack caching for better compatibility with Turbopack + Payload
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = false
+    }
+    return config
+  },
 }
 
 // Wrap with Payload plugin for Next.js compatibility
