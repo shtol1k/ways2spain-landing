@@ -5,157 +5,210 @@ description: Manage Payload CMS database migrations for schema changes. Use when
 
 # Payload CMS Migrations
 
-## Quick Workflow
+## ⚠️ CRITICAL: Automatic vs Manual Migrations
 
-For ANY database schema change, follow these steps in order:
+### ALWAYS use `migrate:create` for schema changes
+
+When adding collections, fields, or relationships, **ALWAYS use Payload's migration generator**:
 
 ```bash
-# 1. Modify collection/config file
-# src/collections/YourCollection.ts
+npx payload migrate:create --name descriptive-name
+```
 
-# 2. Create migration
-npm run payload -- migrate:create descriptive-name
+**Payload's generator automatically includes:**
+- ✅ Main table creation (CREATE TABLE)
+- ✅ **System table updates** (`payload_locked_documents_rels`, `payload_preferences_rels`)
+- ✅ All required foreign keys and indexes
+- ✅ Proper Payload-specific column types
+- ✅ Schema snapshot for future comparisons
 
-# 3. Review migration SQL
+### NEVER create manual migrations for schema changes
+
+**Why manual schema migrations break things:**
+- ❌ Missing `payload_locked_documents_rels` relations → **Blank edit pages in admin**
+- ❌ No schema snapshot created → Generator creates "full" migration next time
+- ❌ Missing system table indexes and constraints
+- ❌ Hydration errors in Next.js admin panel
+
+### When to use manual migrations
+
+Manual migrations are ONLY for:
+- ✅ **Seed data** (INSERT statements)
+- ✅ **Data transformations** (UPDATE, data migration)
+- ✅ **Cleanup** (DROP old tables not managed by Payload)
+- ✅ **Custom SQL** that doesn't affect Payload schema
+
+---
+
+## Quick Workflow
+
+### Adding a New Collection
+
+```bash
+# 1. Create collection file
+# src/collections/Tags.ts
+
+# 2. Add to payload.config.ts
+import { Tags } from './src/collections/Tags'
+collections: [Users, Media, Tags]
+
+# 3. Generate migration AUTOMATICALLY
+npx payload migrate:create --name add-tags-collection
+
+# 4. Review generated migration
 cat src/migrations/YYYYMMDD_HHMMSS_*.ts
+# ✅ Should include: CREATE TABLE tags
+# ✅ Should include: ALTER TABLE payload_locked_documents_rels ADD COLUMN tags_id
 
-# 4. Apply locally
-npm run migrate
+# 5. Apply migration
+npx payload migrate
 
-# 5. Verify status
-npm run payload -- migrate:status  # Should show "Ran: Yes"
+# 6. Test in admin panel
+npm run dev
 
-# 6. Test
-npm run dev:next
-# Verify in admin panel
+# 7. Commit ALL files
+git add src/migrations/ src/collections/ payload.config.ts
+```
 
-# 7. Commit
+### Adding a Field to Existing Collection
+
+```bash
+# 1. Modify collection file
+# src/collections/Media.ts - add new field
+
+# 2. Generate migration
+npx payload migrate:create --name add-category-to-media
+
+# 3. Review + Apply + Test
+npx payload migrate
+npm run dev
+
+# 4. Commit
 git add src/migrations/ src/collections/
 ```
+
+### Adding Seed Data (Manual Migration OK)
+
+```bash
+# 1. Create manual migration file
+# src/migrations/YYYYMMDD_HHMMSS_seed-categories.ts
+
+# 2. Write INSERT-only SQL
+export async function up({ db }) {
+  await db.execute(sql`
+    INSERT INTO categories (name, slug) VALUES
+    ('News', 'news'),
+    ('Tips', 'tips');
+  `)
+}
+
+# 3. Apply
+npx payload migrate
+```
+
+---
 
 ## Critical Rules
 
 **NEVER:**
-- Modify database directly (use migrations only)
-- Skip migration creation
-- Commit without testing
-- Apply migrations to production without local testing
+- ❌ Create manual migrations for CREATE TABLE / ALTER TABLE schema changes
+- ❌ Modify `payload_locked_documents_rels` manually without understanding Payload's requirements
+- ❌ Skip migration creation and modify DB directly
+- ❌ Delete `.json` snapshot files from migrations folder
 
 **ALWAYS:**
-- Create migration immediately after schema changes
-- Review generated SQL code
-- Apply migration locally before committing
-- Test in dev mode
-- Include migration files in commit
+- ✅ Use `npx payload migrate:create` for any schema changes
+- ✅ Review the generated SQL before applying
+- ✅ Check that system tables are updated in the migration
+- ✅ Keep snapshot `.json` files in git
 
-## Migration Naming
-
-**Pattern:** `<action>-<target>-<context>`
-
-**Examples:**
-- ✅ `add-category-field-to-media`
-- ✅ `create-tags-collection`
-- ✅ `add-media-tags-relationship`
-- ✅ `modify-user-role-to-enum`
-
-❌ Avoid: `migration1`, `update`, `fix`, `changes`
-
-## Common Scenarios
-
-### Add Field to Collection
-
-```bash
-# 1. Modify src/collections/Media.ts - add field
-# 2. npm run payload -- migrate:create add-field-to-media
-# 3. Review migration
-# 4. npm run migrate
-# 5. npm run dev:next
-# 6. git add src/migrations/ src/collections/
-```
-
-### Create New Collection
-
-```bash
-# 1. Create src/collections/NewCollection.ts
-# 2. Import in payload.config.ts
-# 3. npm run payload -- migrate:create create-new-collection
-# 4. Review migration (should CREATE TABLE)
-# 5. npm run migrate && npm run dev:next
-# 6. git add src/migrations/ src/collections/ payload.config.ts
-```
-
-### Modify Field Properties
-
-⚠️ **ALTER COLUMN can be destructive!**
-
-```bash
-# 1. Modify field definition
-# 2. npm run payload -- migrate:create modify-field-type
-# 3. Review migration CAREFULLY
-# 4. Test thoroughly with existing data
-# 5. npm run migrate && npm run dev:next
-```
-
-## Pre-Commit Checklist
-
-- [ ] Migration file created in `src/migrations/`
-- [ ] Migration SQL reviewed and correct
-- [ ] Migration applied locally
-- [ ] Status shows "Ran: Yes"
-- [ ] Dev server runs without errors
-- [ ] Changes visible in admin panel
-- [ ] Can create/edit records successfully
-- [ ] Migration file included in commit
-- [ ] Collection changes included in commit
-
-**Only commit if ALL checked!**
+---
 
 ## Troubleshooting
 
-### "column already exists"
-Migration already applied. Check: `npm run payload -- migrate:status`
+### Blank/empty edit pages in admin panel
 
-### "relation does not exist"
-Migration not applied. Run: `npm run migrate`
+**Cause:** Collection missing from `payload_locked_documents_rels`
 
-### Dev mode artifacts detected
-```bash
-node scripts/cleanup-dev-migrations.js
-npm run migrate
+**Fix:**
+```sql
+-- Add missing column
+ALTER TABLE payload_locked_documents_rels 
+ADD COLUMN IF NOT EXISTS {collection}_id integer 
+REFERENCES {collection}(id) ON DELETE CASCADE;
+
+CREATE INDEX IF NOT EXISTS payload_locked_documents_rels_{collection}_id_idx 
+ON payload_locked_documents_rels({collection}_id);
 ```
 
-### Migration SQL looks wrong
-Manually edit migration file, fix SQL, save, then apply
+### Migration creates ALL tables instead of incremental changes
 
-### Dev server won't start
+**Cause:** No previous schema snapshot exists
+
+**Solution:**
+1. If this is initial setup, this is expected — apply the full migration
+2. If tables already exist, you need to:
+   - Extract ONLY the new changes from the migration
+   - Apply them manually via SQL
+   - Register the migration as completed:
+   ```sql
+   INSERT INTO payload_migrations (name, batch, created_at, updated_at) 
+   VALUES ('migration_name', NEXT_BATCH, NOW(), NOW());
+   ```
+
+### "column already exists" error
+
+Migration already applied partially. Check status:
 ```bash
-npm run payload -- migrate:down  # Rollback
-# Fix migration file
-npm run migrate
-npm run dev:next
+npx payload migrate:status
 ```
+
+### "relation does not exist" error
+
+Migration not applied. Run:
+```bash
+npx payload migrate
+```
+
+---
 
 ## Quick Reference
 
 ```bash
-# Create migration
-npm run payload -- migrate:create descriptive-name
+# Create migration (ALWAYS use for schema changes)
+npx payload migrate:create --name descriptive-name
 
-# Apply migrations
-npm run migrate
+# Apply pending migrations
+npx payload migrate
 
-# Check status
-npm run payload -- migrate:status
+# Check migration status
+npx payload migrate:status
 
 # Rollback last migration
-npm run payload -- migrate:down
+npx payload migrate:down
 
 # Start dev server
-npm run dev:next
+npm run dev
 ```
+
+---
+
+## Pre-Commit Checklist
+
+- [ ] Migration created via `npx payload migrate:create` (not manually for schema)
+- [ ] Migration SQL includes system table updates if adding collection
+- [ ] Migration applied locally
+- [ ] `npx payload migrate:status` shows "Ran: Yes"
+- [ ] Dev server runs without errors
+- [ ] Edit pages work (not blank!)
+- [ ] Can create/edit records
+- [ ] Migration `.ts` file in commit
+- [ ] Snapshot `.json` file in commit (if generated)
+
+---
 
 ## Additional Resources
 
-- For detailed workflows and examples, see [reference.md](reference.md)
-- For project-specific migration guide, see `docs/MIGRATION_WORKFLOW.md`
+- For detailed workflows: [reference.md](reference.md)
+- For project-specific guide: `documentation/PAYLOAD_MIGRATIONS_GUIDE.md`
 - Payload CMS docs: https://payloadcms.com/docs/database/migrations

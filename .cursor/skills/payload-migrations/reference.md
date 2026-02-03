@@ -4,12 +4,133 @@ This file contains comprehensive information about Payload CMS migrations. Refer
 
 ## Table of Contents
 
+- [Critical: Understanding Payload Migration System](#critical-understanding-payload-migration-system)
 - [Philosophy](#philosophy-migrations-first-development)
 - [Complete Workflow](#complete-step-by-step-workflow)
 - [Advanced Scenarios](#advanced-scenarios)
 - [Testing Strategy](#testing-strategy)
 - [Production Deployment](#production-deployment)
 - [Emergency Procedures](#emergency-procedures)
+
+---
+
+## Critical: Understanding Payload Migration System
+
+### How Payload Migration Generator Works
+
+When you run `npx payload migrate:create`, Payload does the following:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    PAYLOAD MIGRATION GENERATOR                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   [payload.config.ts]          [Last Snapshot JSON]              │
+│         ↓                              ↓                         │
+│   Current Schema              Previous Schema State              │
+│   (Collections,               (Stored in migrations/*.json)      │
+│    Fields, etc.)                                                 │
+│         ↓                              ↓                         │
+│         └──────────┬───────────────────┘                         │
+│                    ↓                                             │
+│              DIFF ANALYSIS                                       │
+│                    ↓                                             │
+│         ┌─────────────────────┐                                  │
+│         │ Generated Migration │                                  │
+│         │  - CREATE TABLE     │                                  │
+│         │  - ALTER TABLE      │                                  │
+│         │  - System tables    │                                  │
+│         └─────────────────────┘                                  │
+│                    ↓                                             │
+│         ┌─────────────────────┐                                  │
+│         │   New Snapshot JSON │ ← Saves current state            │
+│         └─────────────────────┘                                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Why Manual Schema Migrations Break Things
+
+**Problem Scenario:**
+```
+1. You create Categories collection manually:
+   → Only CREATE TABLE categories
+   → Missing: ALTER TABLE payload_locked_documents_rels ADD COLUMN categories_id
+   → No snapshot JSON created
+
+2. Result:
+   → Category list works ✓
+   → Category edit page is BLANK (Hydration Error) ✗
+   → Payload can't lock documents for editing
+```
+
+**What Payload expects for EVERY collection:**
+```sql
+-- 1. Main table
+CREATE TABLE categories (...);
+
+-- 2. System table relation (CRITICAL!)
+ALTER TABLE payload_locked_documents_rels 
+ADD COLUMN categories_id integer REFERENCES categories(id) ON DELETE CASCADE;
+
+-- 3. Index for the relation
+CREATE INDEX payload_locked_documents_rels_categories_id_idx 
+ON payload_locked_documents_rels(categories_id);
+```
+
+### The `payload_locked_documents_rels` Table
+
+This table is used by Payload to:
+- Lock documents when being edited (prevent concurrent edits)
+- Track which user is editing which document
+- Manage document state in admin panel
+
+**Structure:**
+```sql
+payload_locked_documents_rels (
+    id serial PRIMARY KEY,
+    order integer,
+    parent_id integer NOT NULL,  -- References payload_locked_documents
+    path varchar NOT NULL,
+    -- One column per collection:
+    users_id integer,
+    media_id integer,
+    testimonials_id integer,
+    categories_id integer,       -- ← Must exist for Categories collection!
+    tags_id integer,             -- ← Must exist for Tags collection!
+    payload_folders_id integer
+)
+```
+
+**If a collection's column is missing:**
+- Edit page renders but has no content (blank)
+- Hydration errors in browser console
+- Cannot save changes to documents
+
+### Snapshot Files
+
+When `migrate:create` runs, it creates TWO files:
+```
+src/migrations/
+├── 20260203_212300_add-collection.ts   ← The migration SQL
+└── 20260203_212300_add-collection.json ← SNAPSHOT of schema state
+```
+
+**The JSON snapshot is CRITICAL:**
+- Payload uses it to compare "what was" vs "what is"
+- If missing, next `migrate:create` generates FULL migration
+- Must be committed to git with migration
+
+### When Manual Migrations Are Safe
+
+| Use Case | Safe? | Why |
+|----------|-------|-----|
+| CREATE TABLE for new collection | ❌ NO | Missing system table updates |
+| ALTER TABLE adding column | ❌ NO | No snapshot update |
+| INSERT seed data | ✅ YES | Doesn't affect schema |
+| UPDATE data migration | ✅ YES | Doesn't affect schema |
+| DROP old non-Payload table | ✅ YES | Payload doesn't track it |
+| Custom SQL functions | ✅ YES | Payload doesn't track it |
 
 ---
 
@@ -22,7 +143,7 @@ Instead, we:
 2. Create a migration using `payload migrate:create`
 3. Apply the migration locally with `payload migrate`
 4. Test changes in development mode
-5. Commit migration files to Git
+5. Commit migration files to Git (including .json snapshots!)
 6. Deploy to Vercel (migrations run automatically)
 
 This approach is **safer**, **more predictable**, and **essential for AI-assisted development**.
@@ -38,6 +159,7 @@ This approach is **safer**, **more predictable**, and **essential for AI-assiste
 - ✅ Clear audit trail
 - ✅ Testable locally before production
 - ✅ Predictable behavior
+- ✅ Includes system table updates automatically
 
 ---
 
