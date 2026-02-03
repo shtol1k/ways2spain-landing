@@ -15,6 +15,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-4a398d8b77104a9e883ddfbb3db801ea.r2.dev', // Cloudflare R2 public URL
+      },
     ],
   },
   // Disable webpack caching for better compatibility with Turbopack + Payload
