@@ -1,7 +1,7 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-	await db.execute(sql`
+      await db.execute(sql`
    DO $$ BEGIN
     CREATE TYPE "public"."enum_users_role" AS ENUM('admin', 'manager');
    EXCEPTION
@@ -90,15 +90,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE IF NOT EXISTS "categories" (
-        "id" serial PRIMARY KEY NOT NULL,
-        "name" varchar NOT NULL,
-        "slug" varchar NOT NULL,
-        "description" varchar,
-        "order" numeric DEFAULT 0,
-        "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-        "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
-  );
+  -- CATEGORIES skipped as they are created in previous migrations
   
   CREATE TABLE IF NOT EXISTS "tags" (
         "id" serial PRIMARY KEY NOT NULL,
@@ -195,6 +187,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
    ALTER TABLE "users_sessions" ADD CONSTRAINT "users_sessions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
+   WHEN duplicate_table THEN null;
   END $$;
 
   DO $$ BEGIN
@@ -305,9 +298,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "media_updated_at_idx" ON "media" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "media_created_at_idx" ON "media" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "media_filename_idx" ON "media" USING btree ("filename");
-  CREATE UNIQUE INDEX IF NOT EXISTS "categories_slug_idx" ON "categories" USING btree ("slug");
-  CREATE INDEX IF NOT EXISTS "categories_updated_at_idx" ON "categories" USING btree ("updated_at");
-  CREATE INDEX IF NOT EXISTS "categories_created_at_idx" ON "categories" USING btree ("created_at");
+  /* Categories indexes skipped */
   CREATE UNIQUE INDEX IF NOT EXISTS "tags_slug_idx" ON "tags" USING btree ("slug");
   CREATE INDEX IF NOT EXISTS "tags_updated_at_idx" ON "tags" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "tags_created_at_idx" ON "tags" USING btree ("created_at");
@@ -349,12 +340,13 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
-	await db.execute(sql`
+      // Safe down migration
+      await db.execute(sql`
    DROP TABLE IF EXISTS "users_sessions" CASCADE;
    DROP TABLE IF EXISTS "users" CASCADE;
    DROP TABLE IF EXISTS "testimonials" CASCADE;
    DROP TABLE IF EXISTS "media" CASCADE;
-   DROP TABLE IF EXISTS "categories" CASCADE;
+   -- Categories preserved as they belong to another migration
    DROP TABLE IF EXISTS "tags" CASCADE;
    DROP TABLE IF EXISTS "authors" CASCADE;
    DROP TABLE IF EXISTS "payload_kv" CASCADE;
