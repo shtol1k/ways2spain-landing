@@ -90,7 +90,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  -- CATEGORIES skipped as they are created in previous migrations
+  -- CATEGORIES skipped
   
   CREATE TABLE IF NOT EXISTS "tags" (
         "id" serial PRIMARY KEY NOT NULL,
@@ -159,6 +159,15 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         "payload_folders_id" integer
   );
   
+  -- Ensure columns exist in payload_locked_documents_rels even if table existed
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "users_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "testimonials_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "categories_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "tags_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "authors_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "payload_folders_id" integer;
+
   CREATE TABLE IF NOT EXISTS "payload_preferences" (
         "id" serial PRIMARY KEY NOT NULL,
         "key" varchar,
@@ -174,6 +183,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         "path" varchar NOT NULL,
         "users_id" integer
   );
+
+  -- Ensure columns exist in payload_preferences_rels
+  ALTER TABLE "payload_preferences_rels" ADD COLUMN IF NOT EXISTS "users_id" integer;
   
   CREATE TABLE IF NOT EXISTS "payload_migrations" (
         "id" serial PRIMARY KEY NOT NULL,
@@ -298,7 +310,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "media_updated_at_idx" ON "media" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "media_created_at_idx" ON "media" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "media_filename_idx" ON "media" USING btree ("filename");
-  /* Categories indexes skipped */
+  /* categories indexes skipped */
   CREATE UNIQUE INDEX IF NOT EXISTS "tags_slug_idx" ON "tags" USING btree ("slug");
   CREATE INDEX IF NOT EXISTS "tags_updated_at_idx" ON "tags" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "tags_created_at_idx" ON "tags" USING btree ("created_at");
@@ -346,7 +358,7 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
    DROP TABLE IF EXISTS "users" CASCADE;
    DROP TABLE IF EXISTS "testimonials" CASCADE;
    DROP TABLE IF EXISTS "media" CASCADE;
-   -- Categories preserved as they belong to another migration
+   -- Categories skipped
    DROP TABLE IF EXISTS "tags" CASCADE;
    DROP TABLE IF EXISTS "authors" CASCADE;
    DROP TABLE IF EXISTS "payload_kv" CASCADE;
