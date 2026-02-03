@@ -30,19 +30,19 @@ export const Testimonials: CollectionConfig = {
       name: 'name',
       type: 'text',
       required: true,
-      localized: true,
+      // localized: true, // Disabled - no testimonials_locales table exists
     },
     {
       name: 'title',
       type: 'text',
       required: true,
-      localized: true,
+      // localized: true, // Disabled - no testimonials_locales table exists
     },
     {
       name: 'testimonial',
       type: 'textarea',
       required: true,
-      localized: true,
+      // localized: true, // Disabled - no testimonials_locales table exists
       admin: {
         description: 'Client testimonial text',
       },

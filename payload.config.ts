@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { Users } from './src/collections/Users'
 import { Testimonials } from './src/collections/Testimonials'
 import { Media } from './src/collections/Media'
+import { Categories } from './src/collections/Categories'
 
 export default buildConfig({
   // Rich text editor
@@ -34,19 +35,14 @@ export default buildConfig({
     },
   },
 
-  // Cookies and sessions configuration
-  cookies: {
-    suffix: 'w2s-payload',
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    domain: undefined,
-  },
+
 
   // Collections
   collections: [
     Users,
     Testimonials,
     Media,
+    Categories,
   ],
 
   // Server configuration
@@ -80,6 +76,28 @@ export default buildConfig({
 
   // Security
   secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-this-in-production',
+
+  // Localization configuration - DISABLED until all _locales tables are created
+  // The Testimonials collection has localized: true fields, but no testimonials_locales table
+  // Uncomment after running migrations to create locales tables for all collections
+  // localization: {
+  //   locales: [
+  //     {
+  //       label: 'Українська',
+  //       code: 'uk',
+  //     },
+  //     {
+  //       label: 'English',
+  //       code: 'en',
+  //     },
+  //     {
+  //       label: 'Español',
+  //       code: 'es',
+  //     },
+  //   ],
+  //   defaultLocale: 'uk',
+  //   fallback: true,
+  // },
 
   // Typescript
   typescript: {
