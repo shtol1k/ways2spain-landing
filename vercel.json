@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npx payload migrate --force-accept-warning && npm run build:next",
+  "buildCommand": "npm install --os=linux --cpu=x64 sharp && npx payload migrate --force-accept-warning && npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps && npm install --os=linux --cpu=x64 sharp"
+  "installCommand": "npm install --legacy-peer-deps"
 }
