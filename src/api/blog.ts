@@ -24,15 +24,6 @@ export async function getPosts(page: number = 1, limit: number = 9): Promise<Pos
 
     const result = await payload.find({
         collection: 'posts',
-        where: {
-            status: {
-                equals: 'published',
-            },
-            // Ensure we don't show future posts
-            publishedAt: {
-                less_than_equal: new Date().toISOString(),
-            },
-        },
         sort: '-publishedAt',
         depth: 2, // Populate relationships (author, category, tags)
         page,
@@ -61,9 +52,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
             slug: {
                 equals: slug,
             },
-            status: {
-                equals: 'published',
-            },
         },
         depth: 2,
         limit: 1,
@@ -85,11 +73,6 @@ export async function getFeaturedPost(): Promise<Post | null> {
 
     const result = await payload.find({
         collection: 'posts',
-        where: {
-            status: {
-                equals: 'published',
-            },
-        },
         sort: '-publishedAt',
         depth: 2,
         limit: 1,
@@ -104,11 +87,7 @@ export async function getFeaturedPost(): Promise<Post | null> {
 export async function getRecentPosts(limit: number = 3, excludeId?: number): Promise<Post[]> {
     const payload = await getPayloadClient()
 
-    const where: any = {
-        status: {
-            equals: 'published',
-        },
-    }
+    const where: any = {}
 
     if (excludeId) {
         where.id = {
@@ -176,9 +155,6 @@ export async function getPostsByCategory(slug: string, page: number = 1, limit: 
         where: {
             'category.id': {
                 equals: categoryId,
-            },
-            status: {
-                equals: 'published',
             },
         },
         sort: '-publishedAt',
