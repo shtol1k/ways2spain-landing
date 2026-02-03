@@ -1,18 +1,10 @@
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
-
+// Root layout is a pass-through - html/body tags are rendered by route group layouts
+// (payload) uses Payload's RootLayout which renders html/body
+// (site) needs its own html/body tags and imports globals.css
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html lang="uk">
-      <body className={inter.className}>
-        {children}
-      </body>
-    </html>
-  )
+  return children
 }
