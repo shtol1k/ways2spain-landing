@@ -19,13 +19,19 @@ export const Users: CollectionConfig = {
         },
       }
     },
-    create: () => false, // Only admins can create users via admin panel
+    create: ({ req }) => {
+      return req.user?.role === 'admin'
+    },
     update: ({ req }) => {
       const user = req.user
       if (!user) return false
-      // Admins can update any user
-      // Managers can only update themselves
-      return user.role === 'admin' || user.id === req.user.id
+      if (user.role === 'admin') return true
+
+      return {
+        id: {
+          equals: user.id,
+        },
+      }
     },
     delete: ({ req }) => {
       // Only admins can delete users
