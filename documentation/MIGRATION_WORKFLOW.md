@@ -399,7 +399,7 @@ ORDER BY ordinal_position;
 
 ```bash
 # Create migration
-npm run payload -- migrate:create descriptive-name
+npm run payload -- migrate:create --name descriptive-name
 
 # Apply migrations locally
 npm run migrate

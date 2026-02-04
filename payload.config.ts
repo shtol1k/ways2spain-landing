@@ -10,6 +10,7 @@ import { Categories } from './src/collections/Categories'
 import { Tags } from './src/collections/Tags'
 import { Authors } from './src/collections/Authors'
 import { Posts } from './src/collections/Posts'
+import { SiteSettings } from './src/globals/SiteSettings'
 
 export default buildConfig({
   // Rich text editor
@@ -38,7 +39,10 @@ export default buildConfig({
     },
   },
 
-
+  // Globals
+  globals: [
+    SiteSettings,
+  ],
 
   // Collections
   collections: [

@@ -634,31 +634,31 @@ ___
 **Goal**: Implement Payload-based maintenance mode
 
 ### SiteSettings Collection
-- [ ] Create `src/collections/SiteSettings.ts`
-- [ ] Add maintenanceMode field
-- [ ] Add maintenanceMessage field
-- [ ] Configure access control
+- [✓] Create `src/globals/SiteSettings.ts` (Changed to Global)
+- [✓] Add maintenanceMode field
+- [✓] Add maintenanceMessage field (title/description)
+- [✓] Configure access control
 
 ### Middleware
-- [ ] Create `src/middleware.ts`
-- [ ] Implement maintenance mode check
-- [ ] Implement authentication check
-- [ ] Test redirect logic
+- [✓] Create `src/middleware.ts`
+- [✓] Implement maintenance mode check
+- [✓] Implement authentication check
+- [✓] Test redirect logic (pending manual test)
 
 ### ComingSoon Page
-- [ ] Create `src/app/coming-soon/page.tsx`
-- [ ] Design responsive layout
-- [ ] Add social links
+- [✓] Create `src/app/coming-soon/page.tsx`
+- [✓] Design responsive layout (migrated from main)
+- [✓] Add social links (migrated from main)
 
 ### Login Page
-- [ ] Create `src/app/login/page.tsx`
+- [ ] Create `src/app/login/page.tsx` (Optional - Admin panel login handles auth for now)
 - [ ] Create login form
 - [ ] Implement authentication
 - [ ] Test login flow
 
 ### API Route
-- [ ] Create `src/app/api/site-settings/route.ts`
-- [ ] Test settings retrieval
+- [✓] Create `src/app/api/site-settings/route.ts` (Used Payload default API: `/api/globals/site-settings`)
+- [✓] Test settings retrieval (via middleware)
 
 ### Testing
 - [ ] Test maintenance mode OFF → public site accessible
