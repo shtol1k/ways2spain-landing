@@ -11,6 +11,7 @@ import * as migration_20260203_204712 from './20260203_204712';
 import * as migration_20260203_212300_create-tags-table from './20260203_212300_create-tags-table';
 import * as migration_20260203_213800_create-authors-table from './20260203_213800_create-authors-table';
 import * as migration_20260204_114317 from './20260204_114317';
+import * as migration_20260204_125350 from './20260204_125350';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20260204_114317.up,
     down: migration_20260204_114317.down,
-    name: '20260204_114317'
+    name: '20260204_114317',
+  },
+  {
+    up: migration_20260204_125350.up,
+    down: migration_20260204_125350.down,
+    name: '20260204_125350'
   },
 ];
