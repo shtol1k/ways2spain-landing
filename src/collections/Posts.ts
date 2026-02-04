@@ -5,6 +5,7 @@ import {
     lexicalHTML
 } from '@payloadcms/richtext-lexical'
 import { formatSlug } from '@/utilities/transliterate'
+import { revalidatePost } from '@/hooks/revalidatePost'
 
 export const Posts: CollectionConfig = {
     slug: 'posts',
@@ -45,6 +46,9 @@ export const Posts: CollectionConfig = {
     },
     versions: {
         drafts: true,
+    },
+    hooks: {
+        afterChange: [revalidatePost],
     },
     fields: [
         {
