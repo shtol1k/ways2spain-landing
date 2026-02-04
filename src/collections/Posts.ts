@@ -4,34 +4,29 @@ import {
     lexicalEditor,
     lexicalHTML
 } from '@payloadcms/richtext-lexical'
+import { formatSlug } from '@/utilities/transliterate'
 
 export const Posts: CollectionConfig = {
     slug: 'posts',
     labels: {
-        singular: 'Стаття',
-        plural: 'Статті',
+        singular: 'Article',
+        plural: 'Articles',
     },
     admin: {
         useAsTitle: 'title',
         defaultColumns: ['title', 'status', 'category', 'publishedAt'],
-        group: 'Блог',
+        group: 'Blog',
     },
     access: {
-        // Public read for published posts
         read: ({ req }) => {
             const user = req.user
-
-            // Admins can read everything
             if (user?.role === 'admin' || user?.role === 'manager') return true
-
-            // Public users can only read published posts
             return {
                 status: {
                     equals: 'published',
                 },
             }
         },
-        // Only admins/managers can create/update/delete
         create: ({ req }) => {
             const user = req.user
             if (!user) return false
@@ -43,7 +38,6 @@ export const Posts: CollectionConfig = {
             return user.role === 'admin' || user.role === 'manager'
         },
         delete: ({ req }) => {
-            // Only admins can delete posts
             const user = req.user
             if (!user) return false
             return user.role === 'admin'
@@ -57,43 +51,32 @@ export const Posts: CollectionConfig = {
             name: 'title',
             type: 'text',
             required: true,
-            label: 'Заголовок',
+            label: 'Title',
             admin: {
-                description: 'Головний заголовок статті',
+                description: 'Main article title',
             },
         },
         {
             name: 'slug',
             type: 'text',
-            // Відключаємо required: true, щоб адмінка не блокувала пусте поле,
-            // оскільки ми генеруємо його автоматично в beforeValidate
-            // required: true, 
             unique: true,
             index: true,
             label: 'Slug (URL)',
             admin: {
-                description: 'URL-адреса статті (автоматично генерується з заголовку, якщо пусто)',
+                description: 'Article URL (automatically generated from title if empty)',
                 position: 'sidebar',
             },
             hooks: {
                 beforeValidate: [
                     ({ value, data }) => {
                         if (!value && data?.title) {
-                            return data.title
-                                .toString()
-                                .toLowerCase()
-                                .trim()
-                                .replace(/\s+/g, '-')
-                                .replace(/[^\w\-]+/g, '')
-                                .replace(/\-\-+/g, '-')
+                            return formatSlug(data.title)
                         }
                         return value
                     },
                 ],
             },
             validate: (value) => {
-                // Серверна валідація, яка спрацьовує ПІСЛЯ хука beforeValidate.
-                // Так ми гарантуємо, що slug точно буде в базі.
                 if (!value) {
                     return 'Slug is required (will be auto-generated from Title)'
                 }
@@ -103,7 +86,7 @@ export const Posts: CollectionConfig = {
         {
             name: 'publishedAt',
             type: 'date',
-            label: 'Дата публікації',
+            label: 'Published At',
             admin: {
                 position: 'sidebar',
                 date: {
@@ -115,10 +98,10 @@ export const Posts: CollectionConfig = {
             name: 'status',
             type: 'select',
             defaultValue: 'draft',
-            label: 'Статус',
+            label: 'Status',
             options: [
-                { label: 'Чорновик', value: 'draft' },
-                { label: 'Опубліковано', value: 'published' },
+                { label: 'Draft', value: 'draft' },
+                { label: 'Published', value: 'published' },
             ],
             admin: {
                 position: 'sidebar',
@@ -129,7 +112,7 @@ export const Posts: CollectionConfig = {
             type: 'relationship',
             relationTo: 'authors',
             required: true,
-            label: 'Автор',
+            label: 'Author',
             admin: {
                 position: 'sidebar',
             },
@@ -139,7 +122,7 @@ export const Posts: CollectionConfig = {
             type: 'relationship',
             relationTo: 'categories',
             required: true,
-            label: 'Категорія',
+            label: 'Category',
             admin: {
                 position: 'sidebar',
             },
@@ -149,7 +132,7 @@ export const Posts: CollectionConfig = {
             type: 'relationship',
             relationTo: 'tags',
             hasMany: true,
-            label: 'Теги',
+            label: 'Tags',
             admin: {
                 position: 'sidebar',
             },
@@ -158,9 +141,9 @@ export const Posts: CollectionConfig = {
             name: 'excerpt',
             type: 'textarea',
             required: true,
-            label: 'Короткий опис',
+            label: 'Short Description',
             admin: {
-                description: 'Текст для прев\'ю статті в списках (SEO description за замовчуванням)',
+                description: 'Preview text for lists (SEO description by default)',
             },
         },
         {
@@ -168,13 +151,13 @@ export const Posts: CollectionConfig = {
             type: 'upload',
             relationTo: 'media',
             required: true,
-            label: 'Головне зображення',
+            label: 'Main Image',
         },
         {
             name: 'content',
             type: 'richText',
             required: true,
-            label: 'Контент',
+            label: 'Content',
             editor: lexicalEditor({
                 features: ({ defaultFeatures }) => [
                     ...defaultFeatures,
@@ -185,18 +168,15 @@ export const Posts: CollectionConfig = {
         {
             name: 'readTime',
             type: 'number',
-            label: 'Час читання (хв)',
+            label: 'Reading Time (min)',
             admin: {
                 position: 'sidebar',
                 readOnly: true,
-                description: 'Розраховується автоматично при збереженні',
+                description: 'Calculated automatically on save',
             },
             hooks: {
                 beforeChange: [
                     ({ data }) => {
-                        // Simple read time calculation
-                        // Assuming 200 words per minute
-                        // Note: This is a rough estimation based on raw content
                         if (data?.content) {
                             const text = JSON.stringify(data.content)
                             const wordCount = text.split(/\s+/).length
@@ -212,7 +192,7 @@ export const Posts: CollectionConfig = {
             type: 'relationship',
             relationTo: 'posts',
             hasMany: true,
-            label: 'Схожі статті',
+            label: 'Related Articles',
             filterOptions: ({ id }) => {
                 return {
                     id: {
@@ -224,14 +204,14 @@ export const Posts: CollectionConfig = {
         {
             type: 'group',
             name: 'seo',
-            label: 'SEO налаштування',
+            label: 'SEO Settings',
             fields: [
                 {
                     name: 'metaTitle',
                     type: 'text',
                     label: 'Meta Title',
                     admin: {
-                        description: 'Залиште пустим, щоб використовувати заголовок статті',
+                        description: 'Leave empty to use article title',
                     },
                 },
                 {
@@ -239,7 +219,7 @@ export const Posts: CollectionConfig = {
                     type: 'textarea',
                     label: 'Meta Description',
                     admin: {
-                        description: 'Залиште пустим, щоб використовувати короткий опис',
+                        description: 'Leave empty to use short description',
                     },
                 },
                 {
@@ -248,7 +228,7 @@ export const Posts: CollectionConfig = {
                     relationTo: 'media',
                     label: 'OG Image',
                     admin: {
-                        description: 'Залиште пустим, щоб використовувати головне зображення',
+                        description: 'Leave empty to use main image',
                     },
                 },
             ],

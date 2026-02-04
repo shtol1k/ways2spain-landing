@@ -3,13 +3,13 @@ import { CollectionConfig } from 'payload'
 export const Tags: CollectionConfig = {
     slug: 'tags',
     labels: {
-        singular: 'Тег',
-        plural: 'Теги',
+        singular: 'Tag',
+        plural: 'Tags',
     },
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'slug'],
-        group: 'Блог',
+        group: 'Blog',
     },
     access: {
         // Public read for displaying on website
@@ -36,8 +36,9 @@ export const Tags: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+            label: 'Name',
             admin: {
-                description: 'Назва тега для відображення на сайті',
+                description: 'Tag name for website display',
             },
         },
         {
@@ -46,14 +47,15 @@ export const Tags: CollectionConfig = {
             required: true,
             unique: true,
             index: true,
+            label: 'Slug (URL)',
             admin: {
-                description: 'URL-friendly ідентифікатор (наприклад: digital-nomad, vie-legal)',
+                description: 'URL-friendly identifier (e.g. digital-nomad)',
             },
             validate: (value: string | null | undefined) => {
-                if (!value) return 'Slug є обов\'язковим'
+                if (!value) return 'Slug is required'
                 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
                 if (!slugRegex.test(value)) {
-                    return 'Slug має містити тільки малі латинські літери, цифри та дефіси'
+                    return 'Slug must contain only lowercase latin letters, numbers and hyphens'
                 }
                 return true
             },

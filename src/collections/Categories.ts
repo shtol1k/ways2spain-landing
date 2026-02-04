@@ -3,13 +3,13 @@ import { CollectionConfig } from 'payload'
 export const Categories: CollectionConfig = {
     slug: 'categories',
     labels: {
-        singular: 'Категорія',
-        plural: 'Категорії',
+        singular: 'Category',
+        plural: 'Categories',
     },
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'slug', 'order'],
-        group: 'Блог',
+        group: 'Blog',
     },
     access: {
         // Public read for displaying on website
@@ -36,8 +36,9 @@ export const Categories: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+            label: 'Name',
             admin: {
-                description: 'Назва категорії для відображення на сайті',
+                description: 'Category name for website display',
             },
         },
         {
@@ -46,14 +47,15 @@ export const Categories: CollectionConfig = {
             required: true,
             unique: true,
             index: true,
+            label: 'Slug (URL)',
             admin: {
-                description: 'URL-friendly ідентифікатор (наприклад: instrukcii, podatkyi)',
+                description: 'URL-friendly identifier (e.g. instructions, taxes)',
             },
             validate: (value: string | null | undefined) => {
-                if (!value) return 'Slug є обов\'язковим'
+                if (!value) return 'Slug is required'
                 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
                 if (!slugRegex.test(value)) {
-                    return 'Slug має містити тільки малі латинські літери, цифри та дефіси'
+                    return 'Slug must contain only lowercase latin letters, numbers and hyphens'
                 }
                 return true
             },
@@ -61,16 +63,18 @@ export const Categories: CollectionConfig = {
         {
             name: 'description',
             type: 'textarea',
+            label: 'Description',
             admin: {
-                description: 'Опис категорії для SEO та сторінки категорії',
+                description: 'Category description for SEO and category page',
             },
         },
         {
             name: 'order',
             type: 'number',
             defaultValue: 0,
+            label: 'Order',
             admin: {
-                description: 'Порядок сортування (менше число = вище в списку)',
+                description: 'Sorting order (lower number = higher in list)',
             },
         },
     ],

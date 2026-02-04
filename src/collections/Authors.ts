@@ -3,13 +3,13 @@ import { CollectionConfig } from 'payload'
 export const Authors: CollectionConfig = {
     slug: 'authors',
     labels: {
-        singular: 'Автор',
-        plural: 'Автори',
+        singular: 'Author',
+        plural: 'Authors',
     },
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'role', 'photo'],
-        group: 'Блог',
+        group: 'Blog',
     },
     access: {
         // Public read for displaying on website
@@ -36,8 +36,9 @@ export const Authors: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+            label: 'Name',
             admin: {
-                description: 'Повне ім\'я автора',
+                description: 'Full author name',
             },
         },
         {
@@ -46,14 +47,15 @@ export const Authors: CollectionConfig = {
             required: true,
             unique: true,
             index: true,
+            label: 'Slug (URL)',
             admin: {
-                description: 'URL-friendly ідентифікатор (наприклад: maria-shevchenko)',
+                description: 'URL-friendly identifier (e.g. maria-shevchenko)',
             },
             validate: (value: string | null | undefined) => {
-                if (!value) return 'Slug є обов\'язковим'
+                if (!value) return 'Slug is required'
                 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
                 if (!slugRegex.test(value)) {
-                    return 'Slug має містити тільки малі латинські літери, цифри та дефіси'
+                    return 'Slug must contain only lowercase latin letters, numbers and hyphens'
                 }
                 return true
             },
@@ -62,30 +64,33 @@ export const Authors: CollectionConfig = {
             name: 'photo',
             type: 'upload',
             relationTo: 'media',
+            label: 'Photo',
             admin: {
-                description: 'Фото автора для відображення в блозі',
+                description: 'Author photo for blog display',
             },
         },
         {
             name: 'bio',
             type: 'textarea',
+            label: 'Bio',
             admin: {
-                description: 'Коротка біографія автора (2-3 речення)',
+                description: 'Short biography (2-3 sentences)',
             },
         },
         {
             name: 'role',
             type: 'text',
+            label: 'Role',
             admin: {
-                description: 'Посада або роль (наприклад: CEO, Експерт з імміграції)',
+                description: 'Position or role (e.g. CEO, Immigration Expert)',
             },
         },
         {
             name: 'socialLinks',
             type: 'group',
-            label: 'Соціальні мережі',
+            label: 'Social Links',
             admin: {
-                description: 'Посилання на профілі в соціальних мережах',
+                description: 'Links to social media profiles',
             },
             fields: [
                 {
@@ -93,7 +98,7 @@ export const Authors: CollectionConfig = {
                     type: 'text',
                     label: 'LinkedIn',
                     admin: {
-                        description: 'URL профілю LinkedIn',
+                        description: 'LinkedIn profile URL',
                     },
                 },
                 {
@@ -101,7 +106,7 @@ export const Authors: CollectionConfig = {
                     type: 'text',
                     label: 'Twitter/X',
                     admin: {
-                        description: 'URL профілю Twitter/X',
+                        description: 'Twitter/X profile URL',
                     },
                 },
                 {
@@ -109,7 +114,7 @@ export const Authors: CollectionConfig = {
                     type: 'text',
                     label: 'Instagram',
                     admin: {
-                        description: 'URL профілю Instagram',
+                        description: 'Instagram profile URL',
                     },
                 },
                 {
@@ -117,7 +122,7 @@ export const Authors: CollectionConfig = {
                     type: 'text',
                     label: 'Facebook',
                     admin: {
-                        description: 'URL профілю Facebook',
+                        description: 'Facebook profile URL',
                     },
                 },
                 {
@@ -125,7 +130,7 @@ export const Authors: CollectionConfig = {
                     type: 'text',
                     label: 'Telegram',
                     admin: {
-                        description: 'URL або username в Telegram',
+                        description: 'Telegram URL or username',
                     },
                 },
             ],
@@ -134,8 +139,9 @@ export const Authors: CollectionConfig = {
             name: 'user',
             type: 'relationship',
             relationTo: 'users',
+            label: 'User Account',
             admin: {
-                description: 'Зв\'язок з обліковим записом користувача CMS (опціонально)',
+                description: 'Link to CMS user account (optional)',
             },
         },
     ],
