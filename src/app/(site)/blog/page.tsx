@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію",
 };
 
+export const revalidate = 60; // Revalidate this page every 60 seconds
+
 // Helper to get image URL safely
 const getImageUrl = (image: Media | number | null | undefined): string | null => {
   if (!image || typeof image === 'number') return null;

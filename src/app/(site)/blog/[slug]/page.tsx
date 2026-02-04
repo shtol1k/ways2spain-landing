@@ -9,6 +9,8 @@ interface BlogPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 60; // Revalidate this page every 60 seconds
+
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
