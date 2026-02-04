@@ -14,7 +14,7 @@ export const Posts: CollectionConfig = {
     },
     admin: {
         useAsTitle: 'title',
-        defaultColumns: ['title', 'status', 'category', 'publishedAt'],
+        defaultColumns: ['title', 'category', 'publishedAt'],
         group: 'Blog',
     },
     access: {
@@ -22,7 +22,7 @@ export const Posts: CollectionConfig = {
             const user = req.user
             if (user?.role === 'admin' || user?.role === 'manager') return true
             return {
-                status: {
+                _status: {
                     equals: 'published',
                 },
             }
@@ -154,19 +154,7 @@ export const Posts: CollectionConfig = {
                 return true
             },
         },
-        {
-            name: 'status',
-            type: 'select',
-            defaultValue: 'draft',
-            label: 'Status',
-            options: [
-                { label: 'Draft', value: 'draft' },
-                { label: 'Published', value: 'published' },
-            ],
-            admin: {
-                position: 'sidebar',
-            },
-        },
+
         {
             name: 'publishedAt',
             type: 'date',
