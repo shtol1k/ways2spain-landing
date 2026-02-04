@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node scripts/vercel-build.js",
+  "buildCommand": "npx payload migrate --force-accept-warning && npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps"
