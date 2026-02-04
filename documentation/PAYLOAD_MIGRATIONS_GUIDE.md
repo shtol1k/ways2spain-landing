@@ -269,3 +269,5 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 | Дата | Опис |
 |------|------|
 | 2026-02-03 | Створено документ після вирішення проблеми з Hydration error |
+
+Тестовий коміт
