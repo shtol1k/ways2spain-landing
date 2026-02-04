@@ -65,7 +65,9 @@ export const Posts: CollectionConfig = {
         {
             name: 'slug',
             type: 'text',
-            required: true,
+            // Відключаємо required: true, щоб адмінка не блокувала пусте поле,
+            // оскільки ми генеруємо його автоматично в beforeValidate
+            // required: true, 
             unique: true,
             index: true,
             label: 'Slug (URL)',
@@ -77,7 +79,6 @@ export const Posts: CollectionConfig = {
                 beforeValidate: [
                     ({ value, data }) => {
                         if (!value && data?.title) {
-                            // Simple slug generator hook
                             return data.title
                                 .toString()
                                 .toLowerCase()
@@ -89,6 +90,14 @@ export const Posts: CollectionConfig = {
                         return value
                     },
                 ],
+            },
+            validate: (value) => {
+                // Серверна валідація, яка спрацьовує ПІСЛЯ хука beforeValidate.
+                // Так ми гарантуємо, що slug точно буде в базі.
+                if (!value) {
+                    return 'Slug is required (will be auto-generated from Title)'
+                }
+                return true
             },
         },
         {

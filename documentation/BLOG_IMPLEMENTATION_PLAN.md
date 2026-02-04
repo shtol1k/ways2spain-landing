@@ -21,34 +21,34 @@
 
 ### 1.1 Колекція Categories ✅
 
-- [x] Створити колекцію `Categories` з полями:
+- [✓] Створити колекцію `Categories` з полями:
   - `name` (text, required) — назва категорії
   - `slug` (text, unique) — URL-friendly ідентифікатор
   - `description` (textarea) — опис категорії
   - `order` (number) — порядок сортування
-- [x] Створити міграцію для таблиці categories
+- [✓] Створити міграцію для таблиці categories
   - Файл: `20260203_180000_create-categories-table.ts`
-- [x] Додати колекцію до `payload.config.ts`
-- [x] Налаштувати права доступу (read: public, write: admin/manager)
-- [x] Додати початкові категорії (seed data через міграцію):
+- [✓] Додати колекцію до `payload.config.ts`
+- [✓] Налаштувати права доступу (read: public, write: admin/manager)
+- [✓] Додати початкові категорії (seed data через міграцію):
   - Файл: `20260203_180100_seed-blog-categories.ts`
   - Інструкції, Документи, Податки, Поради, Родина, Порівняння
-- [x] Запустити міграції (`npx payload migrate`)
-- [x] Виправити проблему з `payload_locked_documents_rels`
+- [✓] Запустити міграції (`npx payload migrate`)
+- [✓] Виправити проблему з `payload_locked_documents_rels`
   - Файл: `20260203_180200_add-categories-to-locked-docs.ts`
 
 ### 1.2 Колекція Tags
 
-- [ ] Створити колекцію `Tags` з полями:
+- [✓] Створити колекцію `Tags` з полями:
   - `name` (text, required) — назва тега
   - `slug` (text, unique) — URL-friendly ідентифікатор
-- [ ] Створити міграцію для таблиці tags
-- [ ] Додати колекцію до `payload.config.ts`
-- [ ] Налаштувати права доступу (read: public, write: admin/manager)
+- [✓] Створити міграцію для таблиці tags
+- [✓] Додати колекцію до `payload.config.ts`
+- [✓] Налаштувати права доступу (read: public, write: admin/manager)
 
 ### 1.3 Колекція Authors
 
-- [ ] Створити колекцію `Authors` з полями:
+- [✓] Створити колекцію `Authors` з полями:
   - `name` (text, required) — ім'я автора
   - `slug` (text, unique) — URL-friendly ідентифікатор
   - `photo` (upload → Media) — фото автора
@@ -58,13 +58,13 @@
     - `platform` (select: linkedin, twitter, instagram, facebook)
     - `url` (text)
   - `user` (relationship → Users, optional) — зв'язок з користувачем CMS
-- [ ] Створити міграцію для таблиці authors
-- [ ] Додати колекцію до `payload.config.ts`
-- [ ] Налаштувати права доступу
+- [✓] Створити міграцію для таблиці authors
+- [✓] Додати колекцію до `payload.config.ts`
+- [✓] Налаштувати права доступу
 
 ### 1.4 Колекція Posts
 
-- [ ] Створити колекцію `Posts` з полями:
+- [✓] Створити колекцію `Posts` з полями:
   - **Основний контент:**
     - `title` (text, required) — заголовок статті
     - `slug` (text, unique, required) — URL-friendly ідентифікатор
@@ -89,15 +89,15 @@
   - **Системні:**
     - `isFeatured` (checkbox) — показувати як головну статтю
     - `views` (number, hidden) — кількість переглядів (опціонально)
-- [ ] Створити міграцію для таблиці posts та зв'язків
-- [ ] Додати колекцію до `payload.config.ts`
-- [ ] Налаштувати права доступу:
+- [✓] Створити міграцію для таблиці posts та зв'язків
+- [✓] Додати колекцію до `payload.config.ts`
+- [✓] Налаштувати права доступу:
   - read: публічний для published статей
   - create/update: admin/manager
   - delete: admin
 - [ ] Налаштувати автоматичну генерацію slug з title
-- [ ] Додати валідацію (required fields, slug format)
-- [ ] Додати хуки для автоматичного розрахунку readTime
+- [✓] Додати валідацію (required fields, slug format)
+- [✓] Додати хуки для автоматичного розрахунку readTime
 
 ---
 
@@ -105,7 +105,7 @@
 
 ### 2.1 API та утиліти
 
-- [ ] Створити API функції для отримання даних з Payload:
+- [✓] Створити API функції для отримання даних з Payload:
   - `getPosts()` — список статей з пагінацією
   - `getPostBySlug(slug)` — окрема стаття
   - `getCategories()` — список категорій
@@ -118,7 +118,7 @@
 
 ### 2.2 Сторінка списку статей `/blog`
 
-- [ ] Оновити `src/app/(site)/blog/page.tsx`:
+- [✓] Оновити `src/app/(site)/blog/page.tsx`:
   - Замінити хардкод дані на API виклики
   - Відображати Featured Post
   - Відображати сітку статей
@@ -131,14 +131,14 @@
 
 ### 2.3 Сторінка статті `/blog/[slug]`
 
-- [ ] Оновити роутинг з `[id]` на `[slug]`
-- [ ] Оновити `BlogPostContent.tsx`:
+- [✓] Оновити роутинг з `[id]` на `[slug]`
+- [✓] Оновити `BlogPostContent.tsx`:
   - Рендеринг Lexical richText контенту
   - Відображення featuredImage
   - Інформація про автора
   - Категорія та теги
   - Дата публікації та час читання
-- [ ] Компонент Related Posts
+- [✓] Компонент Related Posts
 - [ ] Компонент Author Card
 - [ ] Breadcrumbs навігація
 - [ ] Кнопки шарингу (оновити функціонал)
