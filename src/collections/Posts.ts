@@ -57,6 +57,77 @@ export const Posts: CollectionConfig = {
             },
         },
         {
+            type: 'tabs',
+            tabs: [
+                {
+                    label: 'Content',
+                    fields: [
+                        {
+                            name: 'excerpt',
+                            type: 'textarea',
+                            required: true,
+                            label: 'Short Description',
+                            admin: {
+                                description: 'Preview text for lists (SEO description by default)',
+                            },
+                        },
+                        {
+                            name: 'featuredImage',
+                            type: 'upload',
+                            relationTo: 'media',
+                            required: true,
+                            label: 'Main Image',
+                        },
+                        {
+                            name: 'content',
+                            type: 'richText',
+                            required: true,
+                            label: 'Content',
+                            editor: lexicalEditor({
+                                features: ({ defaultFeatures }) => [
+                                    ...defaultFeatures,
+                                    HTMLConverterFeature({}),
+                                ],
+                            }),
+                        },
+                        lexicalHTML('content', { name: 'content_html' }),
+                    ],
+                },
+                {
+                    label: 'SEO',
+                    name: 'seo', // Preserves the data structure: { seo: { metaTitle: ... } }
+                    fields: [
+                        {
+                            name: 'metaTitle',
+                            type: 'text',
+                            label: 'Meta Title',
+                            admin: {
+                                description: 'Leave empty to use article title',
+                            },
+                        },
+                        {
+                            name: 'metaDescription',
+                            type: 'textarea',
+                            label: 'Meta Description',
+                            admin: {
+                                description: 'Leave empty to use short description',
+                            },
+                        },
+                        {
+                            name: 'metaImage',
+                            type: 'upload',
+                            relationTo: 'media',
+                            label: 'OG Image',
+                            admin: {
+                                description: 'Leave empty to use main image',
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        // Sidebar fields
+        {
             name: 'slug',
             type: 'text',
             unique: true,
@@ -84,17 +155,6 @@ export const Posts: CollectionConfig = {
             },
         },
         {
-            name: 'publishedAt',
-            type: 'date',
-            label: 'Published At',
-            admin: {
-                position: 'sidebar',
-                date: {
-                    pickerAppearance: 'dayAndTime',
-                },
-            },
-        },
-        {
             name: 'status',
             type: 'select',
             defaultValue: 'draft',
@@ -105,6 +165,17 @@ export const Posts: CollectionConfig = {
             ],
             admin: {
                 position: 'sidebar',
+            },
+        },
+        {
+            name: 'publishedAt',
+            type: 'date',
+            label: 'Published At',
+            admin: {
+                position: 'sidebar',
+                date: {
+                    pickerAppearance: 'dayAndTime',
+                },
             },
         },
         {
@@ -138,32 +209,21 @@ export const Posts: CollectionConfig = {
             },
         },
         {
-            name: 'excerpt',
-            type: 'textarea',
-            required: true,
-            label: 'Short Description',
-            admin: {
-                description: 'Preview text for lists (SEO description by default)',
+            name: 'relatedPosts',
+            type: 'relationship',
+            relationTo: 'posts',
+            hasMany: true,
+            label: 'Related Articles',
+            filterOptions: ({ id }) => {
+                return {
+                    id: {
+                        not_equals: id,
+                    },
+                }
             },
-        },
-        {
-            name: 'featuredImage',
-            type: 'upload',
-            relationTo: 'media',
-            required: true,
-            label: 'Main Image',
-        },
-        {
-            name: 'content',
-            type: 'richText',
-            required: true,
-            label: 'Content',
-            editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                    ...defaultFeatures,
-                    HTMLConverterFeature({}),
-                ],
-            }),
+            admin: {
+                position: 'sidebar',
+            },
         },
         {
             name: 'readTime',
@@ -187,52 +247,5 @@ export const Posts: CollectionConfig = {
                 ],
             },
         },
-        {
-            name: 'relatedPosts',
-            type: 'relationship',
-            relationTo: 'posts',
-            hasMany: true,
-            label: 'Related Articles',
-            filterOptions: ({ id }) => {
-                return {
-                    id: {
-                        not_equals: id,
-                    },
-                }
-            },
-        },
-        {
-            type: 'group',
-            name: 'seo',
-            label: 'SEO Settings',
-            fields: [
-                {
-                    name: 'metaTitle',
-                    type: 'text',
-                    label: 'Meta Title',
-                    admin: {
-                        description: 'Leave empty to use article title',
-                    },
-                },
-                {
-                    name: 'metaDescription',
-                    type: 'textarea',
-                    label: 'Meta Description',
-                    admin: {
-                        description: 'Leave empty to use short description',
-                    },
-                },
-                {
-                    name: 'metaImage',
-                    type: 'upload',
-                    relationTo: 'media',
-                    label: 'OG Image',
-                    admin: {
-                        description: 'Leave empty to use main image',
-                    },
-                },
-            ],
-        },
-        lexicalHTML('content', { name: 'content_html' }),
     ],
 }
