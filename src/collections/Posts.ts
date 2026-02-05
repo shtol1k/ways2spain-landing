@@ -49,6 +49,7 @@ export const Posts: CollectionConfig = {
     },
     hooks: {
         afterChange: [revalidatePost],
+        afterDelete: [revalidatePost],
     },
     fields: [
         {

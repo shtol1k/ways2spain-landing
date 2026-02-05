@@ -4,6 +4,7 @@ import '../globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Toaster } from '@/components/ui/sonner'
+import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/GoogleTagManager'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -19,7 +20,11 @@ export default function SiteLayout({
 }) {
   return (
     <html lang="uk">
+      <head>
+        <GoogleTagManagerHead />
+      </head>
       <body className={inter.className}>
+        <GoogleTagManagerBody />
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-1">
