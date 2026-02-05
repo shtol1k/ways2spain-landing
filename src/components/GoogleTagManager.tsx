@@ -4,7 +4,18 @@ import Script from 'next/script'
 
 const GTM_ID = 'GTM-W735T3PS'
 
+// Enable GTM only in production to avoid polluting analytics with dev traffic
+const isGTMEnabled =
+  typeof window !== 'undefined'
+    ? window.location.hostname === 'ways2spain.com' ||
+      window.location.hostname === 'www.ways2spain.com'
+    : process.env.NODE_ENV === 'production'
+
 export function GoogleTagManagerHead() {
+  if (!isGTMEnabled) {
+    return null
+  }
+
   return (
     <Script
       id="gtm-script"
@@ -23,6 +34,10 @@ export function GoogleTagManagerHead() {
 }
 
 export function GoogleTagManagerBody() {
+  if (!isGTMEnabled) {
+    return null
+  }
+
   return (
     <noscript>
       <iframe
