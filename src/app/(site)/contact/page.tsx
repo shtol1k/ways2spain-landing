@@ -217,18 +217,6 @@ export default function ContactPage() {
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <Phone className="w-5 h-5 text-secondary mt-1" />
-                    <div>
-                      <p className="font-medium">Телефон</p>
-                      <a
-                        href="tel:+34627073891"
-                        className="text-muted-foreground hover:text-secondary transition-smooth"
-                      >
-                        +34 62 707 3891
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
                     <Send className="w-5 h-5 text-secondary mt-1" />
                     <div>
                       <p className="font-medium">Telegram</p>

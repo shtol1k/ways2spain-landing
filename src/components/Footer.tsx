@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, Send, Instagram } from "lucide-react";
+import { Mail, MapPin, Send, Instagram } from "lucide-react";
 
 const CURRENT_YEAR = 2026;
 
@@ -26,13 +26,10 @@ const Footer = () => {
                   <Mail className="w-4 h-4" />
                   <span>ways2spain@gmail.com</span>
                 </a>
-                <a
-                  href="tel:+34627073891"
-                  className="flex items-center space-x-2 text-primary-foreground/80 hover:text-secondary transition-smooth"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>+34 62 707 3891</span>
-                </a>
+                <div className="flex items-center space-x-2 text-primary-foreground/80">
+                  <MapPin className="w-4 h-4" />
+                  <span>Валенсія, Іспанія</span>
+                </div>
               </div>
               
               {/* Right Column - Telegram and Instagram */}
