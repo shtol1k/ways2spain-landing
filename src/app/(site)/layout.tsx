@@ -19,7 +19,7 @@ export default function SiteLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="uk">
+    <html lang="uk" suppressHydrationWarning>
       <head>
         <GoogleTagManagerHead />
       </head>
