@@ -16,8 +16,8 @@ import { SiteSettings } from './src/globals/SiteSettings'
 export default buildConfig({
   // Email configuration
   email: resendAdapter({
-    defaultFromAddress: process.env.FROM_EMAIL || 'info@ways2spain.com',
-    defaultFromName: 'Ways2Spain',
+    defaultFromAddress: process.env.FROM_EMAIL || 'no-reply@ways2spain.com',
+    defaultFromName: 'Ways2Spain Service',
     apiKey: process.env.RESEND_API_KEY || '',
   }),
   // Rich text editor
