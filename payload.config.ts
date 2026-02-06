@@ -10,9 +10,16 @@ import { Categories } from './src/collections/Categories'
 import { Tags } from './src/collections/Tags'
 import { Authors } from './src/collections/Authors'
 import { Posts } from './src/collections/Posts'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { SiteSettings } from './src/globals/SiteSettings'
 
 export default buildConfig({
+  // Email configuration
+  email: resendAdapter({
+    defaultFromAddress: process.env.FROM_EMAIL || 'info@ways2spain.com',
+    defaultFromName: 'Ways2Spain',
+    apiKey: process.env.RESEND_API_KEY || '',
+  }),
   // Rich text editor
   editor: lexicalEditor(),
 

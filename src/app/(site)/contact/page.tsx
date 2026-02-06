@@ -221,12 +221,12 @@ export default function ContactPage() {
                     <div>
                       <p className="font-medium">Telegram</p>
                       <a
-                        href="https://t.me/DNSpain"
+                        href="https://t.me/ways2spain_manager"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
-                        @DNSpain
+                        @ways2spain_manager
                       </a>
                     </div>
                   </div>
@@ -240,7 +240,7 @@ export default function ContactPage() {
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-secondary transition-smooth"
                       >
-                        Ways2Spain
+                        @ways2spain
                       </a>
                     </div>
                   </div>
