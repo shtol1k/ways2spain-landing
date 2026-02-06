@@ -3,32 +3,21 @@
  * Replaces Express backend at backend-express/api/contact.js
  * 
  * Integrations:
- * - Nodemailer (Gmail SMTP)
+ * - Resend (Email Service)
  * - Notion API
  * - Telegram alerts
  */
 
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { Client } from '@notionhq/client';
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ============================================
 // Helper Functions
 // ============================================
-
-/**
- * Clean Gmail error messages from technical details
- */
-function cleanGmailError(errorMessage: string): string {
-  return errorMessage
-    .split('\n')[0]
-    .replace(/For more information, go to/gi, '')
-    .replace(/https:\/\/support\.google\.com\/mail\/\?p=\S+/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/-gsmtp/g, '')
-    .replace(/\d{16}/g, '')
-    .trim();
-}
 
 /**
  * Send error alert to Telegram
@@ -52,15 +41,10 @@ async function sendTelegramAlert(
     return;
   }
 
-  const cleanErrorMessage = error.message ? cleanGmailError(error.message) : 'N/A';
-
   const message = `🚨 <b>Помилка форми email на сайті Ways 2 Spain</b>
 
-<b>Помилка:</b> ${cleanErrorMessage}
-<b>Тип:</b> ${error.code || 'N/A'}
-<b>Команда:</b> ${error.command || 'N/A'}
-<b>Код відповіді:</b> ${error.responseCode || 'N/A'}
-<b>Відповідь сервера:</b> ${error.response || 'N/A'}
+<b>Помилка:</b> ${error.message || 'Unknown error'}
+<b>Тип:</b> ${error.name || 'Error'}
 ---
 <b>Користувач:</b> ${formData.name || 'N/A'}
 <b>Телефон:</b> ${formData.phone || 'Не вказано'}
@@ -115,14 +99,13 @@ async function createNotionEntry(data: {
 
   // Verify database access
   try {
+    // Optimization: Skip full database retrieval in production to save API calls
+    // unless we need to debug schema
+    /*
     const databaseInfo = await notion.databases.retrieve({
       database_id: databaseId,
     });
-    console.log('📊 Notion Database Info:', {
-      id: databaseInfo.id,
-      title: databaseInfo.title?.[0]?.plain_text || 'Untitled',
-      properties: Object.keys(databaseInfo.properties || {}),
-    });
+    */
   } catch (dbError: any) {
     console.error('❌ Cannot retrieve database info:', dbError);
     throw new Error(
@@ -233,8 +216,10 @@ async function createNotionEntry(data: {
 // ============================================
 
 export async function POST(request: Request) {
+  let body: any = {};
+
   try {
-    const body = await request.json();
+    body = await request.json();
     const { name, email, phone, status, message } = body;
 
     // Validation
@@ -248,9 +233,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check Gmail credentials
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      console.error('❌ Gmail credentials not configured');
+    // Check Resend API Key
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY not configured');
       return NextResponse.json(
         {
           success: false,
@@ -259,18 +244,6 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-
-    // Create Gmail transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    });
 
     // Build HTML email
     const htmlContent = `
@@ -289,11 +262,12 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    // Email options
-    const mailOptions = {
-      from: `"Ways 2 Spain Website" <${process.env.GMAIL_USER}>`,
-      to: process.env.RECIPIENT_EMAIL || process.env.GMAIL_USER,
-      replyTo: email,
+    // Send email via Resend
+    // Important: 'from' address must be the verified domain
+    const { data: emailData, error: emailError } = await resend.emails.send({
+      from: `Ways 2 Spain Website <${process.env.FROM_EMAIL || 'no-reply@ways2spain.com'}>`,
+      to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'], // Where the contact form submission goes
+      replyTo: email, // Reply directly to the user
       subject: `Нова заявка від ${name} - Ways 2 Spain`,
       html: htmlContent,
       text: `
@@ -309,11 +283,14 @@ ${message}
 
 Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
       `.trim(),
-    };
+    });
 
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.messageId);
+    if (emailError) {
+      console.error('❌ Resend API Error:', emailError);
+      throw new Error(`Resend Error: ${emailError.message}`);
+    }
+
+    console.log('✅ Email sent successfully:', emailData?.id);
 
     // Add Notion entry (if configured)
     let notionResult = null;
@@ -340,47 +317,21 @@ ${message}
       {
         success: true,
         message: 'Повідомлення успішно надіслано!',
-        messageId: info.messageId,
+        messageId: emailData?.id,
         notionEntryId: notionResult?.id,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error('❌ Error sending email:', error);
-    console.error('Error details:', {
-      code: error.code,
-      command: error.command,
-      response: error.response,
-      responseCode: error.responseCode,
-    });
-
-    // Parse request body for Telegram alert
-    let formData = {};
-    try {
-      formData = await request.json();
-    } catch (e) {
-      // Ignore parsing errors
-    }
+    console.error('❌ Error processing contact form:', error);
 
     // Send Telegram alert
-    await sendTelegramAlert(error, formData);
-
-    // Detailed error messages
-    let errorMessage = 'Помилка при відправці повідомлення. Спробуйте пізніше.';
-
-    if (error.code === 'EAUTH') {
-      errorMessage =
-        'Помилка автентифікації Gmail. Перевірте налаштування SMTP.';
-    } else if (error.code === 'ECONNECTION') {
-      errorMessage = 'Помилка підключення до Gmail сервера.';
-    } else if (error.responseCode === 535) {
-      errorMessage = 'Помилка автентифікації (535).';
-    }
+    await sendTelegramAlert(error, body);
 
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage,
+        error: 'Помилка при відправці повідомлення. Спробуйте пізніше.',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined,
       },
       { status: 500 }
