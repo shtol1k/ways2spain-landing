@@ -15,6 +15,9 @@ export const metadata = {
     locale: "uk_UA",
     type: "website",
   },
+  alternates: {
+    canonical: "https://ways2spain.com/about",
+  },
 };
 
 export default function AboutPage() {

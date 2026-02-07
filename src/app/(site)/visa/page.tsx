@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     locale: "uk_UA",
     type: "article",
   },
+  alternates: {
+    canonical: "https://ways2spain.com/visa",
+  },
 };
 
 export default function VisaPage() {

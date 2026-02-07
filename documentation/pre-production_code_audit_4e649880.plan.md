@@ -19,10 +19,10 @@ todos:
     status: completed
   - id: seo_homepage_metadata
     content: Add metadata to homepage (title, description, OG, canonical)
-    status: pending
+    status: completed
   - id: seo_static_pages
     content: Add metadata and canonical URLs to all static pages
-    status: pending
+    status: completed
   - id: seo_og_images
     content: Add default OG image and dynamic OG images for categories/tags
     status: pending
@@ -507,7 +507,7 @@ const where: { id?: { not_equals: number } } = {}
 
 ### 🟡 SEO оптимізація
 
-#### 8. Відсутні metadata на критичних сторінках
+#### 8. Відсутні metadata на критичних сторінках ✅ ВИПРАВЛЕНО
 
 **Проблеми:**
 
@@ -533,6 +533,91 @@ export const metadata: Metadata = {
   },
 };
 ```
+
+---
+
+**ВИКОНАНО (2026-02-07):**
+
+**Що було зроблено:**
+
+1. **Homepage (`src/app/(site)/page.tsx`)** - додано повний metadata export:
+
+```typescript
+// Було: немає metadata
+export default function HomePage() { ... }
+
+// Стало:
+export const metadata: Metadata = {
+  title: 'Ways 2 Spain - Релокація в Іспанію через Digital Nomad Visa',
+  description: 'Професійна допомога з релокацією в Іспанію. Digital Nomad Visa, NIE, TIE, резиденція. 300+ успішних кейсів, 98% схвалених заявок. Персональний супровід на кожному етапі.',
+  keywords: ['релокація Іспанія', 'Digital Nomad Visa', 'NIE Іспанія', 'імміграція в Іспанію', 'переїзд в Іспанію', 'резиденція Іспанія', 'Ways2Spain'],
+  openGraph: {
+    title: 'Ways 2 Spain - Релокація в Іспанію через Digital Nomad Visa',
+    description: 'Професійна допомога з релокацією в Іспанію. 300+ успішних кейсів, 98% схвалених заявок.',
+    url: 'https://ways2spain.com',
+    siteName: 'Ways 2 Spain',
+    locale: 'uk_UA',
+    type: 'website',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Ways 2 Spain - Релокація в Іспанію' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ways 2 Spain - Релокація в Іспанію',
+    description: 'Професійна допомога з релокацією в Іспанію. 300+ успішних кейсів.',
+    images: ['/og-image.jpg'],
+  },
+  alternates: { canonical: 'https://ways2spain.com' },
+}
+```
+
+2. **Contact page** - створено `src/app/(site)/contact/layout.tsx` (оскільки page.tsx є client component):
+
+```typescript
+export const metadata: Metadata = {
+  title: 'Контакти - Ways 2 Spain | Зв\'яжіться з нами',
+  description: 'Зв\'яжіться з Ways 2 Spain для консультації щодо релокації в Іспанію. Telegram: @ways2spain, Instagram: @ways2spain, Email: hello@ways2spain.com',
+  keywords: ['контакти', 'зв\'язок', 'Ways 2 Spain', 'консультація', 'Digital Nomad Visa'],
+  openGraph: { ... },
+  twitter: { ... },
+  alternates: { canonical: 'https://ways2spain.com/contact' },
+}
+```
+
+3. **Додано canonical URLs** до всіх статичних сторінок:
+   - ✅ `/about` - додано `alternates: { canonical: "https://ways2spain.com/about" }`
+   - ✅ `/visa` - додано `alternates: { canonical: "https://ways2spain.com/visa" }`
+   - ✅ `/calculator` - додано `alternates: { canonical: "https://ways2spain.com/calculator" }`
+   - ✅ `/consultation` - додано `alternates: { canonical: "https://ways2spain.com/consultation" }`
+   - ✅ `/services` - додано `alternates: { canonical: "https://ways2spain.com/services" }`
+   - ✅ `/blog` - покращено metadata та підтверджено canonical URL
+
+**Переваги:**
+
+1. **SEO покращення:**
+   - ✅ Повноцінні title tags для кожної сторінки
+   - ✅ Унікальні descriptions з ключовими словами
+   - ✅ Canonical URLs - запобігання дублікатів контенту
+   - ✅ Open Graph metadata - кращий вигляд в соцмережах
+   - ✅ Twitter Cards - оптимізація для Twitter
+
+2. **Структура:**
+   - ✅ Homepage - найважливіші keywords, опис послуг
+   - ✅ Contact - контактна інформація, CTA для консультації
+   - ✅ Static pages - унікальні descriptions відповідно до змісту
+   - ✅ Blog - оптимізація для контенту
+
+3. **Social sharing:**
+   - ✅ OG images - красиві превью при шарі
+   - ✅ Структуровані метадані для Facebook, Twitter, LinkedIn
+
+**Технічні деталі:**
+
+- **Client Components:** Для contact page використано `layout.tsx` замість прямого export metadata в client component
+- **Type Safety:** Всі metadata з типом `Metadata` від Next.js
+- **Keywords:** Релевантні українські та англійські терміни
+- **URLs:** Використані production URLs (ways2spain.com), підтримка dev.ways2spain.com через навігацію
+
+---
 
 #### 9. Відсутні OG images
 

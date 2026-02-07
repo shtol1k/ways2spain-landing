@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     locale: "uk_UA",
     type: "website",
   },
+  alternates: {
+    canonical: "https://ways2spain.com/calculator",
+  },
 };
 
 export default function CalculatorPage() {

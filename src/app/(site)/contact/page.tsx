@@ -15,6 +15,10 @@ import {
 import { Mail, Phone, MapPin, Send, Instagram, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
+// Note: Client components can't export metadata directly
+// Metadata should be in a separate page.tsx with this component as child
+// For now, using client component as page - consider refactoring
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",

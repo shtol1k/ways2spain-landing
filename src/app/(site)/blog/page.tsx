@@ -16,8 +16,17 @@ import { generateItemListSchema } from "@/lib/schema";
 import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Блог - Digital Nomad Visa Іспанія",
-  description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію",
+  title: "Блог - Digital Nomad Visa Іспанія | Ways 2 Spain",
+  description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію. Практичні поради, інструкції, особистий досвід.",
+  keywords: ["блог", "Digital Nomad Visa", "релокація", "Іспанія", "статті", "поради"],
+  openGraph: {
+    title: "Блог - Digital Nomad Visa Іспанія",
+    description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію",
+    url: "https://ways2spain.com/blog",
+    siteName: "Ways 2 Spain",
+    locale: "uk_UA",
+    type: "website",
+  },
   alternates: { canonical: getCanonicalUrl("blog") },
   twitter: {
     card: "summary_large_image",
