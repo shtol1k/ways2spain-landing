@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: security_xss
     content: Add input sanitization for XSS prevention in email generation
-    status: pending
+    status: completed
   - id: security_rate_limit
     content: Add rate limiting to contact API endpoint
     status: pending
@@ -157,10 +157,11 @@ return new Response(null, {
 
 **Примітка:** Переконайся, що змінна `NEXT_PUBLIC_SERVER_URL` встановлена в `.env.local` та на Vercel.
 
-#### 2. XSS вразливість в email generation
+#### 2. XSS вразливість в email generation ✅ ВИПРАВЛЕНО
 
 **Файл:** `[src/app/api/contact/route.ts:249-263](src/app/api/contact/route.ts)`
 
+**Було:**
 ```typescript
 const htmlContent = `
   <p><strong>Ім'я:</strong> ${name}</p>
@@ -171,7 +172,40 @@ const htmlContent = `
 
 **Ризик:** Користувацький input вставляється в HTML без санітизації. Якщо зловмисник введе `<script>alert('XSS')</script>`, це може виконатися в email-клієнті.
 
-**Рішення:** Використати HTML escaping або DOMPurify для санітизації.
+**Стало:**
+```typescript
+// Додано helper функцію для HTML escaping
+function escapeHtml(unsafe: string): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Використання в email generation
+const htmlContent = `
+  <p><strong>Ім'я:</strong> ${escapeHtml(name)}</p>
+  <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+  <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+`;
+```
+
+**Що було зроблено:**
+- ✅ Створено функцію `escapeHtml()` для санітизації HTML спецсимволів
+- ✅ Додано escaping для всіх user inputs в email generation (name, email, phone, status, message)
+- ✅ Додано escaping для Telegram alerts (HTML parse mode)
+- ✅ Захист працює без додаткових залежностей (lightweight рішення)
+- ✅ Спецсимволи `<`, `>`, `&`, `"`, `'` тепер безпечно відображаються як HTML entities
+
+**Захист від:**
+- XSS через `<script>` теги в input полях
+- HTML injection через `<img>`, `<iframe>` та інші теги
+- Атрибут injection через лапки
+
+**Примітка:** Рішення використовує native JavaScript без зовнішніх залежностей, що забезпечує мінімальний overhead.
 
 #### 3. Відсутність Rate Limiting
 

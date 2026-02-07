@@ -20,6 +20,19 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // ============================================
 
 /**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(unsafe: string): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
  * Send error alert to Telegram
  */
 async function sendTelegramAlert(
@@ -41,17 +54,18 @@ async function sendTelegramAlert(
     return;
   }
 
+  // Escape user data for HTML parse mode to prevent injection
   const message = `🚨 <b>Помилка форми email на сайті Ways 2 Spain</b>
 
-<b>Помилка:</b> ${error.message || 'Unknown error'}
-<b>Тип:</b> ${error.name || 'Error'}
+<b>Помилка:</b> ${escapeHtml(error.message || 'Unknown error')}
+<b>Тип:</b> ${escapeHtml(error.name || 'Error')}
 ---
-<b>Користувач:</b> ${formData.name || 'N/A'}
-<b>Телефон:</b> ${formData.phone || 'Не вказано'}
-<b>Email:</b> ${formData.email || 'N/A'}
-<b>Послуга:</b> ${formData.package || 'Не обрано'}
-<b>Кейс:</b> ${formData.situation || 'Не вказано'}
-<b>Повідомлення:</b> ${formData.message || 'N/A'}
+<b>Користувач:</b> ${escapeHtml(formData.name || 'N/A')}
+<b>Телефон:</b> ${escapeHtml(formData.phone || 'Не вказано')}
+<b>Email:</b> ${escapeHtml(formData.email || 'N/A')}
+<b>Послуга:</b> ${escapeHtml(formData.package || 'Не обрано')}
+<b>Кейс:</b> ${escapeHtml(formData.situation || 'Не вказано')}
+<b>Повідомлення:</b> ${escapeHtml(formData.message || 'N/A')}
 ⏰ ${new Date().toLocaleString('uk-UA')}
 📍 https://ways2spain.com`;
 
@@ -245,16 +259,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Build HTML email
+    // Build HTML email with escaped user input to prevent XSS
     const htmlContent = `
       <h2>Нова заявка з сайту Ways 2 Spain</h2>
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <p><strong>Ім'я:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        ${phone ? `<p><strong>Телефон:</strong> ${phone}</p>` : ''}
-        ${status ? `<p><strong>Запит:</strong> ${status}</p>` : ''}
+        <p><strong>Ім'я:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        ${phone ? `<p><strong>Телефон:</strong> ${escapeHtml(phone)}</p>` : ''}
+        ${status ? `<p><strong>Запит:</strong> ${escapeHtml(status)}</p>` : ''}
         <p><strong>Повідомлення:</strong></p>
-        <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${message.replace(/\n/g, '<br>')}</p>
+        <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
         <hr>
         <p style="color: #666; font-size: 12px;">
           Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
