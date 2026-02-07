@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { getPosts, getCategoriesWithCount, getTags } from "@/api/blog";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -9,11 +10,22 @@ import { Media } from "@/payload-types";
 import { SmartImage } from "@/components/SmartImage";
 import { BlogPagination } from "@/components/blog/BlogPagination";
 import { CategoryFilter } from "@/components/blog/CategoryFilter";
-import { BlogSearch } from "@/components/blog/BlogSearch";
 import { TagCloud } from "@/components/blog/TagCloud";
 import { getCanonicalUrl } from "@/lib/utils";
 import { generateItemListSchema } from "@/lib/schema";
 import { JsonLd } from "@/components/JsonLd";
+
+// Dynamic import для BlogSearch (Command + Popover components)
+const BlogSearch = dynamic(
+  () => import("@/components/blog/BlogSearch").then((mod) => ({ default: mod.BlogSearch })),
+  {
+    loading: () => (
+      <div className="w-full p-3 border border-border rounded-md bg-background">
+        <p className="text-sm text-muted-foreground">Завантаження пошуку...</p>
+      </div>
+    ),
+  }
+)
 
 export const metadata: Metadata = {
   title: "Блог - Digital Nomad Visa Іспанія | Ways 2 Spain",
