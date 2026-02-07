@@ -1,4 +1,8 @@
-export const transliterate = (text: string): string => {
+/**
+ * Transliterate Ukrainian text to Latin characters
+ * Used internally by formatSlug
+ */
+const transliterate = (text: string): string => {
     if (!text) return ''
 
     const ua = {
@@ -18,6 +22,10 @@ export const transliterate = (text: string): string => {
         .join('')
 }
 
+/**
+ * Format text into URL-friendly slug
+ * Transliterates Ukrainian text and converts to lowercase with hyphens
+ */
 export const formatSlug = (val: string): string => {
     if (!val) return ''
 

@@ -75,27 +75,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 /**
- * Get featured post (most recent featured or just most recent)
- */
-export async function getFeaturedPost(): Promise<Post | null> {
-    const payload = await getPayloadClient()
-
-    // First try to find explicit featured post
-    // Note: We haven't added 'isFeatured' to schema yet based on previous steps, 
-    // but we can query by latest for now or add the field later.
-    // For now, let's just get the latest post.
-
-    const result = await payload.find({
-        collection: 'posts',
-        sort: '-publishedAt',
-        depth: 2,
-        limit: 1,
-    })
-
-    return (result.docs[0] as Post) || null
-}
-
-/**
  * Get limited number of recent posts (e.g. for homepage or sidebar)
  */
 export async function getRecentPosts(limit: number = 3, excludeId?: number): Promise<Post[]> {

@@ -67,7 +67,7 @@ todos:
     status: pending
   - id: cleanup_unused_functions
     content: Remove unused exported functions (getFeaturedPost, getTestimonialById)
-    status: pending
+    status: completed
   - id: migration_docs
     content: Update outdated documentation (.cursor/local-dev.md, etc.)
     status: pending
@@ -654,13 +654,33 @@ const inter = Inter({
 
 **Рішення:** Видалити або залишити якщо плануєш використовувати в майбутньому.
 
-#### 19. Невикористані exported функції
+#### 19. Невикористані exported функції ✅ ВИПРАВЛЕНО
 
-- `[src/api/blog.ts](src/api/blog.ts)` - `getFeaturedPost()` (не використовується)
-- `[src/lib/api.ts](src/lib/api.ts)` - `getTestimonialById()` (не використовується)
-- `[src/utilities/transliterate.ts](src/utilities/transliterate.ts)` - `transliterate()` (експортується, але використовується тільки внутрішньо)
+**Файли:**
+- [`src/api/blog.ts`](src/api/blog.ts) - `getFeaturedPost()`
+- [`src/lib/api.ts`](src/lib/api.ts) - `getTestimonialById()`
+- [`src/utilities/transliterate.ts`](src/utilities/transliterate.ts) - `transliterate()`
 
-**Рішення:** Видалити або зробити private.
+**Проблема:** Функції експортуються, але ніде не імпортуються та не використовуються, збільшуючи bundle size.
+
+**Що було зроблено:**
+- ✅ **Видалено `getFeaturedPost()`** з `src/api/blog.ts`
+  - Функція була залишком від старої реалізації
+  - Замість неї використовується `getRecentPosts(1)` там де потрібен featured post
+  
+- ✅ **Видалено `getTestimonialById()`** з `src/lib/api.ts`
+  - Функція не використовується в жодному компоненті
+  - Testimonials завантажуються тільки списком через `getTestimonials()`
+  
+- ✅ **Зроблено `transliterate()` private** в `src/utilities/transliterate.ts`
+  - Змінено `export const transliterate` → `const transliterate`
+  - Функція використовується тільки всередині `formatSlug()`
+  - Додано JSDoc коментар що це internal utility
+
+**Результат:**
+- Чистіший API - експортуються тільки функції, що реально використовуються
+- Менший bundle size
+- Краща підтримуваність коду
 
 #### 20. Невикористана залежність
 

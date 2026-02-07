@@ -75,37 +75,6 @@ export async function getTestimonials(locale: string = 'uk'): Promise<Testimonia
 }
 
 /**
- * Fetch a single testimonial by ID
- * @param id - Testimonial ID
- * @param locale - Language locale (default: 'uk')
- * @returns Testimonial or null
- */
-export async function getTestimonialById(id: string, locale: string = 'uk'): Promise<Testimonial | null> {
-  try {
-    const response = await fetch(
-      `${API_URL}/api/testimonials/${id}?locale=${locale}&depth=1`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: { revalidate: 60 },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch testimonial: ${response.statusText}`);
-    }
-
-    const data: Testimonial = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching testimonial:', error);
-    return null;
-  }
-}
-
-/**
  * Get image URL from Payload media object
  * Handles both R2 storage and local storage
  * @param photo - Photo object from Payload
