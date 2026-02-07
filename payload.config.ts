@@ -15,6 +15,37 @@ import { Guides } from './src/collections/Guides'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { SiteSettings } from './src/globals/SiteSettings'
 
+// ============================================
+// Environment Variables Validation
+// ============================================
+
+/**
+ * Fail-fast strategy: Validate critical environment variables
+ * Better to crash at startup than run with insecure/broken configuration
+ */
+
+// PAYLOAD_SECRET: Critical for JWT tokens, sessions, encryption
+if (!process.env.PAYLOAD_SECRET) {
+  throw new Error(
+    '❌ PAYLOAD_SECRET environment variable is required.\n' +
+    'This secret is used for JWT tokens, sessions, and encryption.\n' +
+    'Generate a secure secret: openssl rand -base64 32\n' +
+    'Add it to your .env.local file or Vercel environment variables.'
+  )
+}
+
+// DATABASE_URL: Critical for database connection
+if (!process.env.DATABASE_URL) {
+  throw new Error(
+    '❌ DATABASE_URL environment variable is required.\n' +
+    'Example: postgresql://user:password@host:5432/database\n' +
+    'Add it to your .env.local file or Vercel environment variables.'
+  )
+}
+
+// Note: RESEND_API_KEY and FROM_EMAIL have fallbacks for local dev
+// Email functionality will fail gracefully without crashing the app
+
 export default buildConfig({
   // Email configuration
   email: resendAdapter({
@@ -28,7 +59,7 @@ export default buildConfig({
   // Database configuration
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || 'postgresql://atamanov@localhost:5432/w2s_local',
+      connectionString: process.env.DATABASE_URL,
     },
     // Disable push mode - use migrations only for schema changes
     // To add new fields: npx payload migrate:create --name your-migration-name
@@ -96,7 +127,7 @@ export default buildConfig({
   ],
 
   // Security
-  secret: process.env.PAYLOAD_SECRET || 'dev-secret-change-this-in-production',
+  secret: process.env.PAYLOAD_SECRET,
 
   // Localization configuration - DISABLED until all _locales tables are created
   // The Testimonials collection has localized: true fields, but no testimonials_locales table
