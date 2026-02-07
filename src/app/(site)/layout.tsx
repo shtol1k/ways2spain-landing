@@ -7,7 +7,12 @@ import LoadingBar from '@/components/LoadingBar'
 import { Toaster } from '@/components/ui/sonner'
 import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/GoogleTagManager'
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+const inter = Inter({ 
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap', // Prevents FOIT (Flash of Invisible Text)
+  variable: '--font-inter',
+  preload: true,
+})
 
 export const metadata: Metadata = {
   title: 'Ways2Spain - Digital Nomad Visa Spain',
