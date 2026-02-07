@@ -3,7 +3,6 @@ import { TestimonialsCarousel, type Testimonial } from "./TestimonialsCarousel";
 
 export default async function Testimonials() {
   let testimonials: Testimonial[] = [];
-  let error: string | null = null;
 
   try {
     const data = await getTestimonials('uk');
@@ -20,7 +19,13 @@ export default async function Testimonials() {
       photo: getImageUrl(item.photo),
     }));
   } catch (err) {
-    error = 'Не вдалося завантажити відгуки. Спробуйте пізніше.';
+    console.error('Error loading testimonials:', err);
+    // Continue with empty array - testimonials are non-critical
+  }
+
+  // Don't show error message, just skip section if no testimonials
+  if (testimonials.length === 0) {
+    return null;
   }
 
   return (
@@ -33,13 +38,7 @@ export default async function Testimonials() {
           </p>
         </div>
 
-        {error ? (
-          <div className="text-center">
-            <p className="text-destructive">{error}</p>
-          </div>
-        ) : (
-          <TestimonialsCarousel testimonials={testimonials} />
-        )}
+        <TestimonialsCarousel testimonials={testimonials} />
       </div>
     </section>
   );

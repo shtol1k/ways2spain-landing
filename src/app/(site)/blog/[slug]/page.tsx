@@ -64,13 +64,18 @@ export default async function BlogPage({ params }: BlogPageProps) {
   }
 
   // Fetch related posts (exclude current post)
-  // Since we don't have explicit 'relatedPosts' field populated yet in all cases, 
-  // or logic to auto-fill, let's fetch recent posts excluding this one.
+  // Error handling: if fetch fails, continue with empty array
   let relatedPosts = [];
-  if (post.relatedPosts && post.relatedPosts.length > 0) {
-    relatedPosts = post.relatedPosts;
-  } else {
-    relatedPosts = await getRecentPosts(2, post.id);
+  try {
+    if (post.relatedPosts && post.relatedPosts.length > 0) {
+      relatedPosts = post.relatedPosts;
+    } else {
+      relatedPosts = await getRecentPosts(2, post.id);
+    }
+  } catch (error) {
+    console.error('Error fetching related posts:', error);
+    // Continue with empty array - related posts are non-critical
+    relatedPosts = [];
   }
 
   // Serialize content to HTML if it's available in the special field

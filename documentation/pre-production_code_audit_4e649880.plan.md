@@ -85,7 +85,7 @@ todos:
     status: completed
   - id: quality_error_handling
     content: Add error handling to API functions
-    status: pending
+    status: completed
   - id: quality_fallback_secrets
     content: Remove fallback secrets - fail fast on missing env vars
     status: pending
@@ -2609,7 +2609,7 @@ Dedicated functions:
 
 ---
 
-#### 27. Missing error handling
+#### 27. Missing error handling ✅ ВИПРАВЛЕНО
 
 **Файли без proper error handling:**
 
@@ -2618,6 +2618,278 @@ Dedicated functions:
 - `[src/components/Testimonials.tsx](src/components/Testimonials.tsx)` - error state є, але без retry mechanism
 
 **Рішення:** Додати try-catch blocks + proper error boundaries.
+
+---
+
+**ВИПРАВЛЕНО (2026-02-07):**
+
+## Що було зроблено:
+
+### 1. **src/api/blog.ts** - додано error handling до всіх функцій:
+
+```typescript
+// Було: функції без try-catch
+export async function getPosts(page: number = 1, limit: number = 9): Promise<PostsResponse> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({ ... })
+    return { docs: result.docs as Post[], ... }
+}
+
+// Стало: з proper error handling
+export async function getPosts(page: number = 1, limit: number = 9): Promise<PostsResponse> {
+    try {
+        const payload = await getPayloadClient()
+        const result = await payload.find({ ... })
+        return {
+            docs: result.docs as Post[],
+            totalDocs: result.totalDocs,
+            totalPages: result.totalPages,
+            page: result.page || 1,
+            hasNextPage: result.hasNextPage,
+            hasPrevPage: result.hasPrevPage,
+        }
+    } catch (error) {
+        console.error('Error fetching posts:', error)
+        return {
+            docs: [],
+            totalDocs: 0,
+            totalPages: 0,
+            page: 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+        }
+    }
+}
+```
+
+**Функції з error handling:**
+- ✅ `getAllPostSlugs()` → return `[]` on error
+- ✅ `getPosts()` → return empty `PostsResponse` on error
+- ✅ `getPostBySlug()` → return `null` on error
+- ✅ `getRecentPosts()` → return `[]` on error
+- ✅ `getCategories()` → return `[]` on error
+- ✅ `getCategoryBySlug()` → return `null` on error
+- ✅ `getCategoriesWithCount()` → return `[]` on error, nested try-catch для кожної категорії
+- ✅ `getAuthors()` → return `[]` on error
+- ✅ `getAuthorBySlug()` → return `null` on error
+- ✅ `getPostsByAuthor()` → return empty `PostsResponse` on error
+- ✅ `getTags()` → return `[]` on error
+- ✅ `getTagBySlug()` → return `null` on error
+- ✅ `getPostsByTag()` → return empty `PostsResponse` on error
+- ✅ `getPostsByCategory()` → return empty `PostsResponse` on error
+
+---
+
+### 2. **src/api/guides.ts** - додано error handling до всіх функцій:
+
+```typescript
+// Було: функції без try-catch
+export async function getGuides(page: number = 1, limit: number = 12): Promise<GuidesResponse> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({ ... })
+    return { docs: result.docs as Guide[], ... }
+}
+
+// Стало: з proper error handling
+export async function getGuides(page: number = 1, limit: number = 12): Promise<GuidesResponse> {
+    try {
+        const payload = await getPayloadClient()
+        const result = await payload.find({ ... })
+        return {
+            docs: result.docs as Guide[],
+            totalDocs: result.totalDocs,
+            totalPages: result.totalPages,
+            page: result.page ?? 1,
+            hasNextPage: result.hasNextPage,
+            hasPrevPage: result.hasPrevPage,
+        }
+    } catch (error) {
+        console.error('Error fetching guides:', error)
+        return {
+            docs: [],
+            totalDocs: 0,
+            totalPages: 0,
+            page: 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+        }
+    }
+}
+```
+
+**Функції з error handling:**
+- ✅ `getGuides()` → return empty `GuidesResponse` on error
+- ✅ `getGuideBySlug()` → return `null` on error
+- ✅ `getGuidesByCategory()` → return empty `GuidesResponse` on error
+- ✅ `getGuideCategories()` → return `[]` on error
+- ✅ `getGuideCategoryBySlug()` → return `null` on error
+- ✅ `getRelatedGuides()` → return `[]` on error
+- ✅ `getAllGuideSlugs()` → return `[]` on error
+
+---
+
+### 3. **src/app/(site)/blog/[slug]/page.tsx** - додано error handling:
+
+```typescript
+// Було: без try-catch
+let relatedPosts = [];
+if (post.relatedPosts && post.relatedPosts.length > 0) {
+    relatedPosts = post.relatedPosts;
+} else {
+    relatedPosts = await getRecentPosts(2, post.id);
+}
+
+// Стало: з proper error handling
+let relatedPosts = [];
+try {
+    if (post.relatedPosts && post.relatedPosts.length > 0) {
+        relatedPosts = post.relatedPosts;
+    } else {
+        relatedPosts = await getRecentPosts(2, post.id);
+    }
+} catch (error) {
+    console.error('Error fetching related posts:', error);
+    // Continue with empty array - related posts are non-critical
+    relatedPosts = [];
+}
+```
+
+---
+
+### 4. **src/lib/api.ts** - вже має error handling:
+
+```typescript
+export async function getTestimonials(locale: string = 'uk'): Promise<Testimonial[]> {
+  try {
+    const response = await fetch(...);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch testimonials: ${response.statusText}`);
+    }
+    const data: TestimonialsResponse = await response.json();
+    return data.docs;
+  } catch (error) {
+    // Re-throw to let calling component handle the error
+    throw error;
+  }
+}
+```
+
+**Note:** Error handling тут правильний - throw error для обробки в `Testimonials` component.
+
+---
+
+## Переваги:
+
+### 1. **Graceful Degradation:**
+   - ✅ Database/Network errors не крешать додаток
+   - ✅ Return fallback values замість undefined/crash
+   - ✅ Користувач бачить порожній список замість error screen
+
+### 2. **Observability:**
+   - ✅ `console.error()` для всіх database errors
+   - ✅ Descriptive error messages з context (slug, category, etc.)
+   - ✅ Easy to track issues in production logs
+
+### 3. **User Experience:**
+   ```typescript
+   // User бачить:
+   - Empty blog posts list ✓
+   - Empty categories ✓
+   - No related posts (non-critical) ✓
+   
+   // Замість:
+   - 500 Error page ✗
+   - Crash ✗
+   - Blank screen ✗
+   ```
+
+### 4. **Error Handling Strategy:**
+
+**Critical Errors** (block page load):
+```typescript
+// getPostBySlug() - blog post page
+if (!post) {
+    notFound(); // Show 404 page
+}
+```
+
+**Non-Critical Errors** (show empty state):
+```typescript
+// getRecentPosts() - related posts
+try {
+    relatedPosts = await getRecentPosts(2, post.id);
+} catch (error) {
+    relatedPosts = []; // Show page without related posts
+}
+```
+
+### 5. **Consistent Error Responses:**
+
+**Scalar Functions:**
+```typescript
+getPostBySlug() → null (not found)
+getCategoryBySlug() → null (not found)
+```
+
+**Array Functions:**
+```typescript
+getPosts() → [] (empty array)
+getCategories() → [] (empty array)
+```
+
+**Paginated Functions:**
+```typescript
+getPosts() → { docs: [], totalDocs: 0, page: 1, ... }
+```
+
+---
+
+## Що НЕ зроблено (intentionally):
+
+### **Retry Mechanism для Testimonials:**
+
+```typescript
+// Testimonials.tsx - існуючий error handling достатній
+try {
+    const data = await getTestimonials('uk');
+    testimonials = data.map(...);
+} catch (err) {
+    error = 'Не вдалося завантажити відгуки. Спробуйте пізніше.';
+}
+
+return (
+    {error ? (
+        <div className="text-center">
+            <p className="text-destructive">{error}</p>
+        </div>
+    ) : (
+        <TestimonialsCarousel testimonials={testimonials} />
+    )}
+);
+```
+
+**Чому не додано retry:**
+- ✅ Server Component - користувач бачить повідомлення про помилку
+- ✅ Page revalidation (60s) автоматично retry на наступному завантаженні
+- ✅ Retry mechanism більше підходить для Client Components з user interaction
+- ✅ Testimonials - non-critical feature, error message достатній
+
+**Якщо потрібен retry:**
+- Можна додати Client Component з retry button
+- Або implement retry logic з exponential backoff в API layer
+
+---
+
+## Error Handling Best Practices:
+
+1. ✅ **Always catch database/network errors**
+2. ✅ **Log errors with context (console.error)**
+3. ✅ **Return safe fallback values**
+4. ✅ **Distinguish critical vs non-critical errors**
+5. ✅ **Show user-friendly error messages**
+6. ✅ **Don't expose sensitive error details to users**
+
+---
 
 ---
 

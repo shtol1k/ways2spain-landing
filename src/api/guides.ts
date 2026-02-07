@@ -99,22 +99,34 @@ export async function getGuides(
   page: number = 1,
   limit: number = 12
 ): Promise<GuidesResponse> {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'guides',
-    where: { _status: { equals: 'published' } },
-    sort: '-updatedAt',
-    depth: 2,
-    page,
-    limit,
-  })
-  return {
-    docs: result.docs as Guide[],
-    totalDocs: result.totalDocs,
-    totalPages: result.totalPages,
-    page: result.page ?? 1,
-    hasNextPage: result.hasNextPage,
-    hasPrevPage: result.hasPrevPage,
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'guides',
+      where: { _status: { equals: 'published' } },
+      sort: '-updatedAt',
+      depth: 2,
+      page,
+      limit,
+    })
+    return {
+      docs: result.docs as Guide[],
+      totalDocs: result.totalDocs,
+      totalPages: result.totalPages,
+      page: result.page ?? 1,
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
+    }
+  } catch (error) {
+    console.error('Error fetching guides:', error)
+    return {
+      docs: [],
+      totalDocs: 0,
+      totalPages: 0,
+      page: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    }
   }
 }
 
@@ -125,25 +137,30 @@ export async function getGuideBySlug(
   categorySlug: string,
   slug: string
 ): Promise<Guide | null> {
-  const payload = await getPayloadClient()
-  const categoryResult = await payload.find({
-    collection: 'guide-categories',
-    where: { slug: { equals: categorySlug } },
-    limit: 1,
-  })
-  if (categoryResult.docs.length === 0) return null
-  const categoryId = categoryResult.docs[0].id
-  const result = await payload.find({
-    collection: 'guides',
-    where: {
-      _status: { equals: 'published' },
-      slug: { equals: slug },
-      'category.id': { equals: categoryId },
-    },
-    depth: 2,
-    limit: 1,
-  })
-  return (result.docs[0] as Guide) || null
+  try {
+    const payload = await getPayloadClient()
+    const categoryResult = await payload.find({
+      collection: 'guide-categories',
+      where: { slug: { equals: categorySlug } },
+      limit: 1,
+    })
+    if (categoryResult.docs.length === 0) return null
+    const categoryId = categoryResult.docs[0].id
+    const result = await payload.find({
+      collection: 'guides',
+      where: {
+        _status: { equals: 'published' },
+        slug: { equals: slug },
+        'category.id': { equals: categoryId },
+      },
+      depth: 2,
+      limit: 1,
+    })
+    return (result.docs[0] as Guide) || null
+  } catch (error) {
+    console.error(`Error fetching guide "${categorySlug}/${slug}":`, error)
+    return null
+  }
 }
 
 /**
@@ -154,13 +171,45 @@ export async function getGuidesByCategory(
   page: number = 1,
   limit: number = 12
 ): Promise<GuidesResponse> {
-  const payload = await getPayloadClient()
-  const categoryResult = await payload.find({
-    collection: 'guide-categories',
-    where: { slug: { equals: categorySlug } },
-    limit: 1,
-  })
-  if (categoryResult.docs.length === 0) {
+  try {
+    const payload = await getPayloadClient()
+    const categoryResult = await payload.find({
+      collection: 'guide-categories',
+      where: { slug: { equals: categorySlug } },
+      limit: 1,
+    })
+    if (categoryResult.docs.length === 0) {
+      return {
+        docs: [],
+        totalDocs: 0,
+        totalPages: 0,
+        page: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      }
+    }
+    const categoryId = categoryResult.docs[0].id
+    const result = await payload.find({
+      collection: 'guides',
+      where: {
+        _status: { equals: 'published' },
+        'category.id': { equals: categoryId },
+      },
+      sort: '-updatedAt',
+      depth: 2,
+      page,
+      limit,
+    })
+    return {
+      docs: result.docs as Guide[],
+      totalDocs: result.totalDocs,
+      totalPages: result.totalPages,
+      page: result.page ?? 1,
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
+    }
+  } catch (error) {
+    console.error(`Error fetching guides by category "${categorySlug}":`, error)
     return {
       docs: [],
       totalDocs: 0,
@@ -170,39 +219,24 @@ export async function getGuidesByCategory(
       hasPrevPage: false,
     }
   }
-  const categoryId = categoryResult.docs[0].id
-  const result = await payload.find({
-    collection: 'guides',
-    where: {
-      _status: { equals: 'published' },
-      'category.id': { equals: categoryId },
-    },
-    sort: '-updatedAt',
-    depth: 2,
-    page,
-    limit,
-  })
-  return {
-    docs: result.docs as Guide[],
-    totalDocs: result.totalDocs,
-    totalPages: result.totalPages,
-    page: result.page ?? 1,
-    hasNextPage: result.hasNextPage,
-    hasPrevPage: result.hasPrevPage,
-  }
 }
 
 /**
  * Get all guide categories
  */
 export async function getGuideCategories(): Promise<GuideCategory[]> {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'guide-categories',
-    sort: 'order',
-    limit: 100,
-  })
-  return result.docs as GuideCategory[]
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'guide-categories',
+      sort: 'order',
+      limit: 100,
+    })
+    return result.docs as GuideCategory[]
+  } catch (error) {
+    console.error('Error fetching guide categories:', error)
+    return []
+  }
 }
 
 /**
@@ -211,13 +245,18 @@ export async function getGuideCategories(): Promise<GuideCategory[]> {
 export async function getGuideCategoryBySlug(
   slug: string
 ): Promise<GuideCategory | null> {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'guide-categories',
-    where: { slug: { equals: slug } },
-    limit: 1,
-  })
-  return (result.docs[0] as GuideCategory) || null
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'guide-categories',
+      where: { slug: { equals: slug } },
+      limit: 1,
+    })
+    return (result.docs[0] as GuideCategory) || null
+  } catch (error) {
+    console.error(`Error fetching guide category by slug "${slug}":`, error)
+    return null
+  }
 }
 
 /**
@@ -228,19 +267,24 @@ export async function getRelatedGuides(
   excludeId: number,
   limit: number = 3
 ): Promise<Guide[]> {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'guides',
-    where: {
-      _status: { equals: 'published' },
-      'category.id': { equals: categoryId },
-      id: { not_equals: excludeId },
-    },
-    sort: '-updatedAt',
-    depth: 1,
-    limit,
-  })
-  return result.docs as Guide[]
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'guides',
+      where: {
+        _status: { equals: 'published' },
+        'category.id': { equals: categoryId },
+        id: { not_equals: excludeId },
+      },
+      sort: '-updatedAt',
+      depth: 1,
+      limit,
+    })
+    return result.docs as Guide[]
+  } catch (error) {
+    console.error(`Error fetching related guides for category ${categoryId}:`, error)
+    return []
+  }
 }
 
 /**
@@ -249,26 +293,31 @@ export async function getRelatedGuides(
 export async function getAllGuideSlugs(): Promise<
   Array<{ category: string; slug: string; updatedAt: string }>
 > {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'guides',
-    where: { _status: { equals: 'published' } },
-    depth: 1,
-    limit: 500,
-  })
-  return (result.docs as Guide[])
-    .map((g) => {
-      const cat = g.category
-      const categorySlug =
-        typeof cat === 'object' && cat && 'slug' in cat
-          ? (cat as GuideCategory).slug
-          : null
-      if (!g.slug || !categorySlug) return null
-      return { 
-        category: categorySlug, 
-        slug: g.slug,
-        updatedAt: g.updatedAt || new Date().toISOString()
-      }
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'guides',
+      where: { _status: { equals: 'published' } },
+      depth: 1,
+      limit: 500,
     })
-    .filter((x): x is { category: string; slug: string; updatedAt: string } => x != null)
+    return (result.docs as Guide[])
+      .map((g) => {
+        const cat = g.category
+        const categorySlug =
+          typeof cat === 'object' && cat && 'slug' in cat
+            ? (cat as GuideCategory).slug
+            : null
+        if (!g.slug || !categorySlug) return null
+        return { 
+          category: categorySlug, 
+          slug: g.slug,
+          updatedAt: g.updatedAt || new Date().toISOString()
+        }
+      })
+      .filter((x): x is { category: string; slug: string; updatedAt: string } => x != null)
+  } catch (error) {
+    console.error('Error fetching guide slugs:', error)
+    return []
+  }
 }
