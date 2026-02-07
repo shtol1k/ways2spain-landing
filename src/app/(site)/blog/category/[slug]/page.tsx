@@ -37,6 +37,20 @@ export async function generateMetadata({
     description:
       category.description ||
       `Статті за категорією ${category.name}. Корисна інформація про Digital Nomad Visa та релокацію в Іспанію.`,
+    openGraph: {
+      title: `${category.name} - Блог | Digital Nomad Visa Іспанія`,
+      description: category.description || `Статті за категорією ${category.name}.`,
+      url: getCanonicalUrl(`blog/category/${slug}`),
+      type: 'website',
+      images: [
+        {
+          url: '/opengraph.png',
+          width: 1200,
+          height: 630,
+          alt: `${category.name} - Ways 2 Spain`,
+        },
+      ],
+    },
     alternates: { canonical: getCanonicalUrl(`blog/category/${slug}`) },
     twitter: {
       card: "summary_large_image",
@@ -44,6 +58,8 @@ export async function generateMetadata({
       description:
         category.description ||
         `Статті за категорією ${category.name}.`,
+      images: ['/opengraph.png'],
+      site: '@ways2spain',
     },
   };
 }

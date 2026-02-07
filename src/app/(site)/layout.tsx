@@ -18,6 +18,21 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Ways2Spain - Digital Nomad Visa Spain',
   description: 'Допомагаємо віддаленим спеціалістам з родинами жити і працювати в Іспанії з Digital Nomad Visa.',
+  openGraph: {
+    images: [
+      {
+        url: '/opengraph.png',
+        width: 1200,
+        height: 630,
+        alt: 'Ways 2 Spain',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/opengraph.png'],
+    site: '@ways2spain',
+  },
 }
 
 export default function SiteLayout({

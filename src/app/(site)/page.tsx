@@ -3,6 +3,7 @@ import Features from '@/components/Features'
 import Testimonials from '@/components/Testimonials'
 import ProcessSection from '@/components/ProcessSection'
 import CTASection from '@/components/CTASection'
+import { JsonLd } from '@/components/JsonLd'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/opengraph.png',
         width: 1200,
         height: 630,
         alt: 'Ways 2 Spain - Релокація в Іспанію',
@@ -29,7 +30,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Ways 2 Spain - Релокація в Іспанію',
     description: 'Професійна допомога з релокацією в Іспанію. 300+ успішних кейсів.',
-    images: ['/og-image.jpg'],
+    images: ['/opengraph.png'],
+    site: '@ways2spain',
   },
   alternates: {
     canonical: 'https://ways2spain.com',
@@ -38,12 +40,71 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      <Hero />
-      <Features />
-      <Testimonials />
-      <ProcessSection />
-      <CTASection />
-    </div>
+    <>
+      {/* Structured Data for SEO */}
+      <JsonLd
+        data={[
+          // Organization Schema
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            '@id': 'https://ways2spain.com/#organization',
+            name: 'Ways 2 Spain',
+            legalName: 'Ways 2 Spain',
+            url: 'https://ways2spain.com',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://ways2spain.com/logo.png',
+              width: 512,
+              height: 512,
+            },
+            description: 'Професійна допомога з релокацією в Іспанію через Digital Nomad Visa. 300+ успішних кейсів, 98% схвалених заявок.',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              contactType: 'Customer Service',
+              email: 'hello@ways2spain.com',
+              availableLanguage: ['Ukrainian', 'English', 'Russian'],
+            },
+            sameAs: [
+              'https://t.me/ways2spain',
+              'https://instagram.com/ways2spain',
+              'https://x.com/ways2spain',
+            ],
+            address: {
+              '@type': 'PostalAddress',
+              addressCountry: 'ES',
+            },
+          },
+          // WebSite Schema with Search
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            '@id': 'https://ways2spain.com/#website',
+            name: 'Ways 2 Spain',
+            url: 'https://ways2spain.com',
+            description: 'Професійна допомога з релокацією в Іспанію через Digital Nomad Visa',
+            publisher: {
+              '@id': 'https://ways2spain.com/#organization',
+            },
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: {
+                '@type': 'EntryPoint',
+                urlTemplate: 'https://ways2spain.com/blog?search={search_term_string}',
+              },
+              'query-input': 'required name=search_term_string',
+            },
+          },
+        ]}
+      />
+      
+      <div className="min-h-screen">
+        <Hero />
+        <Features />
+        <Testimonials />
+        <ProcessSection />
+        <CTASection />
+      </div>
+    </>
   )
 }

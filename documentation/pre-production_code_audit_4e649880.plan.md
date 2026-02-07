@@ -619,19 +619,185 @@ export const metadata: Metadata = {
 
 ---
 
-#### 9. Відсутні OG images
+#### 9. Відсутні OG images ✅ ВИПРАВЛЕНО
 
-**Страждають:**
+**Страждали:**
 
 - Site layout - немає default OG image
 - Blog category/tag/author pages - без OG images
 - Services detail pages - без OG images
 
-**Рішення:** Додати default OG image в layout + динамічні OG images для категорій/тегів.
+**Що було зроблено:**
 
-#### 10. Missing structured data (JSON-LD)
+**1. Додано default OG image в `src/app/(site)/layout.tsx`:**
 
-**Є:**
+```typescript
+// Було: тільки title та description
+export const metadata: Metadata = {
+  title: 'Ways2Spain - Digital Nomad Visa Spain',
+  description: 'Допомагаємо віддаленим спеціалістам...',
+}
+
+// Стало:
+export const metadata: Metadata = {
+  title: 'Ways2Spain - Digital Nomad Visa Spain',
+  description: 'Допомагаємо віддаленим спеціалістам...',
+  openGraph: {
+    images: [
+      {
+        url: '/opengraph.png',
+        width: 1200,
+        height: 630,
+        alt: 'Ways 2 Spain',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/opengraph.png'],
+    site: '@ways2spain',
+  },
+}
+```
+
+**2. Оновлено homepage `src/app/(site)/page.tsx`:**
+
+```typescript
+// Змінено OG image з /og-image.jpg на /opengraph.png
+openGraph: {
+  images: [{ url: '/opengraph.png', width: 1200, height: 630, alt: '...' }],
+},
+twitter: {
+  images: ['/opengraph.png'],
+  site: '@ways2spain',  // ✅ Додано X.com профіль
+}
+```
+
+**3. Додано OG images до blog category pages** (`src/app/(site)/blog/category/[slug]/page.tsx`):
+
+```typescript
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const category = await getCategoryBySlug(slug);
+  return {
+    // ... existing fields ...
+    openGraph: {
+      title: `${category.name} - Блог | Digital Nomad Visa Іспанія`,
+      description: category.description || `Статті за категорією ${category.name}.`,
+      url: getCanonicalUrl(`blog/category/${slug}`),
+      type: 'website',
+      images: [
+        {
+          url: '/opengraph.png',
+          width: 1200,
+          height: 630,
+          alt: `${category.name} - Ways 2 Spain`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${category.name} - Блог | Digital Nomad Visa Іспанія`,
+      description: category.description || `Статті за категорією ${category.name}.`,
+      images: ['/opengraph.png'],
+      site: '@ways2spain',
+    },
+  };
+}
+```
+
+**4. Додано OG images до blog tag pages** (`src/app/(site)/blog/tag/[slug]/page.tsx`):
+
+```typescript
+// Аналогічна структура з openGraph та twitter metadata
+openGraph: {
+  images: [{ url: '/opengraph.png', width: 1200, height: 630, alt: `${tag.name} - Ways 2 Spain` }],
+},
+twitter: {
+  images: ['/opengraph.png'],
+  site: '@ways2spain',
+}
+```
+
+**5. Додано OG images до blog author pages** (`src/app/(site)/blog/author/[slug]/page.tsx`):
+
+```typescript
+// Аналогічна структура
+openGraph: {
+  images: [{ url: '/opengraph.png', width: 1200, height: 630, alt: `${author.name} - Ways 2 Spain` }],
+},
+twitter: {
+  images: ['/opengraph.png'],
+  site: '@ways2spain',
+}
+```
+
+**6. Додано OG images до services detail pages** (`src/app/(site)/services/[id]/page.tsx`):
+
+```typescript
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const service = serviceDetails[id as ServiceKey];
+  return {
+    // ... existing fields ...
+    openGraph: {
+      title: `${service.name} - Ways 2 Spain`,
+      description: service.description,
+      url: `https://ways2spain.com/services/${id}`,
+      type: "website",
+      images: [
+        {
+          url: '/opengraph.png',
+          width: 1200,
+          height: 630,
+          alt: `${service.name} - Ways 2 Spain`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${service.name} - Ways 2 Spain`,
+      description: service.description,
+      images: ['/opengraph.png'],
+      site: '@ways2spain',
+    },
+    alternates: {
+      canonical: `https://ways2spain.com/services/${id}`,
+    },
+  };
+}
+```
+
+**Переваги:**
+
+1. **Social Sharing:**
+   - ✅ Всі сторінки тепер мають красиві превью при шарі в Facebook, Twitter, LinkedIn
+   - ✅ Default OG image в layout fallback для всіх сторінок
+   - ✅ Twitter Cards з правильним форматом (`summary_large_image`)
+   - ✅ Додано `@ways2spain` профіль для Twitter/X
+
+2. **SEO:**
+   - ✅ Open Graph metadata покращує CTR з соцмереж
+   - ✅ Правильні розміри (1200×630) відповідають стандартам соцмереж
+   - ✅ Унікальні alt-тексти для кожної сторінки
+
+3. **Брендинг:**
+   - ✅ Консистентний вигляд у всіх соцмережах
+   - ✅ Використання існуючого `/opengraph.png` (1200×630)
+
+**X.com (Twitter) Integration:**
+- ✅ Додано `site: '@ways2spain'` до всіх Twitter Cards
+- ✅ Це дозволить відстежувати mentions та shares в Twitter Analytics
+- ✅ Профіль буде відображатися в превью при шарі
+
+**Технічні деталі:**
+- **Default image:** Використано `/opengraph.png` для всіх сторінок
+- **Type safety:** Всі metadata з типом `Metadata` від Next.js
+- **Fallback:** Root layout забезпечує default OG image для всіх дочірніх сторінок
+
+---
+
+#### 10. Missing structured data (JSON-LD) ✅ ВИПРАВЛЕНО
+
+**Було:**
 
 - Blog posts: `BlogPosting`, `BreadcrumbList`, `Person`
 - Guides: `HowTo`, `FAQPage`, `BreadcrumbList`
@@ -641,10 +807,180 @@ export const metadata: Metadata = {
 - `Organization` schema (homepage/site-wide)
 - `WebSite` schema з search action
 - `Service` schema для `/services/[id]`
-- `LocalBusiness` schema (якщо applicable)
-- `Review/Rating` schema для testimonials
+- ~~`LocalBusiness` schema~~ (не applicable для remote-only сервісу)
+- ~~`Review/Rating` schema для testimonials~~ (потребує додаткових полів в CMS - відкладено)
 
-**Рішення:** Додати відсутні schemas для покращення Google rich snippets.
+**Що було зроблено:**
+
+**1. Додано Organization + WebSite schemas на homepage** (`src/app/(site)/page.tsx`):
+
+```typescript
+import { JsonLd } from '@/components/JsonLd'
+
+export default function HomePage() {
+  return (
+    <>
+      <JsonLd
+        data={[
+          // Organization Schema
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            '@id': 'https://ways2spain.com/#organization',
+            name: 'Ways 2 Spain',
+            legalName: 'Ways 2 Spain',
+            url: 'https://ways2spain.com',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://ways2spain.com/logo.png',
+              width: 512,
+              height: 512,
+            },
+            description: 'Професійна допомога з релокацією в Іспанію через Digital Nomad Visa. 300+ успішних кейсів, 98% схвалених заявок.',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              contactType: 'Customer Service',
+              email: 'hello@ways2spain.com',
+              availableLanguage: ['Ukrainian', 'English', 'Russian'],
+            },
+            sameAs: [
+              'https://t.me/ways2spain',
+              'https://instagram.com/ways2spain',
+              'https://x.com/ways2spain',  // ✅ Додано X.com профіль
+            ],
+            address: {
+              '@type': 'PostalAddress',
+              addressCountry: 'ES',
+            },
+          },
+          // WebSite Schema with Search
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            '@id': 'https://ways2spain.com/#website',
+            name: 'Ways 2 Spain',
+            url: 'https://ways2spain.com',
+            description: 'Професійна допомога з релокацією в Іспанію через Digital Nomad Visa',
+            publisher: {
+              '@id': 'https://ways2spain.com/#organization',
+            },
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: {
+                '@type': 'EntryPoint',
+                urlTemplate: 'https://ways2spain.com/blog?search={search_term_string}',
+              },
+              'query-input': 'required name=search_term_string',
+            },
+          },
+        ]}
+      />
+      
+      <div className="min-h-screen">
+        {/* ... existing content ... */}
+      </div>
+    </>
+  )
+}
+```
+
+**2. Додано Service schema до services detail pages** (`src/app/(site)/services/[id]/page.tsx`):
+
+```typescript
+import { JsonLd } from '@/components/JsonLd'
+
+export default async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const service = serviceDetails[id as ServiceKey];
+  
+  const mainPrice = service.pricing[0].price === "Безкоштовно" 
+    ? "0" 
+    : service.pricing[0].price;
+
+  return (
+    <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: `${service.name} - Ways 2 Spain`,
+          description: service.description,
+          provider: {
+            '@type': 'Organization',
+            '@id': 'https://ways2spain.com/#organization',
+            name: 'Ways 2 Spain',
+          },
+          areaServed: {
+            '@type': 'Country',
+            name: 'Spain',
+            identifier: 'ES',
+          },
+          serviceType: 'Relocation Services',
+          category: 'Immigration and Visa Services',
+          ...(mainPrice !== "0" && {
+            offers: {
+              '@type': 'Offer',
+              price: mainPrice,
+              priceCurrency: 'EUR',
+              availability: 'https://schema.org/InStock',
+              url: `https://ways2spain.com/services/${id}`,
+            },
+          }),
+        }}
+      />
+
+      <div className="min-h-screen pt-32 pb-20">
+        {/* ... existing content ... */}
+      </div>
+    </>
+  )
+}
+```
+
+**Переваги:**
+
+1. **Google Rich Snippets:**
+   - ✅ **Organization:** Google розуміє бренд, показує logo, контакти, соцмережі в Knowledge Graph
+   - ✅ **WebSite:** Дозволяє Google показувати search box прямо в SERP
+   - ✅ **Service:** Покращує відображення послуг в Google Search з цінами
+
+2. **SEO Benefits:**
+   - 🎯 Кращий CTR через rich snippets з додатковою інформацією
+   - 🎯 Structured data допомагає Google зрозуміти context сайту
+   - 🎯 Більш акуратна індексація сторінок послуг
+   - 🎯 Можливість появи в спеціальних блоках Google (Featured Snippets, Rich Cards)
+
+3. **Social Integration:**
+   - ✅ `sameAs` links до Telegram, Instagram, X.com
+   - ✅ Google може показувати ці профілі в Knowledge Panel
+
+4. **Service Schema Benefits:**
+   - ✅ Ціни автоматично витягуються з `serviceDetails` data
+   - ✅ Безкоштовна консультація позначається як "0" EUR
+   - ✅ `areaServed: Spain` - чітко вказана географія послуг
+   - ✅ `serviceType` та `category` для кращої категоризації
+
+**X.com (Twitter) Integration:**
+- ✅ Додано `https://x.com/ways2spain` в `sameAs` array Organization schema
+- ✅ Це допомагає Google зрозуміти, що Ways 2 Spain присутній в X.com
+- ✅ Може покращити visibility в Knowledge Graph
+
+**Технічні деталі:**
+- **`JsonLd` component:** Використано існуючий компонент з підтримкою arrays
+- **`@id` references:** Organization schema має унікальний ID, на який посилається WebSite
+- **Conditional offers:** Service schema не показує offers для безкоштовних послуг
+- **Type safety:** Всі schemas відповідають Schema.org стандартам
+
+**Перевірка:**
+Після deploy можна перевірити structured data:
+- Google Rich Results Test: https://search.google.com/test/rich-results
+- Schema.org Validator: https://validator.schema.org/
+
+**Що не зроблено (і чому):**
+- ❌ **LocalBusiness schema:** Не applicable, бо Ways 2 Spain працює віддалено (remote-only)
+- ❌ **Review/Rating schema для testimonials:** Потребує додаткових полів в Testimonials collection (rating, reviewDate, reviewBody), що виходить за межі цього audit. Можна додати пізніше якщо потрібно.
+
+---
 
 #### 11. robots.txt - неповний ✅ ВИПРАВЛЕНО
 

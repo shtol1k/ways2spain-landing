@@ -37,11 +37,27 @@ export async function generateMetadata({
     description:
       author.bio ||
       `Статті автора ${author.name}. Корисна інформація про Digital Nomad Visa та релокацію в Іспанію.`,
+    openGraph: {
+      title: `${author.name} - Блог | Digital Nomad Visa Іспанія`,
+      description: author.bio || `Статті автора ${author.name}.`,
+      url: getCanonicalUrl(`blog/author/${slug}`),
+      type: 'website',
+      images: [
+        {
+          url: '/opengraph.png',
+          width: 1200,
+          height: 630,
+          alt: `${author.name} - Ways 2 Spain`,
+        },
+      ],
+    },
     alternates: { canonical: getCanonicalUrl(`blog/author/${slug}`) },
     twitter: {
       card: "summary_large_image",
       title: `${author.name} - Блог | Digital Nomad Visa Іспанія`,
       description: author.bio || `Статті автора ${author.name}.`,
+      images: ['/opengraph.png'],
+      site: '@ways2spain',
     },
   };
 }

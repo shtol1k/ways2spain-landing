@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft } from "lucide-react";
+import { JsonLd } from "@/components/JsonLd";
 import {
   Table,
   TableBody,
@@ -123,6 +124,24 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description: service.description,
       url: `https://ways2spain.com/services/${id}`,
       type: "website",
+      images: [
+        {
+          url: '/opengraph.png',
+          width: 1200,
+          height: 630,
+          alt: `${service.name} - Ways 2 Spain`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${service.name} - Ways 2 Spain`,
+      description: service.description,
+      images: ['/opengraph.png'],
+      site: '@ways2spain',
+    },
+    alternates: {
+      canonical: `https://ways2spain.com/services/${id}`,
     },
   };
 }
@@ -135,8 +154,45 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
 
+  // Get pricing for Service schema
+  const mainPrice = service.pricing[0].price === "Безкоштовно" 
+    ? "0" 
+    : service.pricing[0].price;
+
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <>
+      {/* Service Schema for SEO */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: `${service.name} - Ways 2 Spain`,
+          description: service.description,
+          provider: {
+            '@type': 'Organization',
+            '@id': 'https://ways2spain.com/#organization',
+            name: 'Ways 2 Spain',
+          },
+          areaServed: {
+            '@type': 'Country',
+            name: 'Spain',
+            identifier: 'ES',
+          },
+          serviceType: 'Relocation Services',
+          category: 'Immigration and Visa Services',
+          ...(mainPrice !== "0" && {
+            offers: {
+              '@type': 'Offer',
+              price: mainPrice,
+              priceCurrency: 'EUR',
+              availability: 'https://schema.org/InStock',
+              url: `https://ways2spain.com/services/${id}`,
+            },
+          }),
+        }}
+      />
+
+      <div className="min-h-screen pt-32 pb-20">
       <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
         {/* Header */}
         <Link
@@ -338,5 +394,6 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         </section>
       </div>
     </div>
+    </>
   );
 }
