@@ -1,6 +1,7 @@
 import { CircleCheckBig, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 // SEO Metadata
@@ -37,9 +38,11 @@ export default function ConsultationPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-neutral-100 mb-4">
-              <img
+              <Image
                 src="/icon_time.svg"
                 alt="30 хвилин"
+                width={44}
+                height={44}
                 className="w-11 h-11"
               />
             </div>
@@ -50,9 +53,11 @@ export default function ConsultationPage() {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-neutral-100 mb-4">
-              <img
+              <Image
                 src="/icon_personal.svg"
                 alt="Персональна консультація"
+                width={44}
+                height={44}
                 className="w-11 h-11"
               />
             </div>
@@ -63,9 +68,11 @@ export default function ConsultationPage() {
           </div>
           <div className="bg-card rounded-xl p-6 border border-border shadow-elegant hover:shadow-strong transition-smooth">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-neutral-100 mb-4">
-              <img
+              <Image
                 src="/icon_google_meet.svg"
                 alt="Онлайн консультація"
+                width={44}
+                height={44}
                 className="w-11 h-11"
               />
             </div>

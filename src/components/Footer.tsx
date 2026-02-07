@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Send, Instagram } from "lucide-react";
 
 const CURRENT_YEAR = 2026;
@@ -11,7 +12,13 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/logo.png" alt="Ways 2 Spain Logo" className="h-12 w-auto" />
+              <Image 
+                src="/logo.png" 
+                alt="Ways 2 Spain Logo" 
+                width={120}
+                height={48}
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               Допомагаємо віддаленим спеціалістам з родинами жити і працювати в Іспанії з Digital Nomad Visa.

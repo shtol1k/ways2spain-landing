@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const features = [
   {
     type: "image",
@@ -47,9 +49,11 @@ const Features = () => {
               className="bg-card rounded-xl p-8 shadow-elegant hover:shadow-strong transition-smooth border border-border hover:scale-105"
             >
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-neutral-100 mb-6">
-                <img
+                <Image
                   src={feature.imageSrc}
                   alt={feature.imageAlt}
+                  width={48}
+                  height={48}
                   className="w-12 h-12"
                 />
               </div>

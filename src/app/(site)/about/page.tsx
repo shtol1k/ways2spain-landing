@@ -1,6 +1,7 @@
 import { CheckCircle2, Award, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 // SEO Metadata
 export const metadata = {
@@ -40,11 +41,14 @@ export default function AboutPage() {
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-          <div>
-            <img
+          <div className="relative w-full aspect-[4/3]">
+            <Image
               src="/documents.jpg"
               alt="Spanish immigration documents and passport"
-              className="rounded-2xl shadow-strong w-full h-auto"
+              fill
+              className="rounded-2xl shadow-strong object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              quality={85}
             />
           </div>
           <div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
@@ -7,10 +8,14 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center pt-20">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src="/hero-spain.jpg"
           alt="Barcelona cityscape with palm trees at sunset"
-          className="w-full h-full object-cover"
+          fill
+          priority
+          className="object-cover"
+          quality={90}
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 to-primary/70" />
       </div>

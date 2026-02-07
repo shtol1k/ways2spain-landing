@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
@@ -20,11 +21,14 @@ const CTASection = () => {
     <section className="py-20 lg:py-32 gradient-subtle">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          <div>
-            <img
+          <div className="relative w-full aspect-[4/3]">
+            <Image
               src="/digital-nomad.jpg"
               alt="Digital nomad workspace in Spain"
-              className="rounded-2xl shadow-strong w-full h-auto"
+              fill
+              className="rounded-2xl shadow-strong object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              quality={85}
             />
           </div>
           <div>
