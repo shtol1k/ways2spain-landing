@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import '../globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import LoadingBar from '@/components/LoadingBar'
 import { Toaster } from '@/components/ui/sonner'
 import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/GoogleTagManager'
 
@@ -31,6 +32,7 @@ export default function SiteLayout({
       </head>
       <body className={inter.className}>
         <GoogleTagManagerBody />
+        <LoadingBar />
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-1">
