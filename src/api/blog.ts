@@ -2,7 +2,6 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { Post, Category, Tag, Author } from '@/payload-types'
 
-// Initialize payload
 const getPayloadClient = async () => {
     return await getPayload({ config })
 }
@@ -301,7 +300,6 @@ export async function getPostsByTag(slug: string, page: number = 1, limit: numbe
 export async function getPostsByCategory(slug: string, page: number = 1, limit: number = 9): Promise<PostsResponse> {
     const payload = await getPayloadClient()
 
-    // First find category ID
     const categoryResult = await payload.find({
         collection: 'categories',
         where: {

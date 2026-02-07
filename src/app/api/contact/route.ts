@@ -13,7 +13,6 @@ import { Resend } from 'resend';
 import { Client } from '@notionhq/client';
 import { z } from 'zod';
 
-// Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ============================================
@@ -73,16 +72,12 @@ const rateLimitMap = new Map<string, number[]>();
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const timestamps = rateLimitMap.get(ip) || [];
-  
-  // Remove timestamps older than 60 seconds
   const recentTimestamps = timestamps.filter(t => now - t < 60000);
   
-  // Check if rate limit exceeded (5 requests per minute)
   if (recentTimestamps.length >= 5) {
     return false;
   }
   
-  // Add current timestamp
   recentTimestamps.push(now);
   rateLimitMap.set(ip, recentTimestamps);
   
@@ -100,7 +95,6 @@ function checkRateLimit(ip: string): boolean {
 }
 
 function getClientIp(request: Request): string {
-  // Try to get real IP from headers (Vercel sets x-forwarded-for)
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
     return forwarded.split(',')[0].trim();
@@ -111,7 +105,6 @@ function getClientIp(request: Request): string {
     return realIp;
   }
   
-  // Fallback to a default (should rarely happen on Vercel)
   return 'unknown';
 }
 
@@ -150,10 +143,9 @@ async function sendTelegramAlert(
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    return; // Silently skip if not configured
+    return;
   }
 
-  // Escape user data for HTML parse mode to prevent injection
   const message = `🚨 <b>Помилка форми email на сайті Ways 2 Spain</b>
 
 <b>Помилка:</b> ${escapeHtml(error.message || 'Unknown error')}
@@ -179,7 +171,7 @@ async function sendTelegramAlert(
       }),
     });
   } catch (tgError) {
-    // Silently fail - Telegram alerts are non-critical
+    // Telegram alerts are non-critical - fail silently
   }
 }
 
@@ -204,7 +196,6 @@ async function createNotionEntry(data: {
     throw new Error('NOTION_DATABASE_ID is not configured');
   }
 
-  // Build properties for Notion
   const properties: Record<string, {
     title?: Array<{ text: { content: string } }>;
     email?: string;
@@ -249,7 +240,6 @@ async function createNotionEntry(data: {
     },
   };
 
-  // Optional fields
   if (data.package && data.package !== 'Не обрано') {
     properties['Послуга'] = {
       select: {
@@ -304,7 +294,6 @@ export async function POST(request: Request) {
   let body: Partial<ContactFormData> = {};
 
   try {
-    // Check rate limit first (before processing request body)
     const clientIp = getClientIp(request);
     if (!checkRateLimit(clientIp)) {
       return NextResponse.json(
@@ -323,7 +312,6 @@ export async function POST(request: Request) {
 
     body = await request.json();
 
-    // Validate input using Zod schema
     const validationResult = contactFormSchema.safeParse(body);
     
     if (!validationResult.success) {
@@ -342,10 +330,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Extract validated and sanitized data
     const { name, email, phone, status, message } = validationResult.data;
 
-    // Check Resend API Key
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
         {
@@ -356,7 +342,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Build HTML email with escaped user input to prevent XSS
     const htmlContent = `
       <h2>Нова заявка з сайту Ways 2 Spain</h2>
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -373,7 +358,6 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    // Send email via Resend
     const { data: emailData, error: emailError} = await resend.emails.send({
       from: `Ways 2 Spain Website <${process.env.FROM_EMAIL || 'no-reply@ways2spain.com'}>`,
       to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'],
@@ -399,7 +383,6 @@ ${message}
       throw new Error(`Resend Error: ${emailError.message}`);
     }
 
-    // Add Notion entry (if configured)
     let notionResult = null;
     if (process.env.NOTION_API_KEY && process.env.NOTION_DATABASE_ID) {
       try {
@@ -412,7 +395,7 @@ ${message}
           message,
         });
       } catch (notionError) {
-        // Don't block response if Notion fails - silently continue
+        // Notion is non-critical - continue on error
       }
     }
 
@@ -428,10 +411,8 @@ ${message}
   } catch (error) {
     const err = error as Error;
     
-    // Log error for debugging in Vercel logs
     console.error('Contact form error:', err);
 
-    // Send Telegram alert
     await sendTelegramAlert(err, body);
 
     return NextResponse.json(

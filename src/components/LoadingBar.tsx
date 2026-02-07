@@ -4,13 +4,7 @@ import { useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 /**
- * LoadingBar - тонкий індикатор завантаження вгорі сторінки
- * 
- * Автоматично з'являється при навігації між сторінками та показує прогрес завантаження.
- * Використовує патерн, де прогрес швидко досягає 80%, а потім чекає завершення навігації.
- * 
- * @example
- * <LoadingBar />
+ * LoadingBar - progress indicator for page navigation
  */
 export default function LoadingBar() {
   const pathname = usePathname()
@@ -19,18 +13,15 @@ export default function LoadingBar() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    // Скидаємо стан при зміні маршруту (сторінка завантажена)
     setLoading(false)
     setProgress(0)
   }, [pathname, searchParams])
 
   useEffect(() => {
-    // Відстежуємо клік по посиланнях для початку анімації
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       const link = target.closest('a')
       
-      // Перевіряємо, чи це внутрішнє посилання (не зовнішнє і не якір)
       if (link && link.href && link.href.startsWith(window.location.origin)) {
         const url = new URL(link.href)
         const isNewPage = url.pathname !== pathname || url.search !== window.location.search
@@ -42,7 +33,6 @@ export default function LoadingBar() {
       }
     }
 
-    // Відстежуємо події popstate (кнопки назад/вперед браузера)
     const handlePopState = () => {
       setLoading(true)
       setProgress(0)
@@ -60,11 +50,9 @@ export default function LoadingBar() {
   useEffect(() => {
     if (!loading) return
 
-    // Імітація прогресу завантаження
-    // Швидко досягаємо 80%, потім повільно до 95%, завершення відбувається при зміні pathname
+    // Progress animation: 0 -> 50% (fast), 50 -> 80% (medium), 80 -> 95% (slow)
     const intervals: NodeJS.Timeout[] = []
 
-    // Швидкий старт: 0 -> 50% за 200ms
     const fastStart = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 50) {
@@ -76,7 +64,6 @@ export default function LoadingBar() {
     }, 40)
     intervals.push(fastStart)
 
-    // Середній прогрес: 50 -> 80% за 500ms
     setTimeout(() => {
       const midProgress = setInterval(() => {
         setProgress((prev) => {
@@ -90,7 +77,6 @@ export default function LoadingBar() {
       intervals.push(midProgress)
     }, 200)
 
-    // Повільний фініш: 80 -> 95% за 1s
     setTimeout(() => {
       const slowFinish = setInterval(() => {
         setProgress((prev) => {
@@ -128,7 +114,6 @@ export default function LoadingBar() {
       aria-valuenow={progress}
       aria-label="Завантаження сторінки"
     >
-      {/* Ефект свічення */}
       <div className="h-full w-full bg-linear-to-r from-transparent via-white/60 to-transparent animate-shimmer" />
     </div>
   )
