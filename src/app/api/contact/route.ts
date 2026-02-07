@@ -11,9 +11,50 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { Client } from '@notionhq/client';
+import { z } from 'zod';
 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ============================================
+// Validation Schema
+// ============================================
+
+/**
+ * Contact form validation schema using Zod
+ * Provides strong type safety and comprehensive validation
+ */
+const contactFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Ім\'я має містити мінімум 2 символи')
+    .max(100, 'Ім\'я занадто довге (максимум 100 символів)')
+    .trim(),
+  email: z
+    .string()
+    .email('Невірний формат email')
+    .max(255, 'Email занадто довгий')
+    .toLowerCase()
+    .trim(),
+  phone: z
+    .string()
+    .max(20, 'Телефон занадто довгий')
+    .optional()
+    .or(z.literal('')),
+  status: z
+    .string()
+    .max(100, 'Статус занадто довгий')
+    .optional()
+    .or(z.literal('')),
+  message: z
+    .string()
+    .min(10, 'Повідомлення має містити мінімум 10 символів')
+    .max(5000, 'Повідомлення занадто довге (максимум 5000 символів)')
+    .trim(),
+});
+
+// TypeScript type derived from Zod schema
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
 // ============================================
 // Rate Limiting
@@ -310,18 +351,28 @@ export async function POST(request: Request) {
     }
 
     body = await request.json();
-    const { name, email, phone, status, message } = body;
 
-    // Validation
-    if (!name || !email || !message) {
+    // Validate input using Zod schema
+    const validationResult = contactFormSchema.safeParse(body);
+    
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(err => ({
+        field: err.path.join('.'),
+        message: err.message,
+      }));
+      
       return NextResponse.json(
         {
           success: false,
-          error: 'Відсутні обов\'язкові поля: ім\'я, email та повідомлення',
+          error: 'Помилка валідації даних',
+          details: errors,
         },
         { status: 400 }
       );
     }
+
+    // Extract validated and sanitized data
+    const { name, email, phone, status, message } = validationResult.data;
 
     // Check Resend API Key
     if (!process.env.RESEND_API_KEY) {

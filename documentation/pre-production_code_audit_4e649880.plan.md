@@ -13,7 +13,7 @@ todos:
     status: completed
   - id: security_validation
     content: Implement Zod validation schemas for contact form
-    status: pending
+    status: completed
   - id: bug_revalidate
     content: Fix path bug in revalidatePost.ts (remove spaces)
     status: pending
@@ -294,10 +294,11 @@ npm install @upstash/ratelimit @upstash/redis
 
 **Висновок:** Поточне рішення дає достатній захист для нового бізнесу. Upstash - це upgrade для масштабування, не обов'язковий на старті.
 
-#### 4. Слабка валідація input
+#### 4. Слабка валідація input ✅ ВИПРАВЛЕНО
 
 **Файл:** `[src/app/api/contact/route.ts:225-234](src/app/api/contact/route.ts)`
 
+**Було:**
 ```typescript
 if (!name || !email || !message) {
   return NextResponse.json({ error: '...' }, { status: 400 });
@@ -305,22 +306,102 @@ if (!name || !email || !message) {
 ```
 
 **Проблеми:**
-
 - Немає перевірки формату email
 - Немає обмеження довжини полів
 - Немає перевірки спецсимволів
 - Немає санітизації для Notion API
 
-**Рішення:** Використати Zod схему:
-
+**Стало:**
 ```typescript
-const contactSchema = z.object({
-  name: z.string().min(2).max(100).trim(),
-  email: z.string().email().max(255),
-  phone: z.string().max(20).optional(),
-  message: z.string().min(10).max(5000).trim(),
+// Zod validation schema
+const contactFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Ім\'я має містити мінімум 2 символи')
+    .max(100, 'Ім\'я занадто довге (максимум 100 символів)')
+    .trim(),
+  email: z
+    .string()
+    .email('Невірний формат email')
+    .max(255, 'Email занадто довгий')
+    .toLowerCase()
+    .trim(),
+  phone: z
+    .string()
+    .max(20, 'Телефон занадто довгий')
+    .optional()
+    .or(z.literal('')),
+  status: z
+    .string()
+    .max(100, 'Статус занадто довгий')
+    .optional()
+    .or(z.literal('')),
+  message: z
+    .string()
+    .min(10, 'Повідомлення має містити мінімум 10 символів')
+    .max(5000, 'Повідомлення занадто довге (максимум 5000 символів)')
+    .trim(),
 });
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
+
+// Validation в POST handler
+const validationResult = contactFormSchema.safeParse(body);
+
+if (!validationResult.success) {
+  const errors = validationResult.error.errors.map(err => ({
+    field: err.path.join('.'),
+    message: err.message,
+  }));
+  
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'Помилка валідації даних',
+      details: errors,
+    },
+    { status: 400 }
+  );
+}
+
+// Validated and sanitized data
+const { name, email, phone, status, message } = validationResult.data;
 ```
+
+**Що було зроблено:**
+- ✅ Створено Zod schema з детальними правилами валідації
+- ✅ Додано перевірку формату email (`.email()`)
+- ✅ Додано обмеження довжини для всіх полів
+- ✅ Автоматична санітизація: `.trim()`, `.toLowerCase()` для email
+- ✅ Кастомні error messages українською мовою
+- ✅ Type-safe: TypeScript тип автоматично виводиться з Zod схеми
+- ✅ Детальні помилки валідації з вказівкою поля (field-level errors)
+
+**Валідаційні правила:**
+- **Name:** 2-100 символів, trim whitespace
+- **Email:** валідний email формат, max 255 символів, lowercase, trim
+- **Phone:** опціональний, max 20 символів
+- **Status:** опціональний, max 100 символів
+- **Message:** 10-5000 символів, trim whitespace
+
+**Приклад валідаційної помилки:**
+```json
+{
+  "success": false,
+  "error": "Помилка валідації даних",
+  "details": [
+    { "field": "email", "message": "Невірний формат email" },
+    { "field": "message", "message": "Повідомлення має містити мінімум 10 символів" }
+  ]
+}
+```
+
+**Переваги:**
+- 🛡️ Захист від injection attacks (обмеження довжини)
+- 🛡️ Гарантована коректність даних перед відправкою в email/Notion/Telegram
+- 🎯 Чіткі error messages для користувача
+- 🔒 Type safety - TypeScript перевіряє типи на етапі компіляції
+- 📝 Автоматична санітизація (trim, lowercase)
 
 ---
 
