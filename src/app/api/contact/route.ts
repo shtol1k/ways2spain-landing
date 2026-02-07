@@ -150,8 +150,7 @@ async function sendTelegramAlert(
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    console.log('⚠️ Telegram alerts not configured (missing TOKEN or CHAT_ID)');
-    return;
+    return; // Silently skip if not configured
   }
 
   // Escape user data for HTML parse mode to prevent injection
@@ -179,9 +178,8 @@ async function sendTelegramAlert(
         parse_mode: 'HTML',
       }),
     });
-    console.log('✅ Telegram alert sent successfully');
   } catch (tgError) {
-    console.error('❌ Failed to send Telegram alert:', tgError);
+    // Silently fail - Telegram alerts are non-critical
   }
 }
 
@@ -204,27 +202,6 @@ async function createNotionEntry(data: {
 
   if (!databaseId) {
     throw new Error('NOTION_DATABASE_ID is not configured');
-  }
-
-  console.log('📝 Notion Configuration:', {
-    hasApiKey: !!process.env.NOTION_API_KEY,
-    databaseId: databaseId,
-  });
-
-  // Verify database access
-  try {
-    // Optimization: Skip full database retrieval in production to save API calls
-    // unless we need to debug schema
-    /*
-    const databaseInfo = await notion.databases.retrieve({
-      database_id: databaseId,
-    });
-    */
-  } catch (dbError: any) {
-    console.error('❌ Cannot retrieve database info:', dbError);
-    throw new Error(
-      `Cannot access Notion database: ${dbError.message}. Check if integration has access to the database.`
-    );
   }
 
   // Build properties for Notion
@@ -283,8 +260,6 @@ async function createNotionEntry(data: {
     };
   }
 
-  console.log('📝 Creating Notion entry with properties:', Object.keys(properties));
-
   try {
     const response = await notion.pages.create({
       parent: {
@@ -293,20 +268,8 @@ async function createNotionEntry(data: {
       properties,
     });
 
-    console.log('✅ Notion page created successfully:', {
-      pageId: response.id,
-      url: response.url,
-    });
-
     return response;
   } catch (error: any) {
-    console.error('❌ Notion API error:', {
-      code: error.code,
-      status: error.status,
-      message: error.message,
-      body: error.body ? JSON.stringify(error.body, null, 2) : 'No body',
-    });
-
     if (error.code === 'object_not_found') {
       throw new Error(
         'Database not found. Check NOTION_DATABASE_ID. Make sure the integration has access to the database.'
@@ -376,7 +339,6 @@ export async function POST(request: Request) {
 
     // Check Resend API Key
     if (!process.env.RESEND_API_KEY) {
-      console.error('❌ RESEND_API_KEY not configured');
       return NextResponse.json(
         {
           success: false,
@@ -404,11 +366,10 @@ export async function POST(request: Request) {
     `;
 
     // Send email via Resend
-    // Important: 'from' address must be the verified domain
-    const { data: emailData, error: emailError } = await resend.emails.send({
+    const { data: emailData, error: emailError} = await resend.emails.send({
       from: `Ways 2 Spain Website <${process.env.FROM_EMAIL || 'no-reply@ways2spain.com'}>`,
-      to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'], // Where the contact form submission goes
-      replyTo: email, // Reply directly to the user
+      to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'],
+      replyTo: email,
       subject: `Нова заявка від ${name} - Ways 2 Spain`,
       html: htmlContent,
       text: `
@@ -427,11 +388,8 @@ ${message}
     });
 
     if (emailError) {
-      console.error('❌ Resend API Error:', emailError);
       throw new Error(`Resend Error: ${emailError.message}`);
     }
-
-    console.log('✅ Email sent successfully:', emailData?.id);
 
     // Add Notion entry (if configured)
     let notionResult = null;
@@ -442,16 +400,12 @@ ${message}
           email,
           phone: phone || 'Не вказано',
           package: status || 'Не обрано',
-          situation: 'Не вказано', // This field doesn't exist in new form
+          situation: 'Не вказано',
           message,
         });
-        console.log('✅ Notion entry created:', notionResult.id);
       } catch (notionError: any) {
-        // Don't block response if Notion fails
-        console.error('⚠️ Notion error (non-blocking):', notionError);
+        // Don't block response if Notion fails - silently continue
       }
-    } else {
-      console.log('ℹ️ Notion integration not configured (missing API_KEY or DATABASE_ID)');
     }
 
     return NextResponse.json(
@@ -464,7 +418,8 @@ ${message}
       { status: 200 }
     );
   } catch (error: any) {
-    console.error('❌ Error processing contact form:', error);
+    // Log error for debugging in Vercel logs
+    console.error('Contact form error:', error);
 
     // Send Telegram alert
     await sendTelegramAlert(error, body);

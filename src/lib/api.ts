@@ -69,7 +69,7 @@ export async function getTestimonials(locale: string = 'uk'): Promise<Testimonia
     const data: TestimonialsResponse = await response.json();
     return data.docs;
   } catch (error) {
-    console.error('Error fetching testimonials:', error);
+    // Re-throw to let calling component handle the error
     throw error;
   }
 }

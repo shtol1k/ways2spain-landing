@@ -52,7 +52,7 @@ todos:
     status: pending
   - id: cleanup_console_logs
     content: Remove all console.log statements from production code
-    status: pending
+    status: completed
   - id: cleanup_any_types
     content: Replace TypeScript any types with proper interfaces
     status: pending

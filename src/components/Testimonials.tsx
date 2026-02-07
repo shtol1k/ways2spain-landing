@@ -52,7 +52,6 @@ const Testimonials = () => {
         
         setTestimonials(adapted);
       } catch (err) {
-        console.error('Failed to fetch testimonials:', err);
         setError('Не вдалося завантажити відгуки. Спробуйте пізніше.');
       } finally {
         setLoading(false);
