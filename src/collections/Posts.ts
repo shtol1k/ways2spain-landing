@@ -80,7 +80,7 @@ export const Posts: CollectionConfig = {
                             name: 'featuredImage',
                             type: 'upload',
                             relationTo: 'media',
-                            required: true,
+                            required: false,
                             label: 'Main Image',
                         },
                         {
