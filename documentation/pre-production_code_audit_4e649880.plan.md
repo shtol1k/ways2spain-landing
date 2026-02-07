@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: bug_revalidate
     content: Fix path bug in revalidatePost.ts (remove spaces)
-    status: pending
+    status: completed
   - id: seo_homepage_metadata
     content: Add metadata to homepage (title, description, OG, canonical)
     status: pending
@@ -675,21 +675,36 @@ const inter = Inter({
 
 ### 🔴 Баги в коді
 
-#### 21. Bug в revalidation path
+#### 21. Bug в revalidation path ✅ ВИПРАВЛЕНО
 
 **Файл:** `[src/hooks/revalidatePost.ts:9](src/hooks/revalidatePost.ts)`
 
+**Було:**
 ```typescript
 revalidatePath(`/ blog / ${doc.slug} `) // ❌ Spaces in path!
+payload.logger.info(`Revalidating post at path: /blog/${doc.slug} `)
+payload.logger.error(`Error revalidating post: ${err} `)
 ```
 
-**Має бути:**
+**Проблема:** Пробіли в path URL призводять до некоректного revalidation. Next.js не розпізнає шлях `/ blog / post-slug ` як валідний, тому кеш не оновлюється після змін в Payload CMS.
 
+**Стало:**
 ```typescript
 revalidatePath(`/blog/${doc.slug}`)
+payload.logger.info(`Revalidating post at path: /blog/${doc.slug}`)
+payload.logger.error(`Error revalidating post: ${err}`)
 ```
 
-**Ефект:** Revalidation не працює для blog posts після оновлення в CMS.
+**Що було зроблено:**
+- ✅ Видалено зайві пробіли з path у `revalidatePath()`
+- ✅ Видалено зайві пробіли з log messages
+- ✅ Тепер revalidation працює коректно після оновлення постів
+
+**Ефект:**
+- **До:** Після редагування blog post в CMS, зміни не відображалися на фронтенді (кеш не оновлювався)
+- **Після:** Зміни blog posts автоматично відображаються після збереження в CMS
+
+**Примітка:** `revalidateGuide.ts` не має цієї проблеми - перевірено ✅
 
 #### 22. Non-functional Share button
 
@@ -952,10 +967,10 @@ Payload CORS та CSRF вже правильно налаштовані з ко�
 
 ## Файли для першочергової уваги
 
-**Критичні:**
+**Критичні:** ✅ Виправлено
 
-1. `src/app/api/contact/route.ts` - безпека + performance
-2. `src/hooks/revalidatePost.ts` - критичний bug
+1. ~~`src/app/api/contact/route.ts` - безпека + performance~~ ✅ ВИПРАВЛЕНО
+2. ~~`src/hooks/revalidatePost.ts` - критичний bug~~ ✅ ВИПРАВЛЕНО
 3. `src/app/(site)/page.tsx` - homepage metadata
 4. `payload.config.ts` - fallback secrets
 
