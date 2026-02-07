@@ -65,6 +65,8 @@ const Footer = () => {
                 {path: "/visa", label: "Про візу"},
                 {path: "/services", label: "Послуги"},
                 {path: "/about", label: "Про нас"},
+                {path: "/blog", label: "Блог"},
+                {path: "/guides", label: "Гайди"},
               ].map((link) => (
                 <li key={link.path}>
                   <Link

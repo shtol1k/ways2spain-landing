@@ -10,6 +10,8 @@ import { Categories } from './src/collections/Categories'
 import { Tags } from './src/collections/Tags'
 import { Authors } from './src/collections/Authors'
 import { Posts } from './src/collections/Posts'
+import { GuideCategories } from './src/collections/GuideCategories'
+import { Guides } from './src/collections/Guides'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { SiteSettings } from './src/globals/SiteSettings'
 
@@ -60,6 +62,8 @@ export default buildConfig({
     Tags,
     Authors,
     Posts,
+    GuideCategories,
+    Guides,
   ],
 
   // Server configuration

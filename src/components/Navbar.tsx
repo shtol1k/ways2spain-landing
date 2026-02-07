@@ -17,9 +17,11 @@ const Navbar = () => {
     { path: "/about", label: "Про нас" },
     { path: "/calculator", label: "Калькулятор" },
     { path: "/blog", label: "Блог" },
+    { path: "/guides", label: "Гайди" },
   ];
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) =>
+    pathname === path || (path !== "/" && pathname.startsWith(path));
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">

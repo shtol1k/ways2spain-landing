@@ -1,0 +1,169 @@
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import {
+  getGuideBySlug,
+  getGuideCategories,
+  getAllGuideSlugs,
+} from '@/api/guides'
+import { getCanonicalUrl } from '@/lib/utils'
+import { GuideHeader } from '@/components/guides/GuideHeader'
+import { GuideSummary } from '@/components/guides/GuideSummary'
+import { GuideSteps } from '@/components/guides/GuideSteps'
+import { GuideResources } from '@/components/guides/GuideResources'
+import { GuidesTableOfContents } from '@/components/guides/GuidesTableOfContents'
+import { GuideFAQ } from '@/components/guides/GuideFAQ'
+import { PrintButton } from '@/components/guides/PrintButton'
+import { PrintStyles } from '@/components/guides/PrintStyles'
+import { BlogBreadcrumbs } from '@/components/blog/BlogBreadcrumbs'
+import { JsonLd } from '@/components/JsonLd'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
+import type { GuideCategory } from '@/api/guides'
+import {
+  generateHowToSchema,
+  generateFAQSchema,
+  generateGuideBreadcrumbSchema,
+} from '@/lib/guideSchema'
+
+export const revalidate = 60
+
+interface GuidePageProps {
+  params: Promise<{ category: string; slug: string }>
+}
+
+export async function generateStaticParams() {
+  const slugs = await getAllGuideSlugs()
+  return slugs.map(({ category, slug }) => ({ category, slug }))
+}
+
+export async function generateMetadata({
+  params,
+}: GuidePageProps): Promise<Metadata> {
+  const { category, slug } = await params
+  const guide = await getGuideBySlug(category, slug)
+  if (!guide) return { title: 'Гайд не знайдено' }
+
+  const metaTitle =
+    typeof guide.seo?.metaTitle === 'string' && guide.seo.metaTitle
+      ? guide.seo.metaTitle
+      : guide.title
+  const metaDescription =
+    typeof guide.seo?.metaDescription === 'string' && guide.seo.metaDescription
+      ? guide.seo.metaDescription
+      : guide.excerpt
+  const canonical = getCanonicalUrl(`guides/${category}/${slug}`)
+  const ogImage =
+    guide.seo?.metaImage && typeof guide.seo.metaImage === 'object' && guide.seo.metaImage.url
+      ? guide.seo.metaImage.url
+      : guide.featuredImage && typeof guide.featuredImage === 'object' && guide.featuredImage.url
+        ? guide.featuredImage.url
+        : undefined
+
+  return {
+    title: metaTitle,
+    description: metaDescription,
+    alternates: { canonical },
+    openGraph: {
+      title: metaTitle,
+      description: metaDescription,
+      url: canonical,
+      type: 'article',
+      images: ogImage ? [ogImage] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: metaTitle,
+      description: metaDescription,
+      images: ogImage ? [ogImage] : undefined,
+    },
+  }
+}
+
+export default async function GuidePage({ params }: GuidePageProps) {
+  const { category, slug } = await params
+  const guide = await getGuideBySlug(category, slug)
+  if (!guide) notFound()
+
+  const categoryData =
+    typeof guide.category === 'object'
+      ? (guide.category as GuideCategory)
+      : null
+  const breadcrumbItems = [
+    { label: 'Головна', href: '/' },
+    { label: 'Гайди', href: '/guides' },
+    ...(categoryData
+      ? [{ label: categoryData.name, href: `/guides?category=${categoryData.slug}` }]
+      : []),
+    { label: guide.title },
+  ]
+
+  const howToSchema = generateHowToSchema(guide, category)
+  const faqSchema = guide.faqs?.length
+    ? generateFAQSchema(guide.faqs)
+    : null
+  const breadcrumbSchema = generateGuideBreadcrumbSchema(breadcrumbItems)
+
+  return (
+    <>
+      <JsonLd data={howToSchema} />
+      {faqSchema && Object.keys(faqSchema).length > 0 ? (
+        <JsonLd data={faqSchema} />
+      ) : null}
+      <JsonLd data={breadcrumbSchema} />
+    <div className="min-h-screen pt-32 pb-20">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="max-w-4xl mx-auto mb-6">
+          <Link href="/guides">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="mr-2 size-4" />
+              Повернутися до гайдів
+            </Button>
+          </Link>
+          <BlogBreadcrumbs items={breadcrumbItems} />
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+          <main className="min-w-0">
+            <GuideHeader guide={guide} />
+            <GuideSummary summary={guide.summary} />
+
+            {guide.introduction_html ? (
+              <div
+                className="prose prose-neutral dark:prose-invert max-w-none my-8"
+                dangerouslySetInnerHTML={{
+                  __html: guide.introduction_html,
+                }}
+              />
+            ) : null}
+
+            <section className="my-8" aria-label="Кроки">
+              <h2 className="text-2xl font-bold mb-6">Кроки</h2>
+              <GuideSteps steps={guide.steps} />
+            </section>
+
+            {guide.conclusion_html ? (
+              <div
+                className="prose prose-neutral dark:prose-invert max-w-none my-8"
+                dangerouslySetInnerHTML={{ __html: guide.conclusion_html }}
+              />
+            ) : null}
+
+            <GuideFAQ faqs={guide.faqs} />
+          </main>
+
+          <aside className="space-y-6 print:hidden">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              <GuidesTableOfContents steps={guide.steps} />
+              <GuideResources resources={guide.resources} />
+              <PrintButton />
+            </div>
+          </aside>
+        </div>
+
+        <PrintStyles />
+      </div>
+    </div>
+    </>
+  )
+}
