@@ -1,28 +1,9 @@
 import Hero from '@/components/Hero'
 import Features from '@/components/Features'
-import dynamic from 'next/dynamic'
+import Testimonials from '@/components/Testimonials'
 import ProcessSection from '@/components/ProcessSection'
 import CTASection from '@/components/CTASection'
 import type { Metadata } from 'next'
-
-// Dynamic import для Testimonials з carousel (heavy component)
-const Testimonials = dynamic(() => import('@/components/Testimonials'), {
-  loading: () => (
-    <section className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="mb-6">Відгуки наших клієнтів</h2>
-          <p className="text-xl text-muted-foreground">
-            Реальні відгуки реальних людей, які вже переїхали в Іспанію через Digital Nomad Visa
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-muted-foreground">Завантаження відгуків...</p>
-        </div>
-      </div>
-    </section>
-  ),
-})
 
 export const metadata: Metadata = {
   title: 'Ways 2 Spain - Релокація в Іспанію через Digital Nomad Visa',
