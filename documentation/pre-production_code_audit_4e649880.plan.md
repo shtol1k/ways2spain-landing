@@ -70,10 +70,10 @@ todos:
     status: completed
   - id: migration_docs
     content: Update outdated documentation (.cursor/local-dev.md, etc.)
-    status: pending
+    status: completed
   - id: migration_scripts
     content: Update ensure-ports.js for Next.js port (3000)
-    status: pending
+    status: completed
   - id: quality_comments
     content: Remove excessive and obvious comments
     status: pending
@@ -740,7 +740,7 @@ payload.logger.error(`Error revalidating post: ${err}`)
 
 ---
 
-### 🟣 Артефакти старого стеку (Vite + Strapi)
+###🟣 Артефакти старого стеку (Vite + Strapi) ✅ ВИПРАВЛЕНО
 
 #### 23. Застаріла документація та скрипти
 
@@ -749,13 +749,12 @@ payload.logger.error(`Error revalidating post: ${err}`)
 1. **Documentation:**
   - `[documentation/MIGRATION_CHECKLIST.md](documentation/MIGRATION_CHECKLIST.md)` - mentions Strapi, Vite
   - `[documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md)` - old architecture section
-  - `[.cursor/local-dev.md](.cursor/local-dev.md)` - **outdated**, references Vite (:8080) and Express (:3001)
-  - `[.cursor/environment-variables.mdc](.cursor/environment-variables.mdc)` - mentions `vite.config.ts`
+  - `[.cursor/local-dev.md](.cursor/local-dev.md)` - **ОНОВЛЕНО** ✅
+  - `[.cursor/environment-variables.mdc](.cursor/environment-variables.mdc)` - **ОНОВЛЕНО** ✅
 2. **Scripts:**
-  - `[scripts/ensure-ports.js](scripts/ensure-ports.js)` - checks ports 3001 and 8080 (старі порти)
-  - Коментарі про "Vite frontend" та "Express backend"
+  - `[scripts/ensure-ports.js](scripts/ensure-ports.js)` - **ОНОВЛЕНО** ✅
 3. **Code comments:**
-  - `[src/app/api/contact/route.ts:3](src/app/api/contact/route.ts)` - "Replaces Express backend"
+  - `[src/app/api/contact/route.ts:3](src/app/api/contact/route.ts)` - "Replaces Express backend" (низький пріоритет)
 
 **TODO items в MIGRATION_CHECKLIST:**
 
@@ -763,12 +762,30 @@ payload.logger.error(`Error revalidating post: ${err}`)
 - Remove `backend-express/` directory ✅ (вже видалено)
 - Remove `cms/` directory ✅ (вже видалено)
 
-**Рішення:**
+**Що було зроблено:**
 
-- Оновити `ensure-ports.js` для порту 3000 (Next.js)
-- Оновити `.cursor/local-dev.md` для Next.js setup
-- Видалити або оновити коментарі про Express
-- Оновити MIGRATION_CHECKLIST - відмітити завершені таски
+**1. `.cursor/local-dev.md` - Повністю переписано:**
+- ✅ Видалено посилання на Vite (:8080) та Express (:3001)
+- ✅ Оновлено для Next.js (port 3000)
+- ✅ Додано інструкції для Payload CMS admin
+- ✅ Оновлено структуру проекту (App Router)
+- ✅ Додано database setup та migrations
+- ✅ Оновлено troubleshooting для Next.js
+
+**2. `.cursor/environment-variables.mdc` - Оновлено:**
+- ✅ Видалено посилання на `vite.config.ts`
+- ✅ Додано інформацію про `next.config.mjs`
+- ✅ Додано секцію "CURRENT STACK" з Next.js + Payload CMS
+- ✅ Пояснено `NEXT_PUBLIC_` префікс
+
+**3. `scripts/ensure-ports.js` - Оновлено:**
+- ✅ Змінено default port: `['3001', '8080']` → `['3000']`
+- ✅ Оновлено коментарі та messages для Next.js
+
+**Результат:**
+- Вся документація відповідає поточному стеку
+- Скрипт працює з правильним портом
+- Чіткі інструкції для розробки
 
 ---
 

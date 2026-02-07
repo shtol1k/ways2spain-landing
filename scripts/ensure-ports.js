@@ -2,14 +2,15 @@
 /**
  * Simple helper that makes sure dev ports are free before starting servers.
  *
- * - Checks ports 3001 and 8080 (override with PORTS env, comma separated)
+ * - Checks port 3000 (Next.js) by default
+ * - Override with PORTS env variable (comma separated)
  * - Attempts to terminate Node.js processes that occupy those ports
  * - Warns if the port is held by a non-Node process so you can handle it manually
  */
 
 import { execSync } from 'node:child_process';
 
-const ports = process.env.PORTS ? process.env.PORTS.split(',') : ['3001', '8080'];
+const ports = process.env.PORTS ? process.env.PORTS.split(',') : ['3000'];
 
 function killNodeListeners(port) {
   let killedAny = false;
@@ -27,7 +28,7 @@ function killNodeListeners(port) {
 
     for (const pid of pids) {
       try {
-        // Отримуємо назву процесу, щоб попередити, якщо це не Node
+        // Get process name to warn if it's not Node
         const command = execSync(`ps -p ${pid} -o comm=`, { stdio: ['ignore', 'pipe', 'ignore'] })
           .toString()
           .trim();
@@ -47,7 +48,7 @@ function killNodeListeners(port) {
 
     return { killedAny, hasListeners: true };
   } catch (error) {
-    // lsof повертає код 1, якщо процесів немає — це окей
+    // lsof returns code 1 if no processes found - this is OK
     if (error.status === 1) {
       return { killedAny, hasListeners: false };
     }
@@ -75,6 +76,6 @@ if (hadManualAction) {
   console.warn('\n⚠️  Деякі порти залишилися зайнятими не-Node процесами. Звільни їх вручну перед запуском dev-серверів.');
   process.exitCode = 1;
 } else {
-  console.log('\n🚀 Порти готові. Можна запускати dev-сервери.');
+  console.log('\n🚀 Порти готові. Можна запускати Next.js dev server (npm run dev).');
 }
 

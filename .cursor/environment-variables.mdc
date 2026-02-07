@@ -26,7 +26,7 @@ RECOMMENDED ACTIONS:
 Instead of directly working with `.env` files, AI agent should:  
 1. Provide instructions to the user on creating/modifying files  
 2. Suggest commands for the user to execute  
-3. Check configuration (e.g., vite.config.ts) for correct handling of environment variables  
+3. Check Next.js configuration (next.config.mjs) and Payload config for correct handling of environment variables  
 4. Explain how to properly set up environment variables for different platforms (Vercel, Netlify, etc.)
 
 REASONS:
@@ -34,3 +34,10 @@ REASONS:
 1. Security: `.env` files contain secret keys, passwords, tokens, and other confidential information  
 2. Unpredictability: Automatic modification of `.env` files may lead to loss of important variables  
 3. Isolation: Environment variables should be controlled by the developer, not the AI assistant  
+
+CURRENT STACK:
+
+This project uses Next.js 16 + Payload CMS 3. Environment variables are:
+- Loaded by Next.js from `.env.local` (development) and Vercel (production)
+- Accessed in code via `process.env.VARIABLE_NAME`
+- Public variables must be prefixed with `NEXT_PUBLIC_`
