@@ -16,6 +16,65 @@ import { Client } from '@notionhq/client';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ============================================
+// Rate Limiting
+// ============================================
+
+/**
+ * Simple IP-based rate limiter
+ * Limits: 5 requests per IP per 60 seconds
+ * 
+ * Note: This is a basic implementation suitable for low-traffic sites.
+ * For production sites with high traffic, consider migrating to @upstash/ratelimit
+ * which provides persistent rate limiting across serverless invocations.
+ */
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  
+  // Remove timestamps older than 60 seconds
+  const recentTimestamps = timestamps.filter(t => now - t < 60000);
+  
+  // Check if rate limit exceeded (5 requests per minute)
+  if (recentTimestamps.length >= 5) {
+    return false;
+  }
+  
+  // Add current timestamp
+  recentTimestamps.push(now);
+  rateLimitMap.set(ip, recentTimestamps);
+  
+  // Clean up old entries periodically (prevent memory leak)
+  if (rateLimitMap.size > 1000) {
+    const cutoff = now - 120000; // 2 minutes
+    for (const [key, values] of rateLimitMap.entries()) {
+      if (values.every(v => v < cutoff)) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+  
+  return true;
+}
+
+function getClientIp(request: Request): string {
+  // Try to get real IP from headers (Vercel sets x-forwarded-for)
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp;
+  }
+  
+  // Fallback to a default (should rarely happen on Vercel)
+  return 'unknown';
+}
+
+// ============================================
 // Helper Functions
 // ============================================
 
@@ -233,6 +292,23 @@ export async function POST(request: Request) {
   let body: any = {};
 
   try {
+    // Check rate limit first (before processing request body)
+    const clientIp = getClientIp(request);
+    if (!checkRateLimit(clientIp)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Забагато запитів. Будь ласка, спробуйте через хвилину.',
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': '60',
+          }
+        }
+      );
+    }
+
     body = await request.json();
     const { name, email, phone, status, message } = body;
 
