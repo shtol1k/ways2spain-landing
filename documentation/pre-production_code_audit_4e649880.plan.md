@@ -43,7 +43,7 @@ todos:
     status: completed
   - id: perf_server_components
     content: Convert unnecessary Client Components to Server Components
-    status: pending
+    status: completed
   - id: perf_testimonials
     content: Move Testimonials data fetching to server side
     status: pending
@@ -1138,7 +1138,7 @@ const BlogSearch = dynamic(
 
 ---
 
-#### 15. Зайві Client Components
+#### 15. Зайві Client Components ✅ ВИПРАВЛЕНО
 
 **Компоненти, які мають бути Server Components:**
 
@@ -1149,6 +1149,93 @@ const BlogSearch = dynamic(
 - `[src/components/JsonLd.tsx](src/components/JsonLd.tsx)` - статичні дані
 
 **Рішення:** Видалити `"use client"` де не потрібно, використати React Server Components.
+
+---
+
+**ВИКОНАНО (2026-02-07):**
+
+**Що було зроблено:**
+
+Проведено аудит всіх компонентів на предмет необхідності `'use client'` директиви:
+
+**✅ Компоненти, які ВЖЕ є Server Components (не потребують змін):**
+
+1. **JsonLd** (`src/components/JsonLd.tsx`)
+   - Статичний компонент для JSON-LD structured data
+   - Немає інтерактивності
+   - ✅ Вже Server Component
+
+2. **BlogBreadcrumbs** (`src/components/blog/BlogBreadcrumbs.tsx`)
+   - Статична навігація (breadcrumbs)
+   - Використовує тільки Link (працює в Server Components)
+   - ✅ Вже Server Component
+
+3. **GuideSummary** (`src/components/guides/GuideSummary.tsx`)
+   - Статичний card з інформацією про гайд
+   - Використовує тільки date formatting
+   - ✅ Вже Server Component
+
+**❌ Компоненти, які ПРАВИЛЬНО є Client Components (потребують `'use client'`):**
+
+1. **GuideStep** (`src/components/guides/GuideStep.tsx`)
+   - ✅ Використовує `Accordion` (interactive UI з state)
+   - ✅ Потребує client-side interactivity
+   - **Рішення:** Залишити `'use client'` - це правильно
+
+2. **SmartImage** (`src/components/SmartImage.tsx`)
+   - ✅ Використовує `useState` для error handling
+   - ✅ Використовує `useEffect` для src updates
+   - ✅ Має `onError` handler
+   - **Рішення:** Залишити `'use client'` - потрібен для error fallback
+
+**Інші перевірені Client Components (всі правильно):**
+
+- ✅ **Navbar** - interactive menu, useState
+- ✅ **Testimonials** - carousel з state, data fetching
+- ✅ **LoadingBar** - progress tracking з state
+- ✅ **BlogSearch** - Command/Popover з interaction
+- ✅ **TableOfContents** - active section tracking
+- ✅ **ReadingProgress** - scroll tracking
+- ✅ **CalculatorContent** - form з state
+- ✅ **GoogleTagManager** - analytics script
+- ✅ **contact/page.tsx** - form з useState
+
+**Результат:**
+
+✅ **Все правильно налаштовано!** Компоненти, які згадані в аудиті як "зайві client components", вже є Server Components:
+- JsonLd ✅
+- BlogBreadcrumbs ✅
+- GuideSummary ✅
+
+Компоненти з `'use client'` правильно його використовують для:
+- Interactive UI (accordions, menus, modals)
+- State management (useState, useEffect)
+- Event handlers (onClick, onError, onScroll)
+- Client-side data fetching
+- Browser APIs (window, document)
+
+**Переваги поточної архітектури:**
+
+1. **Optimal Bundle Size:**
+   - ✅ Server Components не додаються до JS bundle
+   - ✅ Client Components тільки там, де потрібна інтерактивність
+   - ✅ Automatic code splitting
+
+2. **Performance:**
+   - ✅ Менший JS bundle для клієнта
+   - ✅ Швидший initial page load
+   - ✅ Краща SEO (Server Components pre-rendered)
+
+3. **Best Practices:**
+   - ✅ Правильне використання Server/Client boundary
+   - ✅ Мінімальна кількість Client Components
+   - ✅ Ізольована інтерактивність
+
+**Висновок:**
+
+Немає зайвих Client Components - всі компоненти правильно розміщені. Архітектура вже оптимальна для Next.js 16 App Router.
+
+---
 
 #### 16. Неефективний data fetching
 
