@@ -287,6 +287,129 @@ async function createNotionEntry(data: {
 }
 
 // ============================================
+// Email Generation
+// ============================================
+
+/**
+ * Generate HTML email content
+ */
+function generateHtmlEmail(data: ContactFormData): string {
+  const { name, email, phone, status, message } = data;
+  
+  return `
+    <h2>Нова заявка з сайту Ways 2 Spain</h2>
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <p><strong>Ім'я:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      ${phone ? `<p><strong>Телефон:</strong> ${escapeHtml(phone)}</p>` : ''}
+      ${status ? `<p><strong>Запит:</strong> ${escapeHtml(status)}</p>` : ''}
+      <p><strong>Повідомлення:</strong></p>
+      <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+      <hr>
+      <p style="color: #666; font-size: 12px;">
+        Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
+      </p>
+    </div>
+  `;
+}
+
+/**
+ * Generate plain text email content
+ */
+function generateTextEmail(data: ContactFormData): string {
+  const { name, email, phone, status, message } = data;
+  
+  return `
+Нова заявка з сайту Ways 2 Spain
+
+Ім'я: ${name}
+Email: ${email}
+${phone ? `Телефон: ${phone}` : ''}
+${status ? `Запит: ${status}` : ''}
+
+Повідомлення:
+${message}
+
+Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
+  `.trim();
+}
+
+/**
+ * Send contact form email via Resend
+ */
+async function sendContactEmail(data: ContactFormData): Promise<string | undefined> {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('Email service not configured. Please contact administrator.');
+  }
+
+  const { name, email } = data;
+
+  const { data: emailData, error: emailError } = await resend.emails.send({
+    from: `Ways 2 Spain Website <${process.env.FROM_EMAIL || 'no-reply@ways2spain.com'}>`,
+    to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'],
+    replyTo: email,
+    subject: `Нова заявка від ${name} - Ways 2 Spain`,
+    html: generateHtmlEmail(data),
+    text: generateTextEmail(data),
+  });
+
+  if (emailError) {
+    throw new Error(`Resend Error: ${emailError.message}`);
+  }
+
+  return emailData?.id;
+}
+
+/**
+ * Save form data to Notion (optional, non-critical)
+ */
+async function saveToNotion(data: ContactFormData): Promise<string | null> {
+  if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
+    return null;
+  }
+
+  try {
+    const result = await createNotionEntry({
+      name: data.name,
+      email: data.email,
+      phone: data.phone || 'Не вказано',
+      package: data.status || 'Не обрано',
+      situation: 'Не вказано',
+      message: data.message,
+    });
+    
+    return result?.id || null;
+  } catch (notionError) {
+    // Notion is non-critical - continue on error
+    return null;
+  }
+}
+
+/**
+ * Validate request body against schema
+ */
+function validateContactForm(body: unknown): ContactFormData {
+  const validationResult = contactFormSchema.safeParse(body);
+  
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map(err => ({
+      field: err.path.join('.'),
+      message: err.message,
+    }));
+    
+    const error = new Error('Validation failed') as Error & { 
+      statusCode: number; 
+      details: typeof errors;
+    };
+    error.statusCode = 400;
+    error.details = errors;
+    throw error;
+  }
+
+  return validationResult.data;
+}
+
+// ============================================
 // POST Handler
 // ============================================
 
@@ -294,6 +417,7 @@ export async function POST(request: Request) {
   let body: Partial<ContactFormData> = {};
 
   try {
+    // Rate limiting check
     const clientIp = getClientIp(request);
     if (!checkRateLimit(clientIp)) {
       return NextResponse.json(
@@ -310,109 +434,42 @@ export async function POST(request: Request) {
       );
     }
 
+    // Parse and validate request body
     body = await request.json();
+    const validatedData = validateContactForm(body);
 
-    const validationResult = contactFormSchema.safeParse(body);
-    
-    if (!validationResult.success) {
-      const errors = validationResult.error.errors.map(err => ({
-        field: err.path.join('.'),
-        message: err.message,
-      }));
-      
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Помилка валідації даних',
-          details: errors,
-        },
-        { status: 400 }
-      );
-    }
+    // Send email (critical operation)
+    const messageId = await sendContactEmail(validatedData);
 
-    const { name, email, phone, status, message } = validationResult.data;
-
-    if (!process.env.RESEND_API_KEY) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Email service not configured. Please contact administrator.',
-        },
-        { status: 500 }
-      );
-    }
-
-    const htmlContent = `
-      <h2>Нова заявка з сайту Ways 2 Spain</h2>
-      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <p><strong>Ім'я:</strong> ${escapeHtml(name)}</p>
-        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-        ${phone ? `<p><strong>Телефон:</strong> ${escapeHtml(phone)}</p>` : ''}
-        ${status ? `<p><strong>Запит:</strong> ${escapeHtml(status)}</p>` : ''}
-        <p><strong>Повідомлення:</strong></p>
-        <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
-        <hr>
-        <p style="color: #666; font-size: 12px;">
-          Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
-        </p>
-      </div>
-    `;
-
-    const { data: emailData, error: emailError} = await resend.emails.send({
-      from: `Ways 2 Spain Website <${process.env.FROM_EMAIL || 'no-reply@ways2spain.com'}>`,
-      to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'],
-      replyTo: email,
-      subject: `Нова заявка від ${name} - Ways 2 Spain`,
-      html: htmlContent,
-      text: `
-Нова заявка з сайту Ways 2 Spain
-
-Ім'я: ${name}
-Email: ${email}
-${phone ? `Телефон: ${phone}` : ''}
-${status ? `Запит: ${status}` : ''}
-
-Повідомлення:
-${message}
-
-Час отримання: ${new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' })}
-      `.trim(),
-    });
-
-    if (emailError) {
-      throw new Error(`Resend Error: ${emailError.message}`);
-    }
-
-    let notionResult = null;
-    if (process.env.NOTION_API_KEY && process.env.NOTION_DATABASE_ID) {
-      try {
-        notionResult = await createNotionEntry({
-          name,
-          email,
-          phone: phone || 'Не вказано',
-          package: status || 'Не обрано',
-          situation: 'Не вказано',
-          message,
-        });
-      } catch (notionError) {
-        // Notion is non-critical - continue on error
-      }
-    }
+    // Save to Notion (optional operation)
+    const notionEntryId = await saveToNotion(validatedData);
 
     return NextResponse.json(
       {
         success: true,
         message: 'Повідомлення успішно надіслано!',
-        messageId: emailData?.id,
-        notionEntryId: notionResult?.id,
+        messageId,
+        notionEntryId,
       },
       { status: 200 }
     );
   } catch (error) {
-    const err = error as Error;
+    const err = error as Error & { statusCode?: number; details?: unknown };
     
-    console.error('Contact form error:', err);
+    // Handle validation errors
+    if (err.statusCode === 400) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Помилка валідації даних',
+          details: err.details,
+        },
+        { status: 400 }
+      );
+    }
 
+    // Log and alert for unexpected errors
+    console.error('Contact form error:', err);
     await sendTelegramAlert(err, body);
 
     return NextResponse.json(

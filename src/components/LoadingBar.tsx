@@ -3,99 +3,144 @@
 import { useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
+// ============================================
+// Constants
+// ============================================
+
+const PROGRESS_CONFIG = {
+  // Progress thresholds
+  FAST_THRESHOLD: 50,
+  MID_THRESHOLD: 80,
+  SLOW_THRESHOLD: 95,
+  
+  // Increment sizes
+  FAST_INCREMENT: 10,
+  MID_INCREMENT: 5,
+  SLOW_INCREMENT: 1,
+  
+  // Timing intervals (ms)
+  FAST_INTERVAL: 40,
+  MID_INTERVAL: 80,
+  SLOW_INTERVAL: 200,
+  
+  // Delay before starting each phase (ms)
+  MID_START_DELAY: 200,
+  SLOW_START_DELAY: 700,
+} as const;
+
+// ============================================
+// Custom Hook: Progress Animation
+// ============================================
+
 /**
- * LoadingBar - progress indicator for page navigation
+ * Custom hook for managing loading progress animation
+ * Implements three-phase progress: fast (0-50%), medium (50-80%), slow (80-95%)
  */
-export default function LoadingBar() {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [loading, setLoading] = useState(false)
-  const [progress, setProgress] = useState(0)
+function useProgressAnimation(isActive: boolean) {
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setLoading(false)
-    setProgress(0)
-  }, [pathname, searchParams])
+    if (!isActive) return;
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      const link = target.closest('a')
-      
-      if (link && link.href && link.href.startsWith(window.location.origin)) {
-        const url = new URL(link.href)
-        const isNewPage = url.pathname !== pathname || url.search !== window.location.search
-        
-        if (isNewPage) {
-          setLoading(true)
-          setProgress(0)
-        }
-      }
-    }
+    const intervals: NodeJS.Timeout[] = [];
 
-    const handlePopState = () => {
-      setLoading(true)
-      setProgress(0)
-    }
-
-    document.addEventListener('click', handleClick)
-    window.addEventListener('popstate', handlePopState)
-
-    return () => {
-      document.removeEventListener('click', handleClick)
-      window.removeEventListener('popstate', handlePopState)
-    }
-  }, [pathname])
-
-  useEffect(() => {
-    if (!loading) return
-
-    // Progress animation: 0 -> 50% (fast), 50 -> 80% (medium), 80 -> 95% (slow)
-    const intervals: NodeJS.Timeout[] = []
-
+    // Phase 1: Fast start (0 -> 50%)
     const fastStart = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 50) {
-          clearInterval(fastStart)
-          return 50
+        if (prev >= PROGRESS_CONFIG.FAST_THRESHOLD) {
+          clearInterval(fastStart);
+          return PROGRESS_CONFIG.FAST_THRESHOLD;
         }
-        return prev + 10
-      })
-    }, 40)
-    intervals.push(fastStart)
+        return prev + PROGRESS_CONFIG.FAST_INCREMENT;
+      });
+    }, PROGRESS_CONFIG.FAST_INTERVAL);
+    intervals.push(fastStart);
 
+    // Phase 2: Medium progress (50 -> 80%)
     setTimeout(() => {
       const midProgress = setInterval(() => {
         setProgress((prev) => {
-          if (prev >= 80) {
-            clearInterval(midProgress)
-            return 80
+          if (prev >= PROGRESS_CONFIG.MID_THRESHOLD) {
+            clearInterval(midProgress);
+            return PROGRESS_CONFIG.MID_THRESHOLD;
           }
-          return prev + 5
-        })
-      }, 80)
-      intervals.push(midProgress)
-    }, 200)
+          return prev + PROGRESS_CONFIG.MID_INCREMENT;
+        });
+      }, PROGRESS_CONFIG.MID_INTERVAL);
+      intervals.push(midProgress);
+    }, PROGRESS_CONFIG.MID_START_DELAY);
 
+    // Phase 3: Slow finish (80 -> 95%)
     setTimeout(() => {
       const slowFinish = setInterval(() => {
         setProgress((prev) => {
-          if (prev >= 95) {
-            clearInterval(slowFinish)
-            return 95
+          if (prev >= PROGRESS_CONFIG.SLOW_THRESHOLD) {
+            clearInterval(slowFinish);
+            return PROGRESS_CONFIG.SLOW_THRESHOLD;
           }
-          return prev + 1
-        })
-      }, 200)
-      intervals.push(slowFinish)
-    }, 700)
+          return prev + PROGRESS_CONFIG.SLOW_INCREMENT;
+        });
+      }, PROGRESS_CONFIG.SLOW_INTERVAL);
+      intervals.push(slowFinish);
+    }, PROGRESS_CONFIG.SLOW_START_DELAY);
 
     return () => {
-      intervals.forEach(clearInterval)
-    }
-  }, [loading])
+      intervals.forEach(clearInterval);
+    };
+  }, [isActive]);
 
-  if (!loading && progress === 0) return null
+  return progress;
+}
+
+// ============================================
+// Component: LoadingBar
+// ============================================
+
+/**
+ * LoadingBar - progress indicator for page navigation
+ * Shows visual feedback during client-side navigation
+ */
+export default function LoadingBar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const progress = useProgressAnimation(loading);
+
+  // Reset on navigation complete
+  useEffect(() => {
+    setLoading(false);
+  }, [pathname, searchParams]);
+
+  // Track navigation clicks
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href && link.href.startsWith(window.location.origin)) {
+        const url = new URL(link.href);
+        const isNewPage = url.pathname !== pathname || url.search !== window.location.search;
+        
+        if (isNewPage) {
+          setLoading(true);
+        }
+      }
+    };
+
+    const handlePopState = () => {
+      setLoading(true);
+    };
+
+    document.addEventListener('click', handleClick);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [pathname]);
+
+  if (!loading && progress === 0) return null;
 
   return (
     <div
@@ -116,5 +161,5 @@ export default function LoadingBar() {
     >
       <div className="h-full w-full bg-linear-to-r from-transparent via-white/60 to-transparent animate-shimmer" />
     </div>
-  )
+  );
 }

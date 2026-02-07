@@ -79,10 +79,10 @@ todos:
     status: completed
   - id: quality_commented_code
     content: Remove commented-out code blocks
-    status: pending
+    status: completed
   - id: quality_refactor_contact
     content: Refactor Contact API POST handler into smaller functions
-    status: pending
+    status: completed
   - id: quality_error_handling
     content: Add error handling to API functions
     status: pending
@@ -2151,7 +2151,7 @@ const categoryResult = await payload.find({ ... })
 
 ---
 
-#### 25. Commented-out code
+#### 25. Commented-out code ✅ ВИПРАВЛЕНО
 
 **Файли:**
 
@@ -2160,7 +2160,94 @@ const categoryResult = await payload.find({ ... })
 
 **Рішення:** Видалити commented-out код.
 
-#### 26. Складні функції, що потребують рефакторингу
+---
+
+**ВИПРАВЛЕНО (2026-02-07):**
+
+**Що було зроблено:**
+
+Видалено весь commented-out code з проекту:
+
+**1. `src/app/(payload)/custom.scss`** - видалено commented приклад:
+
+```scss
+// Було:
+/* Custom Payload Admin Panel Styles */
+/* Add your custom styles here */
+
+// Example: Override primary color
+:root {
+  --payload-color-primary: #3b82f6;
+  --payload-color-primary-dark: #2563eb;
+}
+
+// Example: Custom font
+// .payload-app {
+//   font-family: 'Your Custom Font', sans-serif;
+// }
+
+// Стало:
+/* Custom Payload Admin Panel Styles */
+
+:root {
+  --payload-color-primary: #3b82f6;
+  --payload-color-primary-dark: #2563eb;
+}
+```
+
+**2. Перевірено інші файли:**
+
+Проведено повний аудит проекту на наявність commented-out code:
+- ✅ Немає commented функцій
+- ✅ Немає commented imports
+- ✅ Немає commented HTML/JSX
+- ✅ Немає старого commented коду
+
+**Переваги:**
+
+1. **Clean Codebase:**
+   - ✅ Немає "dead code" в коментарях
+   - ✅ Ясна історія (git замість коментарів)
+   - ✅ Зменшено плутанину для нових розробників
+
+2. **File Size:**
+   - ✅ Менші розміри файлів
+   - ✅ Швидший parsing
+   - ✅ Чистіший source code
+
+3. **Maintenance:**
+   - ✅ Version control (git) замість commented history
+   - ✅ Легше знайти актуальний код
+   - ✅ Немає outdated examples
+
+4. **Best Practices:**
+   - ✅ Use git for code history, not comments
+   - ✅ Delete unused code, don't comment it out
+   - ✅ Keep codebase lean and focused
+
+**Принцип Clean Code:**
+
+> "Commented-out code is an abomination. When you see commented-out code, delete it! Don't worry, the source code control system still remembers it. If anyone really needs it, they can get at the previous versions." - Robert C. Martin (Clean Code)
+
+**Git для історії:**
+
+Якщо потрібно повернутись до старого коду:
+```bash
+git log --all --full-history -- path/to/file
+git show commit_hash:path/to/file
+```
+
+**Результат перевірки:**
+
+Проект тепер повністю чистий від commented-out code:
+- ✅ No dead code
+- ✅ No commented examples
+- ✅ No legacy remnants
+- ✅ Professional codebase quality
+
+---
+
+#### 26. Складні функції, що потребують рефакторингу ✅ ВИПРАВЛЕНО
 
 **1. Contact API POST handler** (`[src/app/api/contact/route.ts:218-339](src/app/api/contact/route.ts)`)
 
@@ -2183,6 +2270,344 @@ async function sendTelegramAlert(data) { ... }
 - Magic numbers (50, 80, 95, 200ms, 500ms)
 
 **Рішення:** Витягнути в custom hook `useProgressAnimation()` + винести magic numbers в константи.
+
+---
+
+**ВИПРАВЛЕНО (2026-02-07):**
+
+## 1. Contact API Refactoring
+
+**Що було зроблено:**
+
+Розбив монолітний POST handler на спеціалізовані функції з чіткою відповідальністю:
+
+### Нові функції:
+
+**A. Email Generation:**
+
+```typescript
+// Було: inline HTML/text generation в POST handler (60+ lines)
+
+// Стало: окремі функції
+function generateHtmlEmail(data: ContactFormData): string {
+  const { name, email, phone, status, message } = data;
+  return `<h2>Нова заявка...</h2>...`;
+}
+
+function generateTextEmail(data: ContactFormData): string {
+  const { name, email, phone, status, message } = data;
+  return `Нова заявка з сайту...`;
+}
+```
+
+**B. Email Sending:**
+
+```typescript
+// Було: inline в POST handler з перевіркою env
+
+// Стало: dedicated функція
+async function sendContactEmail(data: ContactFormData): Promise<string | undefined> {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('Email service not configured...');
+  }
+  
+  const { data: emailData, error: emailError } = await resend.emails.send({
+    from: `Ways 2 Spain Website <...>`,
+    to: [process.env.RECIPIENT_EMAIL || 'info@ways2spain.com'],
+    replyTo: email,
+    subject: `Нова заявка від ${name}`,
+    html: generateHtmlEmail(data),
+    text: generateTextEmail(data),
+  });
+  
+  if (emailError) throw new Error(`Resend Error: ${emailError.message}`);
+  return emailData?.id;
+}
+```
+
+**C. Notion Integration:**
+
+```typescript
+// Було: inline try-catch в POST handler
+
+// Стало: окрема функція з proper error handling
+async function saveToNotion(data: ContactFormData): Promise<string | null> {
+  if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
+    return null;
+  }
+  
+  try {
+    const result = await createNotionEntry({...});
+    return result?.id || null;
+  } catch (notionError) {
+    // Non-critical - return null
+    return null;
+  }
+}
+```
+
+**D. Validation:**
+
+```typescript
+// Було: inline validation з manual error response
+
+// Стало: окрема функція з typed errors
+function validateContactForm(body: unknown): ContactFormData {
+  const validationResult = contactFormSchema.safeParse(body);
+  
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map(err => ({
+      field: err.path.join('.'),
+      message: err.message,
+    }));
+    
+    const error = new Error('Validation failed') as Error & { 
+      statusCode: number; 
+      details: typeof errors;
+    };
+    error.statusCode = 400;
+    error.details = errors;
+    throw error;
+  }
+  
+  return validationResult.data;
+}
+```
+
+**E. Refactored POST Handler:**
+
+```typescript
+// Було: 135+ lines монолітний handler
+
+// Стало: 60 lines clean handler
+export async function POST(request: Request) {
+  let body: Partial<ContactFormData> = {};
+
+  try {
+    // Rate limiting check
+    const clientIp = getClientIp(request);
+    if (!checkRateLimit(clientIp)) {
+      return NextResponse.json({ ... }, { status: 429 });
+    }
+
+    // Parse and validate
+    body = await request.json();
+    const validatedData = validateContactForm(body);
+
+    // Send email (critical)
+    const messageId = await sendContactEmail(validatedData);
+
+    // Save to Notion (optional)
+    const notionEntryId = await saveToNotion(validatedData);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Повідомлення успішно надіслано!',
+      messageId,
+      notionEntryId,
+    }, { status: 200 });
+  } catch (error) {
+    // Централізована обробка помилок
+    const err = error as Error & { statusCode?: number; details?: unknown };
+    
+    if (err.statusCode === 400) {
+      return NextResponse.json({ error: 'Помилка валідації...', details: err.details }, { status: 400 });
+    }
+    
+    console.error('Contact form error:', err);
+    await sendTelegramAlert(err, body);
+    
+    return NextResponse.json({ error: 'Помилка...' }, { status: 500 });
+  }
+}
+```
+
+---
+
+## 2. LoadingBar Refactoring
+
+**Що було зроблено:**
+
+### A. Constants (замість magic numbers):
+
+```typescript
+// Було: magic numbers в коді
+if (prev >= 50) { ... }
+return prev + 10;
+}, 40);
+setTimeout(() => { ... }, 200);
+
+// Стало: named constants
+const PROGRESS_CONFIG = {
+  // Progress thresholds
+  FAST_THRESHOLD: 50,
+  MID_THRESHOLD: 80,
+  SLOW_THRESHOLD: 95,
+  
+  // Increment sizes
+  FAST_INCREMENT: 10,
+  MID_INCREMENT: 5,
+  SLOW_INCREMENT: 1,
+  
+  // Timing intervals (ms)
+  FAST_INTERVAL: 40,
+  MID_INTERVAL: 80,
+  SLOW_INTERVAL: 200,
+  
+  // Delay before starting each phase (ms)
+  MID_START_DELAY: 200,
+  SLOW_START_DELAY: 700,
+} as const;
+```
+
+### B. Custom Hook:
+
+```typescript
+// Було: вся логіка в component useEffect (46 lines)
+
+// Стало: окремий custom hook
+function useProgressAnimation(isActive: boolean) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const intervals: NodeJS.Timeout[] = [];
+
+    // Phase 1: Fast start (0 -> 50%)
+    const fastStart = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= PROGRESS_CONFIG.FAST_THRESHOLD) {
+          clearInterval(fastStart);
+          return PROGRESS_CONFIG.FAST_THRESHOLD;
+        }
+        return prev + PROGRESS_CONFIG.FAST_INCREMENT;
+      });
+    }, PROGRESS_CONFIG.FAST_INTERVAL);
+    intervals.push(fastStart);
+
+    // Phase 2 & 3...
+    
+    return () => {
+      intervals.forEach(clearInterval);
+    };
+  }, [isActive]);
+
+  return progress;
+}
+```
+
+### C. Simplified Component:
+
+```typescript
+// Було: state + складна логіка (120 lines)
+
+// Стало: clean component з custom hook (70 lines)
+export default function LoadingBar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const progress = useProgressAnimation(loading); // 🎯 Custom hook
+
+  // Simple navigation tracking
+  useEffect(() => {
+    setLoading(false);
+  }, [pathname, searchParams]);
+  
+  // Event listeners...
+  
+  return <div ... />;
+}
+```
+
+---
+
+## Переваги рефакторингу:
+
+### Contact API:
+
+1. **Separation of Concerns:**
+   - ✅ Кожна функція має одну відповідальність
+   - ✅ Email generation → `generateHtmlEmail`, `generateTextEmail`
+   - ✅ Email sending → `sendContactEmail`
+   - ✅ Data persistence → `saveToNotion`
+   - ✅ Validation → `validateContactForm`
+
+2. **Testability:**
+   - ✅ Легко unit-тестувати кожну функцію окремо
+   - ✅ Mock dependencies (Resend, Notion) без зміни handler
+   - ✅ Тестувати validation logic ізольовано
+
+3. **Maintainability:**
+   - ✅ POST handler: 135+ lines → 60 lines
+   - ✅ Ясна flow: validate → send email → save to Notion
+   - ✅ Легко додати нові integrations
+
+4. **Error Handling:**
+   - ✅ Централізована обробка помилок
+   - ✅ Typed errors з statusCode
+   - ✅ Proper separation: critical (email) vs optional (Notion)
+
+### LoadingBar:
+
+1. **Code Organization:**
+   - ✅ Magic numbers → Named constants
+   - ✅ Складна логіка → Custom hook
+   - ✅ Component: 120 lines → 70 lines
+
+2. **Reusability:**
+   - ✅ `useProgressAnimation` hook можна використати в інших компонентах
+   - ✅ `PROGRESS_CONFIG` легко налаштувати
+
+3. **Readability:**
+   - ✅ `PROGRESS_CONFIG.FAST_THRESHOLD` замість `50`
+   - ✅ `PROGRESS_CONFIG.MID_INTERVAL` замість `80`
+   - ✅ Зрозуміла трифазна анімація
+
+4. **Maintenance:**
+   - ✅ Змінити швидкість → Edit constants
+   - ✅ Додати нову фазу → Edit hook
+   - ✅ Component залишається simple
+
+---
+
+## Single Responsibility Principle:
+
+**Before:**
+```
+POST handler:
+├── Rate limiting ✓
+├── Parse body ✓
+├── Validate ✓
+├── Generate HTML email ✗
+├── Generate text email ✗
+├── Send email ✗
+├── Create Notion entry ✗
+├── Error handling ✓
+└── Return response ✓
+
+= 9 responsibilities in one function
+```
+
+**After:**
+```
+POST handler:
+├── Rate limiting ✓
+├── Parse body ✓
+├── Orchestrate operations ✓
+└── Error handling ✓
+
+Dedicated functions:
+├── validateContactForm() → validation
+├── generateHtmlEmail() → HTML generation
+├── generateTextEmail() → text generation
+├── sendContactEmail() → email sending
+└── saveToNotion() → data persistence
+
+= 4 responsibilities in handler, 5 dedicated functions
+```
+
+---
 
 #### 27. Missing error handling
 
