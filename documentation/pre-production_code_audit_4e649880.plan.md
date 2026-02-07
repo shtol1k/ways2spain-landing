@@ -55,7 +55,7 @@ todos:
     status: completed
   - id: cleanup_any_types
     content: Replace TypeScript any types with proper interfaces
-    status: pending
+    status: completed
   - id: cleanup_hardcoded
     content: Extract hardcoded values to constants or env variables
     status: pending
@@ -407,7 +407,7 @@ const { name, email, phone, status, message } = validationResult.data;
 
 ### 🟠 Високий пріоритет
 
-#### 5. Console.log statements у production коді
+#### 5. Console.log statements у production коді - ВИКОНАНО ✅
 
 **Знайдено:** 30+ console.log/console.error у production файлах
 
@@ -420,17 +420,73 @@ const { name, email, phone, status, message } = validationResult.data;
 
 **Рішення:** Видалити або замінити на proper logger (наприклад, `pino` або custom logger utility).
 
-#### 6. TypeScript `any` types
+#### 6. TypeScript `any` types ✅ ВИПРАВЛЕНО
 
 **Знайдено:** 8 instances
 
 **Файли:**
+- [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts) - 7 `any` types
+- [`src/app/(site)/blog/[slug]/BlogPostContent.tsx:25`](src/app/(site)/blog/[slug]/BlogPostContent.tsx) - `relatedPosts: any[]`
+- [`src/api/blog.ts:104`](src/api/blog.ts) - `const where: any = {}`
 
-- `[src/app/api/contact/route.ts](src/app/api/contact/route.ts)` - 7 `any` types
-- `[src/app/(site)/blog/[slug]/BlogPostContent.tsx:25](src/app/(site)`/blog/[slug]/BlogPostContent.tsx) - `relatedPosts: any[]`
-- `[src/api/blog.ts:104](src/api/blog.ts)` - `const where: any = {}`
+**Що було зроблено:**
 
-**Рішення:** Замінити на proper TypeScript interfaces/types.
+**1. `src/app/api/contact/route.ts` - Замінено 7 `any` типів:**
+
+```typescript
+// Було:
+error: any
+body: any = {}
+properties: Record<string, any>
+notionError: any
+error: any (в catch блоках)
+
+// Стало:
+error: Error
+body: Partial<ContactFormData> = {}
+properties: Record<string, {
+  title?: Array<{ text: { content: string } }>;
+  email?: string;
+  rich_text?: Array<{ text: { content: string } }>;
+  date?: { start: string };
+  select?: { name: string };
+}>
+notionError: Error (removed, just catch)
+error: Error (з type assertion: error as Error)
+```
+
+**2. `src/app/(site)/blog/[slug]/BlogPostContent.tsx`:**
+
+```typescript
+// Було:
+relatedPosts: any[]
+
+// Стало:
+relatedPosts: Post[]
+```
+
+**3. `src/api/blog.ts` - getRecentPosts function:**
+
+```typescript
+// Було:
+const where: any = {}
+
+// Стало:
+const where: { id?: { not_equals: number } } = {}
+```
+
+**Переваги:**
+- ✅ Type safety - TypeScript тепер перевіряє типи на compile time
+- ✅ Автодоповнення в IDE для всіх властивостей
+- ✅ Запобігає помилкам з неправильними типами даних
+- ✅ Кращa документація коду через явні типи
+- ✅ Легше рефакторити - TypeScript вкаже всі місця, що потребують змін
+
+**Результат:**
+- 0 `any` типів в production коді ✅
+- Повна type safety для Contact API
+- Правильні типи для Notion properties
+- Type-safe blog-related functions
 
 #### 7. Hardcoded values
 

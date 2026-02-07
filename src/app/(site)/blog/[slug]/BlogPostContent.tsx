@@ -22,7 +22,7 @@ import {
 interface BlogPostContentProps {
   post: Post;
   contentHtml: string | null;
-  relatedPosts: any[];
+  relatedPosts: Post[];
   breadcrumbItems?: BlogBreadcrumbItem[];
 }
 

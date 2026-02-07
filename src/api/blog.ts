@@ -80,7 +80,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 export async function getRecentPosts(limit: number = 3, excludeId?: number): Promise<Post[]> {
     const payload = await getPayloadClient()
 
-    const where: any = {}
+    const where: { id?: { not_equals: number } } = {}
 
     if (excludeId) {
         where.id = {

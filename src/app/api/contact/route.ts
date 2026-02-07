@@ -136,7 +136,7 @@ function escapeHtml(unsafe: string): string {
  * Send error alert to Telegram
  */
 async function sendTelegramAlert(
-  error: any,
+  error: Error,
   formData: {
     name?: string;
     phone?: string;
@@ -205,7 +205,13 @@ async function createNotionEntry(data: {
   }
 
   // Build properties for Notion
-  const properties: Record<string, any> = {
+  const properties: Record<string, {
+    title?: Array<{ text: { content: string } }>;
+    email?: string;
+    rich_text?: Array<{ text: { content: string } }>;
+    date?: { start: string };
+    select?: { name: string };
+  }> = {
     "Ім'я": {
       title: [
         {
@@ -269,16 +275,18 @@ async function createNotionEntry(data: {
     });
 
     return response;
-  } catch (error: any) {
-    if (error.code === 'object_not_found') {
+  } catch (error) {
+    const err = error as { code?: string; status?: number; message: string };
+    
+    if (err.code === 'object_not_found') {
       throw new Error(
         'Database not found. Check NOTION_DATABASE_ID. Make sure the integration has access to the database.'
       );
-    } else if (error.code === 'validation_error') {
+    } else if (err.code === 'validation_error') {
       throw new Error(
-        `Property validation error: ${error.message}. Check if property names match your Notion database columns.`
+        `Property validation error: ${err.message}. Check if property names match your Notion database columns.`
       );
-    } else if (error.status === 401) {
+    } else if (err.status === 401) {
       throw new Error(
         'Unauthorized. Check NOTION_API_KEY. Make sure it\'s a valid integration token.'
       );
@@ -293,7 +301,7 @@ async function createNotionEntry(data: {
 // ============================================
 
 export async function POST(request: Request) {
-  let body: any = {};
+  let body: Partial<ContactFormData> = {};
 
   try {
     // Check rate limit first (before processing request body)
@@ -403,7 +411,7 @@ ${message}
           situation: 'Не вказано',
           message,
         });
-      } catch (notionError: any) {
+      } catch (notionError) {
         // Don't block response if Notion fails - silently continue
       }
     }
@@ -417,18 +425,20 @@ ${message}
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as Error;
+    
     // Log error for debugging in Vercel logs
-    console.error('Contact form error:', error);
+    console.error('Contact form error:', err);
 
     // Send Telegram alert
-    await sendTelegramAlert(error, body);
+    await sendTelegramAlert(err, body);
 
     return NextResponse.json(
       {
         success: false,
         error: 'Помилка при відправці повідомлення. Спробуйте пізніше.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined,
       },
       { status: 500 }
     );
