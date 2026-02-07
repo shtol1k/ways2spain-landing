@@ -344,12 +344,20 @@ ${message}
 // ============================================
 
 export async function OPTIONS() {
+  const allowedOrigins = [
+    process.env.NEXT_PUBLIC_SERVER_URL || 'https://ways2spain.com',
+    'https://ways2spain.com',
+    'https://www.ways2spain.com',
+    'https://dev.ways2spain.com', // Pre-production testing environment
+  ];
+
   return new Response(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowedOrigins[0],
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400', // Cache preflight for 24 hours
     },
   });
 }

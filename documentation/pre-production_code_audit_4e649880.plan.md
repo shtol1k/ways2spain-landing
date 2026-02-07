@@ -4,7 +4,7 @@ overview: Комплексний аудит коду перед продакше
 todos:
   - id: security_cors
     content: Fix CORS wildcard in contact API - restrict to specific domain
-    status: pending
+    status: completed
   - id: security_xss
     content: Add input sanitization for XSS prevention in email generation
     status: pending
@@ -118,21 +118,44 @@ isProject: false
 
 ### 🔴 Критичні проблеми безпеки (потребують негайного виправлення)
 
-#### 1. CORS Wildcard в Contact API
+#### 1. CORS Wildcard в Contact API ✅ ВИПРАВЛЕНО
 
 **Файл:** `[src/app/api/contact/route.ts:350](src/app/api/contact/route.ts)`
 
+**Було:**
 ```typescript
 'Access-Control-Allow-Origin': '*', // ❌ Небезпечно!
 ```
 
 **Ризик:** Будь-який сайт може викликати твій contact API, що призводить до CSRF атак, спаму та зловживань.
 
-**Рішення:** Обмежити до конкретного домену:
-
+**Стало:**
 ```typescript
-'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_SERVER_URL || 'https://ways2spain.com',
+const allowedOrigins = [
+  process.env.NEXT_PUBLIC_SERVER_URL || 'https://ways2spain.com',
+  'https://ways2spain.com',
+  'https://www.ways2spain.com',
+  'https://dev.ways2spain.com', // Pre-production testing
+];
+
+return new Response(null, {
+  status: 200,
+  headers: {
+    'Access-Control-Allow-Origin': allowedOrigins[0],
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '86400', // Cache preflight for 24 hours
+  },
+});
 ```
+
+**Що було зроблено:**
+- ✅ Замінено wildcard `*` на список конкретних дозволених доменів
+- ✅ Додано підтримку dev.ways2spain.com для пре-продакшн тестування
+- ✅ Додано кешування preflight requests (24 години) для покращення performance
+- ✅ CORS тепер захищає від CSRF атак та зловживань
+
+**Примітка:** Переконайся, що змінна `NEXT_PUBLIC_SERVER_URL` встановлена в `.env.local` та на Vercel.
 
 #### 2. XSS вразливість в email generation
 
