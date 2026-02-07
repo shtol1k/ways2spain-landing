@@ -31,7 +31,7 @@ todos:
     status: pending
   - id: seo_robots
     content: Update robots.txt with sitemap reference
-    status: pending
+    status: completed
   - id: seo_sitemap_dates
     content: Fix sitemap to use actual post/guide updatedAt dates
     status: completed
@@ -561,17 +561,77 @@ export const metadata: Metadata = {
 
 **Рішення:** Додати відсутні schemas для покращення Google rich snippets.
 
-#### 11. robots.txt - неповний
+#### 11. robots.txt - неповний ✅ ВИПРАВЛЕНО
 
-**Поточний стан:** `[public/robots.txt](public/robots.txt)` - базовий, дозволяє все
+**Поточний стан:** [`public/robots.txt`](public/robots.txt) - базовий, дозволяє все
+
+**Було:**
+```txt
+User-agent: Googlebot
+Allow: /
+
+User-agent: *
+Allow: /
+```
 
 **Відсутнє:**
+- Sitemap reference
+- Disallow rules для admin та API
+- Коментарі та структура
 
-- Sitemap reference: `Sitemap: https://ways2spain.com/sitemap.xml`
-- Crawl-delay (optional)
-- Specific disallow rules (якщо потрібні)
+**Стало:**
+```txt
+# Robots.txt for Ways2Spain
+# Updated: 2026-02-07
 
-**Рішення:** Оновити robots.txt.
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Allow all other bots
+User-agent: *
+Allow: /
+
+# Disallow Payload CMS admin and API from indexing
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://ways2spain.com/sitemap.xml
+Sitemap: https://www.ways2spain.com/sitemap.xml
+Sitemap: https://dev.ways2spain.com/sitemap.xml
+```
+
+**Що було зроблено:**
+- ✅ Додано посилання на sitemap для всіх доменів (production + www + dev)
+- ✅ Додано `Disallow: /admin` - захищає Payload CMS admin від індексації
+- ✅ Додано `Disallow: /api/` - API endpoints не потрібні в пошукових системах
+- ✅ Додано коментарі для читабельності
+- ✅ Додано дату оновлення
+
+**SEO переваги:**
+- 🎯 Google автоматично знаходить sitemap
+- 🎯 Швидше індексування нових сторінок
+- 🎯 Admin панель не потрапляє в пошук
+- 🎯 API endpoints не забивають індекс
+- 🎯 Підтримка всіх середовищ (prod, www, dev)
+
+**Перевірка:**
+Після deploy перевір:
+- https://ways2spain.com/robots.txt
+- https://www.ways2spain.com/robots.txt
+- https://dev.ways2spain.com/robots.txt
+
+Також можеш перевірити в Google Search Console → Sitemaps
 
 #### 12. Sitemap використовує `new Date()` замість реальних дат ✅ ВИПРАВЛЕНО
 
