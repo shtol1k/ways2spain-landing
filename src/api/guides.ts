@@ -247,7 +247,7 @@ export async function getRelatedGuides(
  * Get all guide slugs for static params / sitemap (category + slug)
  */
 export async function getAllGuideSlugs(): Promise<
-  Array<{ category: string; slug: string }>
+  Array<{ category: string; slug: string; updatedAt: string }>
 > {
   const payload = await getPayloadClient()
   const result = await payload.find({
@@ -264,7 +264,11 @@ export async function getAllGuideSlugs(): Promise<
           ? (cat as GuideCategory).slug
           : null
       if (!g.slug || !categorySlug) return null
-      return { category: categorySlug, slug: g.slug }
+      return { 
+        category: categorySlug, 
+        slug: g.slug,
+        updatedAt: g.updatedAt || new Date().toISOString()
+      }
     })
-    .filter((x): x is { category: string; slug: string } => x != null)
+    .filter((x): x is { category: string; slug: string; updatedAt: string } => x != null)
 }

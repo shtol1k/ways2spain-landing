@@ -19,7 +19,7 @@ export type PostsResponse = {
 /**
  * Get all published post slugs (for sitemap)
  */
-export async function getAllPostSlugs(): Promise<Array<{ slug: string }>> {
+export async function getAllPostSlugs(): Promise<Array<{ slug: string; updatedAt: string }>> {
     const payload = await getPayloadClient()
     const result = await payload.find({
         collection: 'posts',
@@ -27,7 +27,12 @@ export async function getAllPostSlugs(): Promise<Array<{ slug: string }>> {
         limit: 2000,
         depth: 0,
     })
-    return (result.docs as Post[]).map((p) => ({ slug: p.slug ?? '' })).filter((p) => p.slug)
+    return (result.docs as Post[])
+        .map((p) => ({ 
+            slug: p.slug ?? '', 
+            updatedAt: p.updatedAt || new Date().toISOString()
+        }))
+        .filter((p) => p.slug)
 }
 
 /**

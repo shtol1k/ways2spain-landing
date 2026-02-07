@@ -34,7 +34,7 @@ todos:
     status: pending
   - id: seo_sitemap_dates
     content: Fix sitemap to use actual post/guide updatedAt dates
-    status: pending
+    status: completed
   - id: perf_images
     content: Replace all <img> tags with next/image (Hero, Navbar, Footer, Features, etc.)
     status: pending
@@ -573,15 +573,98 @@ export const metadata: Metadata = {
 
 **Рішення:** Оновити robots.txt.
 
-#### 12. Sitemap використовує `new Date()` замість реальних дат
+#### 12. Sitemap використовує `new Date()` замість реальних дат ✅ ВИПРАВЛЕНО
 
-**Файл:** `[src/app/sitemap.ts](src/app/sitemap.ts)`
+**Файл:** [`src/app/sitemap.ts`](src/app/sitemap.ts)
 
+**Було:**
 ```typescript
-lastModified: new Date(), // ❌ Не інформативно для Google
+const postEntries = postSlugs.map(({ slug }) => ({
+  url: getCanonicalUrl(`blog/${slug}`),
+  lastModified: new Date(), // ❌ Не інформативно для Google
+  changeFrequency: "weekly",
+  priority: 0.8,
+}));
+
+const guideEntries = guideSlugs.map(({ category, slug }) => ({
+  url: getCanonicalUrl(`guides/${category}/${slug}`),
+  lastModified: new Date(), // ❌ Не інформативно для Google
+  changeFrequency: "monthly",
+  priority: 0.9,
+}));
 ```
 
-**Рішення:** Використати `updatedAt` з posts/guides для точних дат модифікації.
+**Проблема:** Google отримує однакову дату для всіх сторінок, що не дає інформації про реальні зміни контенту.
+
+**Стало:**
+
+**1. Оновлено `src/api/blog.ts` - `getAllPostSlugs()`:**
+```typescript
+export async function getAllPostSlugs(): Promise<
+  Array<{ slug: string; updatedAt: string }>
+> {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'posts',
+    sort: '-publishedAt',
+    limit: 2000,
+    depth: 0,
+  })
+  return (result.docs as Post[])
+    .map((p) => ({ 
+      slug: p.slug ?? '', 
+      updatedAt: p.updatedAt || new Date().toISOString()
+    }))
+    .filter((p) => p.slug)
+}
+```
+
+**2. Оновлено `src/api/guides.ts` - `getAllGuideSlugs()`:**
+```typescript
+export async function getAllGuideSlugs(): Promise<
+  Array<{ category: string; slug: string; updatedAt: string }>
+> {
+  // ... existing code ...
+  return (result.docs as Guide[])
+    .map((g) => ({
+      category: categorySlug,
+      slug: g.slug,
+      updatedAt: g.updatedAt || new Date().toISOString()
+    }))
+    .filter((x) => x != null)
+}
+```
+
+**3. Оновлено `src/app/sitemap.ts` - використання реальних дат:**
+```typescript
+const postEntries = postSlugs.map(({ slug, updatedAt }) => ({
+  url: getCanonicalUrl(`blog/${slug}`),
+  lastModified: new Date(updatedAt), // ✅ Реальна дата з CMS
+  changeFrequency: "weekly",
+  priority: 0.8,
+}));
+
+const guideEntries = guideSlugs.map(({ category, slug, updatedAt }) => ({
+  url: getCanonicalUrl(`guides/${category}/${slug}`),
+  lastModified: new Date(updatedAt), // ✅ Реальна дата з CMS
+  changeFrequency: "monthly",
+  priority: 0.9,
+}));
+```
+
+**Що було зроблено:**
+- ✅ Blog posts тепер показують реальну дату останнього редагування
+- ✅ Guides тепер показують реальну дату останнього редагування
+- ✅ Google краще розуміє, які сторінки змінювалися недавно
+- ✅ Fallback на `new Date()` якщо updatedAt відсутнє (для безпеки)
+
+**SEO переваги:**
+- 🎯 Google швидше індексує оновлені сторінки
+- 🎯 Кращий crawl budget - Google знає, які сторінки приоритетні
+- 🎯 Точна інформація про свіжість контенту
+- 🎯 Краще ранжування для fresh content
+
+**Примітка:** Static routes залишають `new Date()`, бо вони змінюються з кожним deploy, що логічно.
 
 ---
 

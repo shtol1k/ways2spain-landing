@@ -24,9 +24,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const postSlugs = await getAllPostSlugs();
-  const postEntries: MetadataRoute.Sitemap = postSlugs.map(({ slug }) => ({
+  const postEntries: MetadataRoute.Sitemap = postSlugs.map(({ slug, updatedAt }) => ({
     url: getCanonicalUrl(`blog/${slug}`),
-    lastModified: new Date(),
+    lastModified: new Date(updatedAt),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
@@ -61,9 +61,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const guideSlugs = await getAllGuideSlugs();
   const guideEntries: MetadataRoute.Sitemap = guideSlugs.map(
-    ({ category, slug }) => ({
+    ({ category, slug, updatedAt }) => ({
       url: getCanonicalUrl(`guides/${category}/${slug}`),
-      lastModified: new Date(),
+      lastModified: new Date(updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.9,
     })
