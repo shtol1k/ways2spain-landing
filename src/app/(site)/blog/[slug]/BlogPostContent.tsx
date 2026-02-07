@@ -7,19 +7,32 @@ import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { SmartImage } from "@/components/SmartImage";
 import { Post } from "@/payload-types";
+import { BlogBreadcrumbs, type BlogBreadcrumbItem } from "@/components/blog/BlogBreadcrumbs";
+import { AuthorCard } from "@/components/blog/AuthorCard";
+import { ReadingProgress } from "@/components/blog/ReadingProgress";
+import { TableOfContents } from "@/components/blog/TableOfContents";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface BlogPostContentProps {
   post: Post;
   contentHtml: string | null;
-  relatedPosts: any[]; // Use any for now until types are fully synced, or Post[]
+  relatedPosts: any[];
+  breadcrumbItems?: BlogBreadcrumbItem[];
 }
 
-const BlogPostContent = ({ post, contentHtml, relatedPosts }: BlogPostContentProps) => {
+const BlogPostContent = ({ post, contentHtml, relatedPosts, breadcrumbItems }: BlogPostContentProps) => {
   return (
     <div className="min-h-screen pt-32 pb-20">
+      <ReadingProgress />
       <article className="container mx-auto px-4 lg:px-8">
-        {/* Back button */}
         <div className="max-w-4xl mx-auto mb-8">
+          {breadcrumbItems?.length ? <BlogBreadcrumbs items={breadcrumbItems} /> : null}
           <Link href="/blog">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 w-4 h-4" />
@@ -69,12 +82,13 @@ const BlogPostContent = ({ post, contentHtml, relatedPosts }: BlogPostContentPro
           </div>
         </div>
 
-        {/* Content */}
-        <div className="max-w-3xl mx-auto">
+        {/* Content + ToC */}
+        <div className="max-w-5xl mx-auto grid lg:grid-cols-[1fr_200px] gap-12">
+          <div className="min-w-0">
           {contentHtml ? (
             <div
-              className="prose prose-lg dark:prose-invert max-w-none 
-              prose-headings:font-bold prose-headings:text-foreground
+              className="blog-content prose prose-lg dark:prose-invert max-w-none 
+              prose-headings:font-bold prose-headings:text-foreground prose-headings:scroll-mt-24
               prose-p:text-muted-foreground prose-p:leading-relaxed
               prose-a:text-secondary prose-a:no-underline hover:prose-a:underline
               prose-strong:text-foreground
@@ -91,6 +105,24 @@ const BlogPostContent = ({ post, contentHtml, relatedPosts }: BlogPostContentPro
             </div>
           )}
 
+          {/* Author card */}
+          {post.author && typeof post.author !== "number" && (
+            <div className="mt-12">
+              <AuthorCard
+                author={{
+                  id: post.author.id,
+                  name: post.author.name ?? "",
+                  slug: post.author.slug ?? null,
+                  role: post.author.role ?? null,
+                  bio: post.author.bio ?? null,
+                  photo: post.author.photo ?? null,
+                  socialLinks: post.author.socialLinks ?? null,
+                }}
+                variant="compact"
+              />
+            </div>
+          )}
+
           {/* Share buttons */}
           <div className="mt-16 pt-8 border-t border-border">
             <div className="flex items-center justify-between">
@@ -102,39 +134,50 @@ const BlogPostContent = ({ post, contentHtml, relatedPosts }: BlogPostContentPro
             </div>
           </div>
 
-          {/* Related posts */}
+          {/* Related posts carousel */}
           {relatedPosts && relatedPosts.length > 0 && (
             <div className="mt-16">
               <h3 className="text-2xl font-bold mb-8">Читайте також</h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                {relatedPosts.map((relatedPost) => (
-                  <Link
-                    key={relatedPost.id}
-                    href={`/blog/${relatedPost.slug}`}
-                    className="bg-card rounded-xl border border-border p-6 hover:shadow-elegant transition-smooth flex flex-col h-full"
-                  >
-                    {relatedPost.category && typeof relatedPost.category !== 'number' && (
-                      <span className="inline-block px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-semibold mb-3 w-fit">
-                        {relatedPost.category.name}
-                      </span>
-                    )}
-                    <h4 className="text-lg font-bold mb-2 hover:text-secondary transition-smooth line-clamp-2">
-                      {relatedPost.title}
-                    </h4>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-grow">
-                      {relatedPost.excerpt}
-                    </p>
-                    <div className="flex items-center text-sm text-muted-foreground mt-auto">
-                      <Clock className="w-4 h-4 mr-2" />
-                      <span>
-                        {relatedPost.readTime ? `${relatedPost.readTime} хв` : '3 хв'}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <Carousel opts={{ align: "start", loop: true }} className="w-full">
+                <CarouselContent className="-ml-4">
+                  {relatedPosts.map((relatedPost) => (
+                    <CarouselItem key={relatedPost.id} className="pl-4 md:basis-1/2">
+                      <Link
+                        href={`/blog/${relatedPost.slug}`}
+                        className="bg-card rounded-xl border border-border p-6 hover:shadow-elegant transition-smooth flex flex-col h-full"
+                      >
+                        {relatedPost.category && typeof relatedPost.category !== "number" && (
+                          <span className="inline-block px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-semibold mb-3 w-fit">
+                            {relatedPost.category.name}
+                          </span>
+                        )}
+                        <h4 className="text-lg font-bold mb-2 hover:text-secondary transition-smooth line-clamp-2">
+                          {relatedPost.title}
+                        </h4>
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-grow">
+                          {relatedPost.excerpt}
+                        </p>
+                        <div className="flex items-center text-sm text-muted-foreground mt-auto">
+                          <Clock className="w-4 h-4 mr-2" />
+                          <span>
+                            {relatedPost.readTime ? `${relatedPost.readTime} хв` : "3 хв"}
+                          </span>
+                        </div>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+              </Carousel>
             </div>
           )}
+          </div>
+          <aside className="hidden lg:block">
+            <div className="sticky top-24">
+              <TableOfContents selector=".blog-content" />
+            </div>
+          </aside>
         </div>
       </article>
     </div>

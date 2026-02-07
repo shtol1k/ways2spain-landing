@@ -22,6 +22,12 @@ export default function SiteLayout({
     <html lang="uk" suppressHydrationWarning>
       <head>
         <GoogleTagManagerHead />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          href="/blog/rss.xml"
+          title="RSS Блог - Ways2Spain"
+        />
       </head>
       <body className={inter.className}>
         <GoogleTagManagerBody />

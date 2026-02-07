@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { Post, Category, Tag } from '@/payload-types'
+import { Post, Category, Tag, Author } from '@/payload-types'
 
 // Initialize payload
 const getPayloadClient = async () => {
@@ -14,6 +14,20 @@ export type PostsResponse = {
     page: number
     hasNextPage: boolean
     hasPrevPage: boolean
+}
+
+/**
+ * Get all published post slugs (for sitemap)
+ */
+export async function getAllPostSlugs(): Promise<Array<{ slug: string }>> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+        collection: 'posts',
+        sort: '-publishedAt',
+        limit: 2000,
+        depth: 0,
+    })
+    return (result.docs as Post[]).map((p) => ({ slug: p.slug ?? '' })).filter((p) => p.slug)
 }
 
 /**
@@ -119,6 +133,182 @@ export async function getCategories(): Promise<Category[]> {
     })
 
     return result.docs as Category[]
+}
+
+/**
+ * Get category by slug
+ */
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+    const payload = await getPayloadClient()
+
+    const result = await payload.find({
+        collection: 'categories',
+        where: {
+            slug: {
+                equals: slug,
+            },
+        },
+        limit: 1,
+    })
+
+    return (result.docs[0] as Category) || null
+}
+
+/**
+ * Get categories with post count (for filter pills)
+ */
+export async function getCategoriesWithCount(): Promise<Array<Category & { postCount: number }>> {
+    const payload = await getPayloadClient()
+    const categories = await getCategories()
+
+    const withCount = await Promise.all(
+        categories.map(async (cat) => {
+            const result = await payload.find({
+                collection: 'posts',
+                where: {
+                    'category.id': { equals: cat.id },
+                },
+                limit: 0,
+            })
+            return { ...cat, postCount: result.totalDocs }
+        })
+    )
+
+    return withCount
+}
+
+/**
+ * Get all authors
+ */
+export async function getAuthors(): Promise<Author[]> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+        collection: 'authors',
+        sort: 'name',
+        limit: 100,
+    })
+    return result.docs as Author[]
+}
+
+/**
+ * Get author by slug
+ */
+export async function getAuthorBySlug(slug: string): Promise<Author | null> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+        collection: 'authors',
+        where: { slug: { equals: slug } },
+        limit: 1,
+    })
+    return (result.docs[0] as Author) || null
+}
+
+/**
+ * Get posts by author slug
+ */
+export async function getPostsByAuthor(slug: string, page: number = 1, limit: number = 9): Promise<PostsResponse> {
+    const payload = await getPayloadClient()
+    const authorResult = await payload.find({
+        collection: 'authors',
+        where: { slug: { equals: slug } },
+        limit: 1,
+    })
+    if (authorResult.docs.length === 0) {
+        return {
+            docs: [],
+            totalDocs: 0,
+            totalPages: 0,
+            page: 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+        }
+    }
+    const authorId = authorResult.docs[0].id
+    const result = await payload.find({
+        collection: 'posts',
+        where: { 'author.id': { equals: authorId } },
+        sort: '-publishedAt',
+        depth: 2,
+        page,
+        limit,
+    })
+    return {
+        docs: result.docs as Post[],
+        totalDocs: result.totalDocs,
+        totalPages: result.totalPages,
+        page: result.page || 1,
+        hasNextPage: result.hasNextPage,
+        hasPrevPage: result.hasPrevPage,
+    }
+}
+
+/**
+ * Get all tags
+ */
+export async function getTags(): Promise<Tag[]> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+        collection: 'tags',
+        sort: 'name',
+        limit: 200,
+    })
+    return result.docs as Tag[]
+}
+
+/**
+ * Get tag by slug
+ */
+export async function getTagBySlug(slug: string): Promise<Tag | null> {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+        collection: 'tags',
+        where: { slug: { equals: slug } },
+        limit: 1,
+    })
+    return (result.docs[0] as Tag) || null
+}
+
+/**
+ * Get posts by tag slug
+ */
+export async function getPostsByTag(slug: string, page: number = 1, limit: number = 9): Promise<PostsResponse> {
+    const payload = await getPayloadClient()
+    const tagResult = await payload.find({
+        collection: 'tags',
+        where: { slug: { equals: slug } },
+        limit: 1,
+    })
+    if (tagResult.docs.length === 0) {
+        return {
+            docs: [],
+            totalDocs: 0,
+            totalPages: 0,
+            page: 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+        }
+    }
+    const tagId = tagResult.docs[0].id
+    const result = await payload.find({
+        collection: 'posts',
+        where: {
+            'tags.id': {
+                equals: tagId,
+            },
+        },
+        sort: '-publishedAt',
+        depth: 2,
+        page,
+        limit,
+    })
+    return {
+        docs: result.docs as Post[],
+        totalDocs: result.totalDocs,
+        totalPages: result.totalPages,
+        page: result.page || 1,
+        hasNextPage: result.hasNextPage,
+        hasPrevPage: result.hasPrevPage,
+    }
 }
 
 /**

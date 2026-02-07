@@ -2,18 +2,33 @@ import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
-import { getPosts } from "@/api/blog";
+import { getPosts, getCategoriesWithCount, getTags } from "@/api/blog";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { Media } from "@/payload-types";
 import { SmartImage } from "@/components/SmartImage";
+import { BlogPagination } from "@/components/blog/BlogPagination";
+import { CategoryFilter } from "@/components/blog/CategoryFilter";
+import { BlogSearch } from "@/components/blog/BlogSearch";
+import { TagCloud } from "@/components/blog/TagCloud";
+import { getCanonicalUrl } from "@/lib/utils";
+import { generateItemListSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Блог - Digital Nomad Visa Іспанія",
   description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію",
+  alternates: { canonical: getCanonicalUrl("blog") },
+  twitter: {
+    card: "summary_large_image",
+    title: "Блог - Digital Nomad Visa Іспанія",
+    description: "Корисні статті про Digital Nomad Visa та релокацію в Іспанію",
+  },
 };
 
 export const revalidate = 60; // Revalidate this page every 60 seconds
+
+const POSTS_PER_PAGE = 9;
 
 // Helper to get image URL safely
 const getImageUrl = (image: Media | number | null | undefined): string | null => {
@@ -21,11 +36,27 @@ const getImageUrl = (image: Media | number | null | undefined): string | null =>
   return image.url || null;
 }
 
-const BlogPage = async () => {
-  // Fetch posts from Payload CMS
-  const { docs: posts } = await getPosts(1, 10);
+interface BlogPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
 
-  // Need at least one post to show anything useful
+const BlogPage = async ({ searchParams }: BlogPageProps) => {
+  const resolved = await searchParams;
+  const page = Math.max(1, parseInt(resolved?.page ?? '1', 10) || 1);
+
+  const [
+    { docs: posts, totalPages, page: currentPage },
+    categoriesWithCount,
+    searchPostsResponse,
+    tags,
+  ] = await Promise.all([
+    getPosts(page, POSTS_PER_PAGE),
+    getCategoriesWithCount(),
+    getPosts(1, 100),
+    getTags(),
+  ]);
+  const searchPosts = searchPostsResponse.docs ?? [];
+
   if (!posts || posts.length === 0) {
     return (
       <div className="min-h-screen pt-32 pb-20">
@@ -42,83 +73,94 @@ const BlogPage = async () => {
     );
   }
 
-  const featuredPost = posts[0];
-  const otherPosts = posts.slice(1);
+  const featuredPost = page === 1 ? posts[0] : null;
+  const gridPosts = page === 1 ? posts.slice(1) : posts;
+  const itemListSchema = generateItemListSchema(
+    posts.map((p) => ({ title: p.title ?? "", slug: p.slug ?? "" }))
+  );
 
   return (
+    <>
+      <JsonLd data={itemListSchema} />
     <div className="min-h-screen pt-32 pb-20">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
+        <div className="max-w-4xl mx-auto text-center mb-10">
           <h1 className="mb-6">Блог</h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-muted-foreground mb-6">
             Корисні статті про Digital Nomad Visa та релокацію в Іспанію
           </p>
+          <div className="max-w-md mx-auto mb-6">
+            <BlogSearch posts={searchPosts} placeholder="Пошук статей..." />
+          </div>
+          <CategoryFilter categories={categoriesWithCount} />
         </div>
 
-        {/* Featured Post */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="bg-gradient-to-r from-primary to-primary/90 rounded-2xl overflow-hidden shadow-strong min-h-[400px]">
-            <div className="grid lg:grid-cols-2 h-full">
-              <div className="p-8 lg:p-12 flex flex-col justify-center text-primary-foreground">
-                <div>
-                  <span className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm font-semibold mb-4">
-                    Рекомендуємо
-                  </span>
-                  <Link href={`/blog/${featuredPost.slug}`} className="hover:opacity-90 transition-opacity">
-                    <h2 className="text-3xl font-bold mb-4">
-                      {featuredPost.title}
-                    </h2>
-                  </Link>
-                  <p className="text-primary-foreground/90 text-lg mb-6 line-clamp-3">
-                    {featuredPost.excerpt}
-                  </p>
-                  <div className="flex items-center space-x-6 text-primary-foreground/80 mb-6">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4" />
-                      <span className="text-sm">
-                        {featuredPost.publishedAt ? format(new Date(featuredPost.publishedAt), 'd MMMM yyyy', { locale: uk }) : 'TBA'}
-                      </span>
-                    </div>
-                    {featuredPost.readTime && (
+        {/* Featured Post - only on first page */}
+        {featuredPost && (
+          <div className="max-w-6xl mx-auto mb-16">
+            <div className="bg-gradient-to-r from-primary to-primary/90 rounded-2xl overflow-hidden shadow-strong min-h-[400px]">
+              <div className="grid lg:grid-cols-2 h-full">
+                <div className="p-8 lg:p-12 flex flex-col justify-center text-primary-foreground">
+                  <div>
+                    <span className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-sm font-semibold mb-4">
+                      Рекомендуємо
+                    </span>
+                    <Link href={`/blog/${featuredPost.slug}`} className="hover:opacity-90 transition-opacity">
+                      <h2 className="text-3xl font-bold mb-4">
+                        {featuredPost.title}
+                      </h2>
+                    </Link>
+                    <p className="text-primary-foreground/90 text-lg mb-6 line-clamp-3">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex items-center space-x-6 text-primary-foreground/80 mb-6">
                       <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4" />
-                        <span className="text-sm">{featuredPost.readTime} хв читання</span>
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm">
+                          {featuredPost.publishedAt ? format(new Date(featuredPost.publishedAt), 'd MMMM yyyy', { locale: uk }) : 'TBA'}
+                        </span>
                       </div>
-                    )}
+                      {featuredPost.readTime && (
+                        <div className="flex items-center space-x-2">
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm">{featuredPost.readTime} хв читання</span>
+                        </div>
+                      )}
+                    </div>
+                    <Link href={`/blog/${featuredPost.slug}`}>
+                      <Button variant="secondary" size="lg">
+                        Читати далі
+                        <ArrowRight className="ml-2" />
+                      </Button>
+                    </Link>
                   </div>
-                  <Link href={`/blog/${featuredPost.slug}`}>
-                    <Button variant="secondary" size="lg">
-                      Читати далі
-                      <ArrowRight className="ml-2" />
-                    </Button>
-                  </Link>
                 </div>
-              </div>
-              <div className="hidden lg:block relative min-h-[300px] lg:min-h-full bg-muted/20">
-                {featuredPost.featuredImage && typeof featuredPost.featuredImage !== 'number' && featuredPost.featuredImage.url ? (
-                  <SmartImage
-                    src={featuredPost.featuredImage.url}
-                    alt={featuredPost.featuredImage.alt || featuredPost.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary-foreground/10">
-                    <span className="text-primary-foreground/40 text-6xl">📄</span>
-                  </div>
-                )}
+                <div className="hidden lg:block relative min-h-[300px] lg:min-h-full bg-muted/20">
+                  {featuredPost.featuredImage && typeof featuredPost.featuredImage !== 'number' && featuredPost.featuredImage.url ? (
+                    <SmartImage
+                      src={featuredPost.featuredImage.url}
+                      alt={featuredPost.featuredImage.alt || featuredPost.title}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary-foreground/10">
+                      <span className="text-primary-foreground/40 text-6xl">📄</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Blog Grid */}
-        {otherPosts.length > 0 && (
+        {gridPosts.length > 0 && (
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {otherPosts.map((post) => (
+              {gridPosts.map((post) => (
                 <article
                   key={post.id}
                   className="bg-card rounded-xl border border-border shadow-elegant hover:shadow-strong transition-smooth overflow-hidden group flex flex-col h-full"
@@ -177,6 +219,19 @@ const BlogPage = async () => {
                 </article>
               ))}
             </div>
+            <BlogPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath="/blog"
+            />
+          </div>
+        )}
+
+        {/* Tag cloud */}
+        {tags.length > 0 && (
+          <div className="max-w-4xl mx-auto mt-16">
+            <h3 className="text-lg font-semibold mb-4 text-center">Теги</h3>
+            <TagCloud tags={tags.map((t) => ({ id: t.id, name: t.name ?? "", slug: t.slug ?? "" }))} />
           </div>
         )}
 
@@ -203,6 +258,7 @@ const BlogPage = async () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -2,8 +2,13 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getRecentPosts } from "@/api/blog";
 import BlogPostContent from "./BlogPostContent";
 import type { Metadata } from "next";
-import { format } from "date-fns";
-import { uk } from "date-fns/locale";
+import { getCanonicalUrl } from "@/lib/utils";
+import {
+  generateArticleSchema,
+  generateBreadcrumbSchema,
+  generatePersonSchema,
+} from "@/lib/schema";
+import { JsonLd } from "@/components/JsonLd";
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
@@ -21,17 +26,31 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
     };
   }
 
+  const seo = (post as { seo?: { metaTitle?: string; metaDescription?: string; metaImage?: { url?: string } | number } }).seo;
+  const metaTitle = seo?.metaTitle || (post as { meta?: { metaTitle?: string } }).meta?.metaTitle;
+  const metaDescription = seo?.metaDescription ?? (post as { meta?: { metaDescription?: string } }).meta?.metaDescription ?? post.excerpt ?? '';
+  const metaImage = seo?.metaImage && typeof seo.metaImage !== "number" && seo.metaImage?.url
+    ? seo.metaImage.url
+    : post.featuredImage && typeof post.featuredImage !== "number" && post.featuredImage?.url
+      ? post.featuredImage.url
+      : undefined;
+
   return {
-    title: post.meta?.metaTitle || `${post.title} - Digital Nomad Visa Іспанія`,
-    description: post.meta?.metaDescription || post.excerpt,
+    title: metaTitle || `${post.title} - Digital Nomad Visa Іспанія`,
+    description: metaDescription,
+    alternates: { canonical: getCanonicalUrl(`blog/${slug}`) },
     openGraph: {
-      title: post.meta?.metaTitle || post.title,
-      description: post.meta?.metaDescription || post.excerpt,
+      title: metaTitle || post.title,
+      description: metaDescription,
       type: "article",
       publishedTime: post.publishedAt || undefined,
-      images: post.meta?.metaImage && typeof post.meta.metaImage !== 'number' && post.meta.metaImage.url
-        ? [post.meta.metaImage.url]
-        : (post.featuredImage && typeof post.featuredImage !== 'number' && post.featuredImage.url ? [post.featuredImage.url] : undefined),
+      images: metaImage ? [metaImage] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: metaTitle || post.title,
+      description: metaDescription,
+      images: metaImage ? [metaImage] : undefined,
     },
   };
 }
@@ -58,5 +77,37 @@ export default async function BlogPage({ params }: BlogPageProps) {
   // or user content_html if lexicalHTML populated it (which we configured)
   const contentHtml = (post as any).content_html || null;
 
-  return <BlogPostContent post={post} contentHtml={contentHtml} relatedPosts={relatedPosts} />;
+  const breadcrumbItems = [
+    { label: "Головна", href: "/" },
+    { label: "Блог", href: "/blog" },
+    ...(post.category && typeof post.category !== "number"
+      ? [{ label: post.category.name, href: `/blog/category/${post.category.slug}` }]
+      : []),
+    { label: post.title },
+  ];
+
+  const articleSchema = generateArticleSchema(post);
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
+  const personSchema =
+    post.author && typeof post.author !== "number" && post.author.name
+      ? generatePersonSchema({
+          name: post.author.name,
+          slug: post.author.slug ?? null,
+          bio: post.author.bio ?? null,
+          photo: post.author.photo ?? null,
+          socialLinks: post.author.socialLinks ?? null,
+        })
+      : null;
+
+  return (
+    <>
+      <JsonLd data={[articleSchema, breadcrumbSchema, ...(personSchema ? [personSchema] : [])]} />
+      <BlogPostContent
+      post={post}
+      contentHtml={contentHtml}
+      relatedPosts={relatedPosts}
+      breadcrumbItems={breadcrumbItems}
+    />
+    </>
+  );
 }
